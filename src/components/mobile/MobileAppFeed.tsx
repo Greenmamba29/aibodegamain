@@ -31,9 +31,18 @@ export const MobileAppFeed: React.FC = () => {
   }, [user, fetchPurchases])
 
   const handleAppAction = (app: App) => {
+    if (!user) {
+      alert('Please sign in to purchase apps')
+      return
+    }
+
     if (app.pricing_type === 'free' || purchasedApps.has(app.id)) {
       // Open app directly
-      window.open(app.app_url, '_blank')
+      if (app.app_url) {
+        window.open(app.app_url, '_blank')
+      } else {
+        alert('App URL not available')
+      }
     } else {
       // Show payment modal
       setSelectedApp(app)
@@ -83,6 +92,19 @@ export const MobileAppFeed: React.FC = () => {
     console.log('User content submitted:', content)
     // Here you would typically save the content to your backend
     alert('Content posted successfully!')
+  }
+
+  const handlePurchaseSuccess = () => {
+    if (selectedApp) {
+      // Refresh purchases to update the UI
+      fetchPurchases()
+      // Open app after purchase
+      setTimeout(() => {
+        if (selectedApp.app_url) {
+          window.open(selectedApp.app_url, '_blank')
+        }
+      }, 1000)
+    }
   }
 
   const getActionButtonText = (app: App) => {
@@ -159,14 +181,7 @@ export const MobileAppFeed: React.FC = () => {
             setSelectedApp(null)
           }}
           app={selectedApp}
-          onSuccess={() => {
-            fetchPurchases()
-            if (selectedApp) {
-              setTimeout(() => {
-                window.open(selectedApp.app_url, '_blank')
-              }, 1000)
-            }
-          }}
+          onSuccess={handlePurchaseSuccess}
         />
       )}
     </>
