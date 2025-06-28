@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, BarChart3, Settings, Upload, Eye, Edit, Trash2, Star, Download, Users, TrendingUp, DollarSign } from 'lucide-react'
+import { Plus, BarChart3, Settings, Upload, Eye, Edit, Trash2, Star, Download, Users, TrendingUp, DollarSign, FileDown, User } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { AppSubmissionForm } from './AppSubmissionForm'
 import { AppManagement } from './AppManagement'
 import { DeveloperAnalytics } from './DeveloperAnalytics'
 import { RevenueAnalytics } from './RevenueAnalytics'
+import { DeveloperSettings } from './DeveloperSettings'
+import { ProfileView } from './ProfileView'
 import { useAuthStore } from '../../store/authStore'
 import { useDeveloperStore } from '../../store/developerStore'
 
-type TabType = 'overview' | 'apps' | 'submit' | 'analytics' | 'revenue' | 'settings'
+type TabType = 'overview' | 'apps' | 'submit' | 'analytics' | 'revenue' | 'settings' | 'profile'
 
 export const DeveloperPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview')
@@ -41,12 +43,37 @@ export const DeveloperPortal: React.FC = () => {
     setActiveTab('apps')
   }
 
+  // Handle successful app submission
+  const handleAppSubmissionSuccess = () => {
+    setActiveTab('apps')
+  }
+
+  // Export downloads data as CSV
+  const exportDownloadsCSV = () => {
+    const csvData = [
+      ['Date', 'Downloads', 'App', 'Revenue'],
+      ['2024-01-01', '150', 'DreamCanvas AI', '$105.00'],
+      ['2024-01-02', '200', 'TextMind Pro', '$140.00'],
+      ['2024-01-03', '175', 'CodeGenius AI', '$122.50'],
+      // Add more sample data or fetch real data
+    ]
+    
+    const csvContent = csvData.map(row => row.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'downloads-export.csv'
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
   if (profile?.role !== 'developer') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-yellow-50 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="w-24 h-24 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mx-auto mb-8 flex items-center justify-center">
+            <div className="w-24 h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-full mx-auto mb-8 flex items-center justify-center shadow-lg">
               <Plus className="w-12 h-12 text-white" />
             </div>
             
@@ -62,7 +89,7 @@ export const DeveloperPortal: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               <Card>
                 <CardContent className="p-6 text-center">
-                  <Upload className="w-8 h-8 text-purple-600 mx-auto mb-4" />
+                  <Upload className="w-8 h-8 text-blue-600 mx-auto mb-4" />
                   <h3 className="font-semibold text-gray-900 mb-2">Easy Submission</h3>
                   <p className="text-sm text-gray-600">Upload your apps with drag & drop interface</p>
                 </CardContent>
@@ -70,7 +97,7 @@ export const DeveloperPortal: React.FC = () => {
               
               <Card>
                 <CardContent className="p-6 text-center">
-                  <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-4" />
+                  <BarChart3 className="w-8 h-8 text-purple-600 mx-auto mb-4" />
                   <h3 className="font-semibold text-gray-900 mb-2">Real-time Analytics</h3>
                   <p className="text-sm text-gray-600">Track downloads, ratings, and revenue</p>
                 </CardContent>
@@ -78,7 +105,7 @@ export const DeveloperPortal: React.FC = () => {
               
               <Card>
                 <CardContent className="p-6 text-center">
-                  <DollarSign className="w-8 h-8 text-teal-600 mx-auto mb-4" />
+                  <DollarSign className="w-8 h-8 text-yellow-600 mx-auto mb-4" />
                   <h3 className="font-semibold text-gray-900 mb-2">Monetization</h3>
                   <p className="text-sm text-gray-600">70% revenue share with Stripe integration</p>
                 </CardContent>
@@ -88,7 +115,7 @@ export const DeveloperPortal: React.FC = () => {
             <Button 
               size="lg" 
               onClick={handleUpgradeToDeveloper}
-              className="text-lg px-8 py-4"
+              className="text-lg px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
             >
               Start Developing
             </Button>
@@ -104,6 +131,7 @@ export const DeveloperPortal: React.FC = () => {
     { id: 'submit', label: 'Submit App', icon: Plus },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'revenue', label: 'Revenue', icon: DollarSign },
+    { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
   ]
 
@@ -115,7 +143,9 @@ export const DeveloperPortal: React.FC = () => {
           <div className="py-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Developer Portal</h1>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-yellow-600 bg-clip-text text-transparent">
+                  Developer Portal
+                </h1>
                 <p className="text-gray-600 mt-1">Manage your AI applications and track performance</p>
               </div>
               
@@ -124,27 +154,10 @@ export const DeveloperPortal: React.FC = () => {
                   variant="primary" 
                   icon={Upload}
                   onClick={handleSubmitApp}
+                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
                 >
                   Submit New App
                 </Button>
-                
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Welcome back,</p>
-                  <p className="font-semibold text-gray-900">{profile?.full_name}</p>
-                </div>
-                {profile?.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt="Profile"
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold text-lg">
-                      {profile?.full_name?.charAt(0) || 'D'}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -178,11 +191,12 @@ export const DeveloperPortal: React.FC = () => {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'overview' && <DeveloperOverview stats={stats} onSubmitApp={handleSubmitApp} onManageApps={handleManageApps} />}
+        {activeTab === 'overview' && <DeveloperOverview stats={stats} onSubmitApp={handleSubmitApp} onManageApps={handleManageApps} onExportDownloads={exportDownloadsCSV} />}
         {activeTab === 'apps' && <AppManagement />}
-        {activeTab === 'submit' && <AppSubmissionForm />}
-        {activeTab === 'analytics' && <DeveloperAnalytics />}
+        {activeTab === 'submit' && <AppSubmissionForm onSuccess={handleAppSubmissionSuccess} />}
+        {activeTab === 'analytics' && <DeveloperAnalytics onExportDownloads={exportDownloadsCSV} />}
         {activeTab === 'revenue' && <RevenueAnalytics />}
+        {activeTab === 'profile' && <ProfileView />}
         {activeTab === 'settings' && <DeveloperSettings />}
       </div>
     </div>
@@ -194,7 +208,8 @@ const DeveloperOverview: React.FC<{
   stats: any
   onSubmitApp: () => void
   onManageApps: () => void
-}> = ({ stats, onSubmitApp, onManageApps }) => {
+  onExportDownloads: () => void
+}> = ({ stats, onSubmitApp, onManageApps, onExportDownloads }) => {
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
@@ -228,9 +243,20 @@ const DeveloperOverview: React.FC<{
                 <Download className="w-6 h-6 text-blue-600" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm">
-              <span className="text-green-600 font-medium">+12%</span>
-              <span className="text-gray-500 ml-1">vs last month</span>
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex items-center text-sm">
+                <span className="text-green-600 font-medium">+12%</span>
+                <span className="text-gray-500 ml-1">vs last month</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                icon={FileDown}
+                onClick={onExportDownloads}
+                className="text-xs"
+              >
+                Export CSV
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -260,8 +286,8 @@ const DeveloperOverview: React.FC<{
                 <p className="text-sm font-medium text-gray-600">Followers</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.followers || 0}</p>
               </div>
-              <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-teal-600" />
+              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-yellow-600" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
@@ -340,62 +366,6 @@ const DeveloperOverview: React.FC<{
                 <p className="text-sm font-medium text-gray-900">3 new followers</p>
                 <p className="text-xs text-gray-500">3 days ago</p>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
-// Settings Component
-const DeveloperSettings: React.FC = () => {
-  return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-900">Developer Settings</h3>
-          <p className="text-gray-600">Manage your developer profile and preferences</p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Developer Bio
-              </label>
-              <textarea
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                rows={4}
-                placeholder="Tell users about yourself and your development experience..."
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  GitHub Profile
-                </label>
-                <input
-                  type="url"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="https://github.com/username"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Website
-                </label>
-                <input
-                  type="url"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="https://yourwebsite.com"
-                />
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <Button variant="primary">Save Changes</Button>
             </div>
           </div>
         </CardContent>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Upload, X, Plus, Link, Github, Globe, FileText, Image, Video, Package, Save, Send } from 'lucide-react'
+import { Upload, X, Plus, Link, Github, Globe, FileText, Image, Video, Package, Save, Send, ArrowLeft } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
@@ -8,7 +8,11 @@ import { useAppStore } from '../../store/appStore'
 import { useDeveloperStore } from '../../store/developerStore'
 import { uploadAppLogo, uploadAppScreenshot, uploadAppVideo, uploadAppDocumentation, uploadAppPackage } from '../../lib/storage'
 
-export const AppSubmissionForm: React.FC = () => {
+interface AppSubmissionFormProps {
+  onSuccess?: () => void
+}
+
+export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -42,7 +46,7 @@ export const AppSubmissionForm: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const { categories } = useAppStore()
-  const { submitApp } = useDeveloperStore()
+  const { submitApp, saveDraft } = useDeveloperStore()
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -165,8 +169,7 @@ export const AppSubmissionForm: React.FC = () => {
   const handleSaveDraft = async () => {
     setSaving(true)
     try {
-      // Save form data to localStorage for now
-      localStorage.setItem('app-draft', JSON.stringify(formData))
+      await saveDraft(formData, files)
       alert('Draft saved successfully!')
     } catch (error) {
       console.error('Error saving draft:', error)
@@ -223,10 +226,12 @@ export const AppSubmissionForm: React.FC = () => {
         packages: []
       })
       
-      // Clear draft
-      localStorage.removeItem('app-draft')
-      
       alert('App submitted successfully! It will be reviewed within 24-48 hours.')
+      
+      // Navigate to My Apps page
+      if (onSuccess) {
+        onSuccess()
+      }
     } catch (error: any) {
       console.error('Error submitting app:', error)
       alert(error.message || 'Error submitting app. Please try again.')
@@ -557,6 +562,7 @@ export const AppSubmissionForm: React.FC = () => {
             type="submit" 
             loading={loading}
             icon={Send}
+            className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
           >
             Submit for Review
           </Button>
