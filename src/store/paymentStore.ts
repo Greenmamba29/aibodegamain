@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { getUserPurchases, getUserSubscription, hasUserPurchasedApp } from '../lib/stripe';
+import { purchaseApp as purchaseAppApi, checkIfPurchased } from '../lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface PaymentState {
   purchases: any[];
@@ -12,6 +14,7 @@ interface PaymentState {
   fetchSubscription: () => Promise<void>;
   checkAppPurchase: (appId: string) => Promise<boolean>;
   addPurchasedApp: (appId: string) => void;
+  purchaseApp: (appId: string) => Promise<boolean>;
   refreshPaymentData: () => Promise<void>;
 }
 
@@ -50,13 +53,31 @@ export const usePaymentStore = create<PaymentState>((set, get) => ({
 
   checkAppPurchase: async (appId: string) => {
     try {
-      const { hasPurchased } = await hasUserPurchasedApp(appId);
-      if (hasPurchased) {
+      // First check local state
+      if (get().purchasedApps.has(appId)) {
+        return true;
+      }
+      
+      // Then check with API
+      const { isPurchased } = await checkIfPurchased(appId);
+      if (isPurchased) {
         set(state => ({
           purchasedApps: new Set([...state.purchasedApps, appId])
         }));
       }
-      return hasPurchased;
+      
+      // Fallback to Stripe check
+      if (!isPurchased) {
+        const { hasPurchased } = await hasUserPurchasedApp(appId);
+        if (hasPurchased) {
+          set(state => ({
+            purchasedApps: new Set([...state.purchasedApps, appId])
+          }));
+        }
+        return hasPurchased;
+      }
+      
+      return isPurchased;
     } catch (error) {
       console.error('Error checking app purchase:', error);
       return false;
@@ -67,6 +88,29 @@ export const usePaymentStore = create<PaymentState>((set, get) => ({
     set(state => ({
       purchasedApps: new Set([...state.purchasedApps, appId])
     }));
+  },
+  
+  purchaseApp: async (appId: string) => {
+    try {
+      const { data, error } = await purchaseAppApi(appId);
+      
+      if (error) throw error;
+      
+      if (data) {
+        set(state => ({
+          purchasedApps: new Set([...state.purchasedApps, appId])
+        }));
+        
+        toast.success('App purchased successfully!');
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error purchasing app:', error);
+      toast.error('Failed to purchase app. Please try again.');
+      return false;
+    }
   },
 
   refreshPaymentData: async () => {

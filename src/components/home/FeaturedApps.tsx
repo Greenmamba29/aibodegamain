@@ -10,6 +10,7 @@ import { ContentCardModal } from './ContentCardModal';
 import { useAppStore } from '../../store/appStore';
 import { useAuthStore } from '../../store/authStore';
 import { usePaymentStore } from '../../store/paymentStore';
+import { toast } from 'react-hot-toast';
 
 interface FeaturedAppsProps {
   selectedCategoryId?: string | null;
@@ -24,7 +25,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
 }) => {
   const { featuredApps, apps, loading, fetchFeaturedApps, fetchApps } = useAppStore();
   const { user } = useAuthStore();
-  const { purchasedApps, fetchPurchases } = usePaymentStore();
+  const { purchasedApps, fetchPurchases, addPurchasedApp } = usePaymentStore();
   const [selectedApp, setSelectedApp] = useState<any>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isAllAppsModalOpen, setIsAllAppsModalOpen] = useState(false);
@@ -46,6 +47,11 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
   }, [user, fetchPurchases]);
 
   const handleAppAction = (app: any) => {
+    if (!user) {
+      toast.error('Please sign in to continue');
+      return;
+    }
+    
     if (app.pricing_type === 'free' || purchasedApps.has(app.id)) {
       // Open app directly
       window.open(app.app_url, '_blank');
@@ -63,8 +69,12 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
 
   const handlePurchaseSuccess = () => {
     if (selectedApp) {
-      // Refresh purchases to update the UI
-      fetchPurchases();
+      // Add to purchased apps
+      addPurchasedApp(selectedApp.id);
+      
+      // Show success message
+      toast.success(`You've successfully purchased ${selectedApp.title}!`);
+      
       // Open app after purchase
       setTimeout(() => {
         window.open(selectedApp.app_url, '_blank');

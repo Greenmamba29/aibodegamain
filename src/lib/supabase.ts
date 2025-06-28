@@ -1,10 +1,10 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables')
+  console.error('Missing Supabase environment variables');
 }
 
 export const supabase = createClient(
@@ -17,141 +17,156 @@ export const supabase = createClient(
       detectSessionInUrl: true
     }
   }
-)
+);
 
 // Types for our database
 export interface Profile {
-  id: string
-  email: string
-  full_name?: string
-  avatar_url?: string
-  role: 'consumer' | 'developer' | 'admin'
-  subscription_tier: 'free' | 'pro' | 'enterprise'
-  followers_count: number
-  following_count: number
-  created_at: string
-  updated_at: string
+  id: string;
+  email: string;
+  full_name?: string;
+  avatar_url?: string;
+  role: 'consumer' | 'developer' | 'admin';
+  subscription_tier: 'free' | 'pro' | 'enterprise';
+  followers_count: number;
+  following_count: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UserSettings {
-  id: string
-  user_id: string
-  github_url?: string
-  website_url?: string
-  twitter_handle?: string
-  linkedin_url?: string
-  bio?: string
-  location?: string
-  company?: string
+  id: string;
+  user_id: string;
+  github_url?: string;
+  website_url?: string;
+  twitter_handle?: string;
+  linkedin_url?: string;
+  bio?: string;
+  location?: string;
+  company?: string;
   notification_preferences: {
-    email: boolean
-    push: boolean
-    follows: boolean
-    reviews: boolean
-  }
+    email: boolean;
+    push: boolean;
+    follows: boolean;
+    reviews: boolean;
+  };
   privacy_settings: {
-    profile_public: boolean
-    email_public: boolean
-    show_followers: boolean
-  }
-  created_at: string
-  updated_at: string
+    profile_public: boolean;
+    email_public: boolean;
+    show_followers: boolean;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UserFollow {
-  id: string
-  follower_id: string
-  following_id: string
-  created_at: string
-  follower?: Profile
-  following?: Profile
+  id: string;
+  follower_id: string;
+  following_id: string;
+  created_at: string;
+  follower?: Profile;
+  following?: Profile;
 }
 
 export interface Category {
-  id: string
-  name: string
-  slug: string
-  description?: string
-  icon?: string
-  color: string
-  created_at: string
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  color: string;
+  created_at: string;
 }
 
 export interface AppFile {
-  id: string
-  app_id: string
-  file_type: 'logo' | 'screenshot' | 'video' | 'documentation' | 'package' | 'readme'
-  file_name: string
-  file_url: string
-  file_size?: number
-  mime_type?: string
-  description?: string
-  position: number
-  created_at: string
+  id: string;
+  app_id: string;
+  file_type: 'logo' | 'screenshot' | 'video' | 'documentation' | 'package' | 'readme';
+  file_name: string;
+  file_url: string;
+  file_size?: number;
+  mime_type?: string;
+  description?: string;
+  position: number;
+  created_at: string;
 }
 
 export interface App {
-  id: string
-  title: string
-  slug: string
-  description?: string
-  long_description?: string
-  developer_id: string
-  category_id?: string
-  status: 'pending' | 'approved' | 'rejected' | 'archived'
-  pricing_type: 'free' | 'one_time' | 'subscription' | 'freemium'
-  price: number
-  app_url?: string
-  github_url?: string
-  demo_url?: string
-  repository_url?: string
-  documentation_url?: string
-  logo_url?: string
-  screenshots: string[]
-  tags: string[]
-  featured: boolean
-  downloads_count: number
-  rating_average: number
-  rating_count: number
-  created_at: string
-  updated_at: string
-  developer?: Profile
-  category?: Category
-  files?: AppFile[]
+  id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  long_description?: string;
+  developer_id: string;
+  category_id?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'archived';
+  pricing_type: 'free' | 'one_time' | 'subscription' | 'freemium';
+  price: number;
+  app_url?: string;
+  github_url?: string;
+  demo_url?: string;
+  repository_url?: string;
+  documentation_url?: string;
+  logo_url?: string;
+  screenshots: string[];
+  tags: string[];
+  featured: boolean;
+  downloads_count: number;
+  rating_average: number;
+  rating_count: number;
+  created_at: string;
+  updated_at: string;
+  developer?: Profile;
+  category?: Category;
+  files?: AppFile[];
 }
 
 export interface Review {
-  id: string
-  app_id: string
-  user_id: string
-  rating: number
-  title?: string
-  content?: string
-  helpful_count: number
-  created_at: string
-  updated_at: string
-  user?: Profile
+  id: string;
+  app_id: string;
+  user_id: string;
+  rating: number;
+  title?: string;
+  content?: string;
+  helpful_count: number;
+  created_at: string;
+  updated_at: string;
+  user?: Profile;
 }
 
 export interface Collection {
-  id: string
-  title: string
-  description?: string
-  curator_id: string
-  is_public: boolean
-  featured: boolean
-  created_at: string
-  updated_at: string
-  curator?: Profile
-  apps?: App[]
+  id: string;
+  title: string;
+  description?: string;
+  curator_id: string;
+  is_public: boolean;
+  featured: boolean;
+  created_at: string;
+  updated_at: string;
+  curator?: Profile;
+  apps?: App[];
 }
 
 export interface Bookmark {
-  id: string
-  user_id: string
-  app_id: string
-  created_at: string
-  app?: App
+  id: string;
+  user_id: string;
+  app_id: string;
+  created_at: string;
+  app?: App;
+}
+
+export interface AppLike {
+  id: string;
+  user_id: string;
+  app_id: string;
+  created_at: string;
+}
+
+export interface AppPurchase {
+  id: string;
+  user_id: string;
+  app_id: string;
+  purchase_date: string;
+  created_at: string;
 }
 
 // Auth helper functions with error handling
@@ -162,13 +177,13 @@ export const signInWithProvider = async (provider: 'google' | 'github') => {
       options: {
         redirectTo: `${window.location.origin}/auth/callback`
       }
-    })
-    return { data, error }
+    });
+    return { data, error };
   } catch (error: any) {
-    console.error(`Error signing in with ${provider}:`, error)
-    return { data: null, error: { message: error.message } }
+    console.error(`Error signing in with ${provider}:`, error);
+    return { data: null, error: { message: error.message } };
   }
-}
+};
 
 // User following functions with error handling
 export const followUser = async (userId: string) => {
@@ -176,49 +191,49 @@ export const followUser = async (userId: string) => {
     const { data, error } = await supabase
       .from('user_follows')
       .insert({ following_id: userId })
-      .select()
-    return { data, error }
+      .select();
+    return { data, error };
   } catch (error: any) {
-    console.error('Error following user:', error)
-    return { data: null, error: { message: error.message } }
+    console.error('Error following user:', error);
+    return { data: null, error: { message: error.message } };
   }
-}
+};
 
 export const unfollowUser = async (userId: string) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Not authenticated')
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
     const { data, error } = await supabase
       .from('user_follows')
       .delete()
       .eq('following_id', userId)
-      .eq('follower_id', user.id)
-    return { data, error }
+      .eq('follower_id', user.id);
+    return { data, error };
   } catch (error: any) {
-    console.error('Error unfollowing user:', error)
-    return { data: null, error: { message: error.message } }
+    console.error('Error unfollowing user:', error);
+    return { data: null, error: { message: error.message } };
   }
-}
+};
 
 export const checkIfFollowing = async (userId: string) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { isFollowing: false, error: null }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { isFollowing: false, error: null };
 
     const { data, error } = await supabase
       .from('user_follows')
       .select('id')
       .eq('following_id', userId)
       .eq('follower_id', user.id)
-      .maybeSingle()
+      .maybeSingle();
     
-    return { isFollowing: !!data, error }
+    return { isFollowing: !!data, error };
   } catch (error: any) {
-    console.error('Error checking follow status:', error)
-    return { isFollowing: false, error: { message: error.message } }
+    console.error('Error checking follow status:', error);
+    return { isFollowing: false, error: { message: error.message } };
   }
-}
+};
 
 export const getUserFollowers = async (userId: string) => {
   try {
@@ -228,13 +243,13 @@ export const getUserFollowers = async (userId: string) => {
         *,
         follower:profiles!user_follows_follower_id_fkey(*)
       `)
-      .eq('following_id', userId)
-    return { data, error }
+      .eq('following_id', userId);
+    return { data, error };
   } catch (error: any) {
-    console.error('Error getting followers:', error)
-    return { data: null, error: { message: error.message } }
+    console.error('Error getting followers:', error);
+    return { data: null, error: { message: error.message } };
   }
-}
+};
 
 export const getUserFollowing = async (userId: string) => {
   try {
@@ -244,10 +259,96 @@ export const getUserFollowing = async (userId: string) => {
         *,
         following:profiles!user_follows_following_id_fkey(*)
       `)
-      .eq('follower_id', userId)
-    return { data, error }
+      .eq('follower_id', userId);
+    return { data, error };
   } catch (error: any) {
-    console.error('Error getting following:', error)
-    return { data: null, error: { message: error.message } }
+    console.error('Error getting following:', error);
+    return { data: null, error: { message: error.message } };
   }
-}
+};
+
+// App likes functions
+export const likeApp = async (appId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('app_likes')
+      .insert({ app_id: appId })
+      .select();
+    return { data, error };
+  } catch (error: any) {
+    console.error('Error liking app:', error);
+    return { data: null, error: { message: error.message } };
+  }
+};
+
+export const unlikeApp = async (appId: string) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabase
+      .from('app_likes')
+      .delete()
+      .eq('app_id', appId)
+      .eq('user_id', user.id);
+    return { data, error };
+  } catch (error: any) {
+    console.error('Error unliking app:', error);
+    return { data: null, error: { message: error.message } };
+  }
+};
+
+export const checkIfLiked = async (appId: string) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { isLiked: false, error: null };
+
+    const { data, error } = await supabase
+      .from('app_likes')
+      .select('id')
+      .eq('app_id', appId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    
+    return { isLiked: !!data, error };
+  } catch (error: any) {
+    console.error('Error checking like status:', error);
+    return { isLiked: false, error: { message: error.message } };
+  }
+};
+
+// App purchase functions
+export const purchaseApp = async (appId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('app_purchases')
+      .insert({
+        app_id: appId,
+        purchase_date: new Date().toISOString()
+      })
+      .select();
+    return { data, error };
+  } catch (error: any) {
+    console.error('Error purchasing app:', error);
+    return { data: null, error: { message: error.message } };
+  }
+};
+
+export const checkIfPurchased = async (appId: string) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { isPurchased: false, error: null };
+
+    const { data, error } = await supabase
+      .from('app_purchases')
+      .select('id')
+      .eq('app_id', appId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    
+    return { isPurchased: !!data, error };
+  } catch (error: any) {
+    console.error('Error checking purchase status:', error);
+    return { isPurchased: false, error: { message: error.message } };
+  }
+};

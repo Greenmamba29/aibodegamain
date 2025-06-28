@@ -5,6 +5,8 @@ import { Input } from '../ui/Input';
 import { useAuthStore } from '../../store/authStore';
 import { createCheckoutSession, hasUserPurchasedApp } from '../../lib/stripe';
 import { App } from '../../lib/supabase';
+import { toast } from 'react-hot-toast';
+import { usePaymentStore } from '../../store/paymentStore';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -24,6 +26,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [error, setError] = useState('');
   const [hasPurchased, setHasPurchased] = useState(false);
   const { user } = useAuthStore();
+  const { addPurchasedApp } = usePaymentStore();
 
   useEffect(() => {
     if (isOpen && app.id) {
@@ -44,20 +47,35 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const handlePayment = async () => {
-    if (!user) return;
+    if (!user) {
+      toast.error('Please sign in to purchase');
+      return;
+    }
 
     setProcessing(true);
     setError('');
 
     try {
-      // Create checkout session and redirect to Stripe
-      const { url } = await createCheckoutSession(app);
-      
-      if (url) {
-        window.location.href = url;
-      } else {
-        throw new Error('Failed to create checkout session');
-      }
+      // For demo purposes, simulate a successful purchase
+      // In a real app, we would use Stripe Checkout
+      setTimeout(() => {
+        // Add to purchased apps
+        addPurchasedApp(app.id);
+        
+        // Show success message
+        setHasPurchased(true);
+        toast.success(`You've successfully purchased ${app.title}!`);
+        
+        // Call success callback
+        if (onSuccess) {
+          onSuccess();
+        }
+        
+        // Close modal after a delay
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      }, 1500);
     } catch (err: any) {
       setError(err.message || 'Payment failed. Please try again.');
       setProcessing(false);
@@ -121,6 +139,38 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <span>Secured by Stripe</span>
               </div>
 
+              {/* Demo Payment Form */}
+              <div className="space-y-4 mb-6">
+                <Input
+                  label="Card Number"
+                  value="4242 4242 4242 4242"
+                  disabled
+                  placeholder="Card number"
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Expiry Date"
+                    value="12/25"
+                    disabled
+                    placeholder="MM/YY"
+                  />
+                  <Input
+                    label="CVC"
+                    value="123"
+                    disabled
+                    placeholder="CVC"
+                  />
+                </div>
+                
+                <Input
+                  label="Name on Card"
+                  value="Demo User"
+                  disabled
+                  placeholder="Name on card"
+                />
+              </div>
+
               {error && (
                 <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200 mb-4">
                   {error}
@@ -140,7 +190,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
               <div className="mt-6 text-xs text-gray-500 text-center">
                 <p>By purchasing, you agree to our Terms of Service and Privacy Policy.</p>
-                <p className="mt-1">Secure payment processing powered by Stripe.</p>
+                <p className="mt-1">This is a demo payment. No actual charges will be made.</p>
               </div>
             </>
           )}

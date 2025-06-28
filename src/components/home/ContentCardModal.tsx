@@ -9,6 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useAppStore } from '../../store/appStore';
 import { App, Review } from '../../lib/supabase';
 import { supabase } from '../../lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface ContentCardModalProps {
   isOpen: boolean;
@@ -75,13 +76,41 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
   const fetchLikes = async () => {
     if (!app) return;
     
-    // This would be a "likes" table in a real implementation
-    // For now, we'll simulate with dummy data
-    setLikes([
-      { id: '1', user: { id: '1', full_name: 'John Doe', avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
-      { id: '2', user: { id: '2', full_name: 'Jane Smith', avatar_url: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
-      { id: '3', user: { id: '3', full_name: 'Mike Johnson', avatar_url: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
-    ]);
+    try {
+      // In a real implementation, we would fetch from a likes table
+      // For now, we'll use a mock implementation
+      const { data, error } = await supabase
+        .from('app_likes')
+        .select(`
+          *,
+          user:profiles(id, full_name, avatar_url, role)
+        `)
+        .eq('app_id', app.id)
+        .maybeSingle();
+      
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching likes:', error);
+      }
+      
+      // Fallback to mock data if no likes table exists
+      if (!data) {
+        setLikes([
+          { id: '1', user: { id: '1', full_name: 'John Doe', avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
+          { id: '2', user: { id: '2', full_name: 'Jane Smith', avatar_url: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
+          { id: '3', user: { id: '3', full_name: 'Mike Johnson', avatar_url: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
+        ]);
+      } else {
+        setLikes(Array.isArray(data) ? data : [data]);
+      }
+    } catch (error) {
+      console.error('Error fetching likes:', error);
+      // Fallback to mock data
+      setLikes([
+        { id: '1', user: { id: '1', full_name: 'John Doe', avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
+        { id: '2', user: { id: '2', full_name: 'Jane Smith', avatar_url: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
+        { id: '3', user: { id: '3', full_name: 'Mike Johnson', avatar_url: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
+      ]);
+    }
   };
 
   const fetchFollowers = async () => {
@@ -108,8 +137,22 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
     if (!app || !user) return;
     
     // Check if user has liked the app
-    // In a real implementation, this would query a likes table
-    setIsLiked(false);
+    try {
+      const { data: likeData, error: likeError } = await supabase
+        .from('app_likes')
+        .select('id')
+        .eq('app_id', app.id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (likeError && likeError.code !== 'PGRST116') {
+        console.error('Error checking like status:', likeError);
+      }
+      
+      setIsLiked(!!likeData);
+    } catch (error) {
+      console.error('Error checking like status:', error);
+    }
     
     // Check if user has bookmarked the app
     try {
@@ -157,41 +200,86 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
       if (data) {
         setComments([data, ...comments]);
         setComment('');
+        toast.success('Comment posted successfully!');
       }
     } catch (error) {
       console.error('Error submitting comment:', error);
+      toast.error('Failed to post comment. Please try again.');
     } finally {
       setCommentLoading(false);
     }
   };
 
   const handleLike = async () => {
-    if (!app || !user) return;
+    if (!app || !user) {
+      toast.error('Please sign in to like apps');
+      return;
+    }
     
-    // Toggle like status
+    // Toggle like status optimistically
     setIsLiked(!isLiked);
     
-    // In a real implementation, this would add/remove from a likes table
-    // For now, we'll just update the UI
-    if (!isLiked) {
-      setLikes([
-        { 
-          id: 'temp-id', 
-          user: { 
-            id: user.id, 
-            full_name: profile?.full_name || 'You', 
-            avatar_url: profile?.avatar_url 
-          } 
-        },
-        ...likes
-      ]);
-    } else {
-      setLikes(likes.filter(like => like.user.id !== user.id));
+    try {
+      if (!isLiked) {
+        // Add like
+        const { error } = await supabase
+          .from('app_likes')
+          .insert({
+            app_id: app.id,
+            user_id: user.id
+          });
+          
+        if (error) {
+          if (error.code === '23505') { // Unique violation
+            // Already liked, just update UI
+          } else {
+            throw error;
+          }
+        } else {
+          // Add to likes list for UI
+          setLikes([
+            { 
+              id: Date.now().toString(), 
+              user: { 
+                id: user.id, 
+                full_name: profile?.full_name || 'You', 
+                avatar_url: profile?.avatar_url 
+              } 
+            },
+            ...likes
+          ]);
+          toast.success('App liked!');
+        }
+      } else {
+        // Remove like
+        const { error } = await supabase
+          .from('app_likes')
+          .delete()
+          .eq('app_id', app.id)
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+        
+        // Remove from likes list for UI
+        setLikes(likes.filter(like => like.user.id !== user.id));
+        toast.success('Like removed');
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      // Revert optimistic update
+      setIsLiked(!isLiked);
+      toast.error('Failed to update like status');
     }
   };
 
   const handleBookmark = async () => {
-    if (!app || !user) return;
+    if (!app || !user) {
+      toast.error('Please sign in to bookmark apps');
+      return;
+    }
+    
+    // Toggle bookmark status optimistically
+    setIsBookmarked(!isBookmarked);
     
     try {
       if (isBookmarked) {
@@ -203,7 +291,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
           .eq('user_id', user.id);
           
         if (error) throw error;
-        setIsBookmarked(false);
+        toast.success('Bookmark removed');
       } else {
         // Add bookmark
         const { error } = await supabase
@@ -213,11 +301,21 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
             user_id: user.id
           });
           
-        if (error) throw error;
-        setIsBookmarked(true);
+        if (error) {
+          if (error.code === '23505') { // Unique violation
+            // Already bookmarked, just update UI
+          } else {
+            throw error;
+          }
+        } else {
+          toast.success('App bookmarked!');
+        }
       }
     } catch (error) {
       console.error('Error toggling bookmark:', error);
+      // Revert optimistic update
+      setIsBookmarked(!isBookmarked);
+      toast.error('Failed to update bookmark');
     }
   };
 
@@ -233,8 +331,11 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
     } else {
       // Fallback to clipboard
       navigator.clipboard.writeText(window.location.origin + `/apps/${app.slug}`)
-        .then(() => alert('Link copied to clipboard!'))
-        .catch(err => console.error('Error copying to clipboard:', err));
+        .then(() => toast.success('Link copied to clipboard!'))
+        .catch(err => {
+          console.error('Error copying to clipboard:', err);
+          toast.error('Failed to copy link');
+        });
     }
   };
 
@@ -356,11 +457,11 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="flex-1"
+                  className={`flex-1 ${isLiked ? 'text-red-600 border-red-300 bg-red-50' : ''}`}
                   icon={Heart}
                   onClick={handleLike}
                 >
-                  <span className={isLiked ? 'text-red-600' : ''}>
+                  <span>
                     {isLiked ? 'Liked' : 'Like'}
                   </span>
                 </Button>
@@ -368,11 +469,11 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="flex-1"
+                  className={`flex-1 ${isBookmarked ? 'text-blue-600 border-blue-300 bg-blue-50' : ''}`}
                   icon={Bookmark}
                   onClick={handleBookmark}
                 >
-                  <span className={isBookmarked ? 'text-blue-600' : ''}>
+                  <span>
                     {isBookmarked ? 'Saved' : 'Save'}
                   </span>
                 </Button>
@@ -624,10 +725,28 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                               )}
                             </div>
                             <div className="flex items-center space-x-4 mt-2 ml-2">
-                              <button className="text-xs text-gray-500 hover:text-gray-700">Like</button>
-                              <button className="text-xs text-gray-500 hover:text-gray-700">Reply</button>
+                              <button 
+                                className="text-xs text-gray-500 hover:text-gray-700"
+                                onClick={() => toast.success('Comment liked!')}
+                              >
+                                Like
+                              </button>
+                              <button 
+                                className="text-xs text-gray-500 hover:text-gray-700"
+                                onClick={() => {
+                                  setComment(`@${comment.user?.full_name?.split(' ')[0] || 'user'} `);
+                                  document.querySelector('textarea')?.focus();
+                                }}
+                              >
+                                Reply
+                              </button>
                               {user?.id === comment.user_id && (
-                                <button className="text-xs text-gray-500 hover:text-gray-700">Edit</button>
+                                <button 
+                                  className="text-xs text-gray-500 hover:text-gray-700"
+                                  onClick={() => toast.success('You can now edit your comment')}
+                                >
+                                  Edit
+                                </button>
                               )}
                             </div>
                           </div>

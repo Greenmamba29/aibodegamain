@@ -3,6 +3,7 @@ import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, Play, Pause, Vo
 import { Button } from '../ui/Button';
 import { App } from '../../lib/supabase';
 import { ContentCardModal } from '../home/ContentCardModal';
+import { toast } from 'react-hot-toast';
 
 interface MobileContentCardProps {
   app: App;
@@ -98,6 +99,23 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
 
   const handleCardClick = () => {
     setIsModalOpen(true);
+  };
+
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onLike(app.id);
+    toast.success(isLiked ? 'Removed from likes' : 'Added to likes');
+  };
+
+  const handleShareClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onShare(app);
+  };
+
+  const handleBookmarkClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onBookmark(app.id);
+    toast.success(isBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks');
   };
 
   return (
@@ -210,20 +228,14 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
         {/* Side Actions */}
         <div className="absolute right-4 bottom-32 flex flex-col space-y-4 z-10">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onLike(app.id);
-            }}
+            onClick={handleLikeClick}
             className="w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"
           >
             <Heart className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : 'text-white'}`} />
           </button>
           
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onShare(app);
-            }}
+            onClick={handleShareClick}
             className="w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"
           >
             <Share2 className="w-6 h-6 text-white" />
@@ -240,10 +252,7 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
           </button>
           
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onBookmark(app.id);
-            }}
+            onClick={handleBookmarkClick}
             className="w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"
           >
             <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-white text-white' : 'text-white'}`} />

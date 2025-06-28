@@ -6,6 +6,7 @@ import { Input } from '../ui/Input';
 import { FollowButton } from '../ui/FollowButton';
 import { PricingBadge } from '../ui/PricingBadge';
 import { useAppStore } from '../../store/appStore';
+import { toast } from 'react-hot-toast';
 
 interface AllAppsModalProps {
   isOpen: boolean;
@@ -96,6 +97,15 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
     }
     const category = categories.find(c => c.id === selectedCategory);
     return category?.name || 'Unknown Category';
+  };
+
+  const handleAppClick = (app: any) => {
+    // Close modal and open content card
+    onClose();
+    // Small delay to allow modal to close
+    setTimeout(() => {
+      document.querySelector(`[data-app-id="${app.id}"]`)?.click();
+    }, 100);
   };
 
   if (!isOpen) return null;
@@ -217,7 +227,13 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                 const ActionIcon = getActionButtonIcon(app);
                 
                 return (
-                  <Card key={app.id} hover className="h-full overflow-hidden">
+                  <Card 
+                    key={app.id} 
+                    hover 
+                    className="h-full overflow-hidden cursor-pointer"
+                    onClick={() => handleAppClick(app)}
+                    data-app-id={app.id}
+                  >
                     <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 rounded-t-xl flex items-center justify-center relative">
                       {app.logo_url ? (
                         <img
@@ -307,7 +323,10 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                           variant="primary" 
                           size="sm" 
                           className="flex-1"
-                          onClick={() => onAppAction(app)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onAppAction(app);
+                          }}
                           icon={ActionIcon}
                         >
                           {getActionButtonText(app)}
