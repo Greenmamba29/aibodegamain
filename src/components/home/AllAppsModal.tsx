@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react'
-import { X, Search, Filter, Star, Download, ExternalLink, Github, Globe, ShoppingCart } from 'lucide-react'
-import { Card, CardContent } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
-import { FollowButton } from '../ui/FollowButton'
-import { PricingBadge } from '../ui/PricingBadge'
-import { useAppStore } from '../../store/appStore'
+import React, { useState, useEffect } from 'react';
+import { X, Search, Filter, Star, Download, ExternalLink, Github, Globe, ShoppingCart } from 'lucide-react';
+import { Card, CardContent } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { FollowButton } from '../ui/FollowButton';
+import { PricingBadge } from '../ui/PricingBadge';
+import { useAppStore } from '../../store/appStore';
 
 interface AllAppsModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAppAction: (app: any) => void
-  purchasedApps: Set<string>
-  getActionButtonText: (app: any) => string
-  getActionButtonIcon: (app: any) => any
-  initialCategoryFilter?: string | null
-  initialCategoryName?: string | null
+  isOpen: boolean;
+  onClose: () => void;
+  onAppAction: (app: any) => void;
+  purchasedApps: Set<string>;
+  getActionButtonText: (app: any) => string;
+  getActionButtonIcon: (app: any) => any;
+  initialCategoryFilter?: string | null;
+  initialCategoryName?: string | null;
 }
 
 export const AllAppsModal: React.FC<AllAppsModalProps> = ({
@@ -28,77 +28,77 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
   initialCategoryFilter,
   initialCategoryName
 }) => {
-  const { apps, categories, loading, fetchApps, fetchCategories, searchApps, filterByCategory } = useAppStore()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter || 'all')
-  const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'rating'>('popular')
+  const { apps, categories, loading, fetchApps, fetchCategories, searchApps, filterByCategory } = useAppStore();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter || 'all');
+  const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'rating'>('popular');
 
   useEffect(() => {
     if (isOpen) {
-      fetchApps()
-      fetchCategories()
+      fetchApps();
+      fetchCategories();
       
       // Apply initial category filter if provided
       if (initialCategoryFilter) {
-        setSelectedCategory(initialCategoryFilter)
-        filterByCategory(initialCategoryFilter)
+        setSelectedCategory(initialCategoryFilter);
+        filterByCategory(initialCategoryFilter);
       }
     }
-  }, [isOpen, initialCategoryFilter, fetchApps, fetchCategories, filterByCategory])
+  }, [isOpen, initialCategoryFilter, fetchApps, fetchCategories, filterByCategory]);
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query)
+    setSearchQuery(query);
     if (query.trim()) {
-      searchApps(query)
+      searchApps(query);
     } else {
       if (selectedCategory !== 'all') {
-        filterByCategory(selectedCategory)
+        filterByCategory(selectedCategory);
       } else {
-        fetchApps()
+        fetchApps();
       }
     }
-  }
+  };
 
   const handleCategoryChange = async (categoryId: string) => {
-    setSelectedCategory(categoryId)
+    setSelectedCategory(categoryId);
     if (categoryId === 'all') {
       if (searchQuery.trim()) {
-        searchApps(searchQuery)
+        searchApps(searchQuery);
       } else {
-        fetchApps()
+        fetchApps();
       }
     } else {
-      await filterByCategory(categoryId)
+      await filterByCategory(categoryId);
     }
-  }
+  };
 
   const filteredApps = apps.filter(app => {
     if (selectedCategory !== 'all' && app.category_id !== selectedCategory) {
-      return false
+      return false;
     }
-    return true
+    return true;
   }).sort((a, b) => {
     switch (sortBy) {
       case 'newest':
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       case 'rating':
-        return b.rating_average - a.rating_average
+        return b.rating_average - a.rating_average;
       case 'popular':
       default:
-        return b.downloads_count - a.downloads_count
+        return b.downloads_count - a.downloads_count;
     }
-  })
+  });
 
   const getSelectedCategoryName = () => {
-    if (selectedCategory === 'all') return 'All Categories'
+    if (selectedCategory === 'all') return 'All Categories';
     if (initialCategoryFilter === selectedCategory && initialCategoryName) {
-      return initialCategoryName
+      return initialCategoryName;
     }
-    const category = categories.find(c => c.id === selectedCategory)
-    return category?.name || 'Unknown Category'
-  }
+    const category = categories.find(c => c.id === selectedCategory);
+    return category?.name || 'Unknown Category';
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -213,8 +213,8 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredApps.map((app) => {
-                const isPurchased = purchasedApps.has(app.id)
-                const ActionIcon = getActionButtonIcon(app)
+                const isPurchased = purchasedApps.has(app.id);
+                const ActionIcon = getActionButtonIcon(app);
                 
                 return (
                   <Card key={app.id} hover className="h-full overflow-hidden">
@@ -319,7 +319,10 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                               variant="outline" 
                               size="sm"
                               icon={ExternalLink}
-                              onClick={() => window.open(app.demo_url, '_blank')}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(app.demo_url, '_blank');
+                              }}
                               className="px-2"
                             />
                           )}
@@ -328,7 +331,10 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                               variant="outline" 
                               size="sm"
                               icon={Github}
-                              onClick={() => window.open(app.github_url, '_blank')}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(app.github_url, '_blank');
+                              }}
                               className="px-2"
                             />
                           )}
@@ -336,7 +342,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                       </div>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           )}
@@ -356,5 +362,5 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,19 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, Play, Pause, Volume2, VolumeX } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { App } from '../../lib/supabase'
-import { ContentCardModal } from '../home/ContentCardModal'
+import React, { useState, useRef, useEffect } from 'react';
+import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { App } from '../../lib/supabase';
+import { ContentCardModal } from '../home/ContentCardModal';
 
 interface MobileContentCardProps {
-  app: App
-  onLike: (appId: string) => void
-  onShare: (app: App) => void
-  onBookmark: (appId: string) => void
-  onAction: (app: App) => void
-  isLiked: boolean
-  isBookmarked: boolean
-  getActionButtonText: (app: App) => string
-  getActionButtonIcon: (app: App) => any
+  app: App;
+  onLike: (appId: string) => void;
+  onShare: (app: App) => void;
+  onBookmark: (appId: string) => void;
+  onAction: (app: App) => void;
+  isLiked: boolean;
+  isBookmarked: boolean;
+  getActionButtonText: (app: App) => string;
+  getActionButtonIcon: (app: App) => any;
 }
 
 export const MobileContentCard: React.FC<MobileContentCardProps> = ({
@@ -27,78 +27,78 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
   getActionButtonText,
   getActionButtonIcon
 }) => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isMuted, setIsMuted] = useState(true)
-  const [showVideo, setShowVideo] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const ActionIcon = getActionButtonIcon(app)
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const ActionIcon = getActionButtonIcon(app);
 
   // Check if app has demo video
   const hasVideo = app.demo_url && (
     app.demo_url.includes('.mp4') || 
     app.demo_url.includes('.webm') || 
     app.demo_url.includes('video')
-  )
+  );
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
-    const handlePlay = () => setIsPlaying(true)
-    const handlePause = () => setIsPlaying(false)
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
     const handleEnded = () => {
-      setIsPlaying(false)
-      setShowVideo(false)
-    }
+      setIsPlaying(false);
+      setShowVideo(false);
+    };
 
-    video.addEventListener('play', handlePlay)
-    video.addEventListener('pause', handlePause)
-    video.addEventListener('ended', handleEnded)
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+    video.addEventListener('ended', handleEnded);
 
     return () => {
-      video.removeEventListener('play', handlePlay)
-      video.removeEventListener('pause', handlePause)
-      video.removeEventListener('ended', handleEnded)
-    }
-  }, [])
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+      video.removeEventListener('ended', handleEnded);
+    };
+  }, []);
 
   const toggleVideo = () => {
     if (hasVideo) {
-      setShowVideo(!showVideo)
+      setShowVideo(!showVideo);
       if (!showVideo && videoRef.current) {
-        videoRef.current.play()
+        videoRef.current.play();
       }
     }
-  }
+  };
 
   const togglePlayPause = (e: React.MouseEvent) => {
-    e.stopPropagation()
+    e.stopPropagation();
     if (videoRef.current) {
       if (isPlaying) {
-        videoRef.current.pause()
+        videoRef.current.pause();
       } else {
-        videoRef.current.play()
+        videoRef.current.play();
       }
     }
-  }
+  };
 
   const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation()
+    e.stopPropagation();
     if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted
-      setIsMuted(videoRef.current.muted)
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
     }
-  }
+  };
 
   const handleActionClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onAction(app)
-  }
+    e.stopPropagation();
+    onAction(app);
+  };
 
   const handleCardClick = () => {
-    setIsModalOpen(true)
-  }
+    setIsModalOpen(true);
+  };
 
   return (
     <>
@@ -303,5 +303,5 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
         getActionButtonIcon={getActionButtonIcon}
       />
     </>
-  )
-}
+  );
+};
