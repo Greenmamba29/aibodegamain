@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, ExternalLink, ShoppingCart } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { MobileContentCard } from './MobileContentCard'
 import { UserContentCreator, UserContent } from '../ui/UserContentCreator'
@@ -93,9 +93,9 @@ export const MobileAppFeed: React.FC = () => {
 
   const getActionButtonIcon = (app: App) => {
     if (app.pricing_type === 'free' || purchasedApps.has(app.id)) {
-      return require('lucide-react').ExternalLink
+      return ExternalLink
     }
-    return require('lucide-react').ShoppingCart
+    return ShoppingCart
   }
 
   if (loading) {
