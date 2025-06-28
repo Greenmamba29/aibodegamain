@@ -174,16 +174,16 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center space-x-3">
               {user ? (
                 <>
-                  {/* Mobile View Button - Only for consumers */}
+                  {/* Mobile View Button - Only for consumers - Icon Only */}
                   {profile?.role !== 'developer' && (
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      icon={Smartphone}
                       onClick={handleMobileView}
-                      className="hidden lg:flex"
+                      className="hidden lg:flex p-2"
+                      title="Mobile View"
                     >
-                      Mobile View
+                      <Smartphone className="w-4 h-4" />
                     </Button>
                   )}
 
