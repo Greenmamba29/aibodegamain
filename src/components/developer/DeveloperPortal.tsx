@@ -48,6 +48,11 @@ export const DeveloperPortal: React.FC = () => {
     setActiveTab('apps')
   }
 
+  // Handle view profile
+  const handleViewProfile = () => {
+    setActiveTab('profile')
+  }
+
   // Export downloads data as CSV
   const exportDownloadsCSV = () => {
     const csvData = [
@@ -191,7 +196,7 @@ export const DeveloperPortal: React.FC = () => {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'overview' && <DeveloperOverview stats={stats} onSubmitApp={handleSubmitApp} onManageApps={handleManageApps} onExportDownloads={exportDownloadsCSV} />}
+        {activeTab === 'overview' && <DeveloperOverview stats={stats} onSubmitApp={handleSubmitApp} onManageApps={handleManageApps} onViewProfile={handleViewProfile} onExportDownloads={exportDownloadsCSV} />}
         {activeTab === 'apps' && <AppManagement />}
         {activeTab === 'submit' && <AppSubmissionForm onSuccess={handleAppSubmissionSuccess} />}
         {activeTab === 'analytics' && <DeveloperAnalytics onExportDownloads={exportDownloadsCSV} />}
@@ -208,8 +213,9 @@ const DeveloperOverview: React.FC<{
   stats: any
   onSubmitApp: () => void
   onManageApps: () => void
+  onViewProfile: () => void
   onExportDownloads: () => void
-}> = ({ stats, onSubmitApp, onManageApps, onExportDownloads }) => {
+}> = ({ stats, onSubmitApp, onManageApps, onViewProfile, onExportDownloads }) => {
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
@@ -299,7 +305,7 @@ const DeveloperOverview: React.FC<{
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -326,6 +332,21 @@ const DeveloperOverview: React.FC<{
                 </Button>
               </div>
               <Eye className="w-16 h-16 text-blue-200" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Profile</h3>
+                <p className="text-gray-600 mb-4">Manage your developer profile and settings</p>
+                <Button variant="outline" onClick={onViewProfile} icon={User}>
+                  View Profile
+                </Button>
+              </div>
+              <User className="w-16 h-16 text-green-200" />
             </div>
           </CardContent>
         </Card>

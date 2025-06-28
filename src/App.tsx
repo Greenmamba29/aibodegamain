@@ -10,12 +10,15 @@ import { AdminDashboard } from './components/admin/AdminDashboard'
 import { ProductsPage } from './components/payment/ProductsPage'
 import { PaymentSuccess } from './components/payment/PaymentSuccess'
 import { PaymentCancel } from './components/payment/PaymentCancel'
+import { PurchaseHistoryPage } from './components/payment/PurchaseHistoryPage'
 import { MobilePage } from './components/mobile/MobilePage'
+import { ProfileView } from './components/developer/ProfileView'
+import { DeveloperSettings } from './components/developer/DeveloperSettings'
 import { AuthModal } from './components/auth/AuthModal'
 import { useAuthStore } from './store/authStore'
 import { realtimeManager } from './lib/realtime'
 
-type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile'
+type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings'
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home')
@@ -43,6 +46,12 @@ function App() {
       setCurrentPage('admin')
     } else if (path === '/mobile') {
       setCurrentPage('mobile')
+    } else if (path === '/profile') {
+      setCurrentPage('profile')
+    } else if (path === '/purchase-history') {
+      setCurrentPage('purchase-history')
+    } else if (path === '/settings') {
+      setCurrentPage('settings')
     } else {
       setCurrentPage('home')
     }
@@ -95,10 +104,28 @@ function App() {
       products: '/products',
       'payment-success': '/payment/success',
       'payment-cancel': '/payment/cancel',
-      mobile: '/mobile'
+      mobile: '/mobile',
+      profile: '/profile',
+      'purchase-history': '/purchase-history',
+      settings: '/settings'
     }
     
     window.history.pushState({}, '', urls[page])
+  }
+
+  const handleOpenProfile = () => {
+    setCurrentPage('profile')
+    window.history.pushState({}, '', '/profile')
+  }
+
+  const handleOpenPurchaseHistory = () => {
+    setCurrentPage('purchase-history')
+    window.history.pushState({}, '', '/purchase-history')
+  }
+
+  const handleOpenSettings = () => {
+    setCurrentPage('settings')
+    window.history.pushState({}, '', '/settings')
   }
 
   // Show mobile page
@@ -116,11 +143,80 @@ function App() {
     return <PaymentCancel />
   }
 
+  // Show purchase history page
+  if (currentPage === 'purchase-history') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header 
+          onNavigate={handleNavigation}
+          onOpenProfile={handleOpenProfile}
+          onOpenPurchaseHistory={handleOpenPurchaseHistory}
+          onOpenSettings={handleOpenSettings}
+        />
+        <PurchaseHistoryPage />
+        <Footer />
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
+      </div>
+    )
+  }
+
+  // Show profile page
+  if (currentPage === 'profile') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header 
+          onNavigate={handleNavigation}
+          onOpenProfile={handleOpenProfile}
+          onOpenPurchaseHistory={handleOpenPurchaseHistory}
+          onOpenSettings={handleOpenSettings}
+        />
+        <div className="py-8">
+          <ProfileView />
+        </div>
+        <Footer />
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
+      </div>
+    )
+  }
+
+  // Show settings page
+  if (currentPage === 'settings') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header 
+          onNavigate={handleNavigation}
+          onOpenProfile={handleOpenProfile}
+          onOpenPurchaseHistory={handleOpenPurchaseHistory}
+          onOpenSettings={handleOpenSettings}
+        />
+        <div className="py-8">
+          <DeveloperSettings />
+        </div>
+        <Footer />
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
+      </div>
+    )
+  }
+
   // Show products page
   if (currentPage === 'products') {
     return (
       <div className="min-h-screen bg-white">
-        <Header onNavigate={handleNavigation} />
+        <Header 
+          onNavigate={handleNavigation}
+          onOpenProfile={handleOpenProfile}
+          onOpenPurchaseHistory={handleOpenPurchaseHistory}
+          onOpenSettings={handleOpenSettings}
+        />
         <ProductsPage />
         <Footer />
         <AuthModal
@@ -135,7 +231,12 @@ function App() {
   if (currentPage === 'admin' && profile?.role === 'admin') {
     return (
       <div className="min-h-screen bg-white">
-        <Header onNavigate={handleNavigation} />
+        <Header 
+          onNavigate={handleNavigation}
+          onOpenProfile={handleOpenProfile}
+          onOpenPurchaseHistory={handleOpenPurchaseHistory}
+          onOpenSettings={handleOpenSettings}
+        />
         <AdminDashboard />
         <AuthModal
           isOpen={isAuthModalOpen}
@@ -149,7 +250,12 @@ function App() {
   if (currentPage === 'developer') {
     return (
       <div className="min-h-screen bg-white">
-        <Header onNavigate={handleNavigation} />
+        <Header 
+          onNavigate={handleNavigation}
+          onOpenProfile={handleOpenProfile}
+          onOpenPurchaseHistory={handleOpenPurchaseHistory}
+          onOpenSettings={handleOpenSettings}
+        />
         <DeveloperPortal />
         <AuthModal
           isOpen={isAuthModalOpen}
@@ -161,7 +267,12 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header onNavigate={handleNavigation} />
+      <Header 
+        onNavigate={handleNavigation}
+        onOpenProfile={handleOpenProfile}
+        onOpenPurchaseHistory={handleOpenPurchaseHistory}
+        onOpenSettings={handleOpenSettings}
+      />
       
       <main>
         {/* Show Hero only for non-authenticated users or first-time visitors */}

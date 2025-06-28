@@ -9,9 +9,17 @@ import { useAppStore } from '../../store/appStore'
 
 interface HeaderProps {
   onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile') => void
+  onOpenProfile?: () => void
+  onOpenPurchaseHistory?: () => void
+  onOpenSettings?: () => void
 }
 
-export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  onNavigate, 
+  onOpenProfile, 
+  onOpenPurchaseHistory, 
+  onOpenSettings 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
@@ -59,15 +67,36 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
     setIsProfileOpen(false)
   }
 
-  const handleBecomeDeveloper = async () => {
+  const handleViewProfile = () => {
+    if (onOpenProfile) onOpenProfile()
+    setIsProfileOpen(false)
+  }
+
+  const handlePurchaseHistory = () => {
+    if (onOpenPurchaseHistory) onOpenPurchaseHistory()
+    setIsProfileOpen(false)
+  }
+
+  const handleSettings = () => {
+    if (onOpenSettings) onOpenSettings()
+    setIsProfileOpen(false)
+  }
+
+  const handleToggleRole = async () => {
     try {
-      await updateProfile({ role: 'developer' })
+      const newRole = profile?.role === 'developer' ? 'consumer' : 'developer'
+      await updateProfile({ role: newRole })
       setIsProfileOpen(false)
-      // Navigate to developer portal after upgrade
-      if (onNavigate) onNavigate('developer')
+      
+      // Navigate appropriately based on new role
+      if (newRole === 'developer' && onNavigate) {
+        onNavigate('developer')
+      } else if (onNavigate) {
+        onNavigate('home')
+      }
     } catch (error) {
-      console.error('Error upgrading to developer:', error)
-      alert('Error upgrading to developer. Please try again.')
+      console.error('Error toggling role:', error)
+      alert('Error changing role. Please try again.')
     }
   }
 
@@ -153,8 +182,8 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                   {/* Notifications */}
                   <NotificationBell />
 
-                  {/* Developer Portal Button */}
-                  {profile?.role === 'developer' && (
+                  {/* Role-based Portal Button */}
+                  {profile?.role === 'developer' ? (
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -163,6 +192,16 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                       className="hidden sm:flex"
                     >
                       Developer
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      icon={User}
+                      onClick={handleViewProfile}
+                      className="hidden sm:flex"
+                    >
+                      Profile
                     </Button>
                   )}
 
@@ -235,7 +274,10 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                             </div>
                           </div>
                           
-                          <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors">
+                          <button 
+                            onClick={handleViewProfile}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                          >
                             <User className="w-4 h-4" />
                             <span>View Profile</span>
                           </button>
@@ -250,12 +292,18 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                             </span>
                           </button>
                           
-                          <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors">
+                          <button 
+                            onClick={handlePurchaseHistory}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                          >
                             <Package className="w-4 h-4" />
                             <span>Purchase History</span>
                           </button>
                           
-                          <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors">
+                          <button 
+                            onClick={handleSettings}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                          >
                             <Settings className="w-4 h-4" />
                             <span>Settings</span>
                           </button>
@@ -270,23 +318,27 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                             </button>
                           )}
                           
-                          {profile?.role === 'developer' ? (
+                          {/* Role Toggle */}
+                          <div className="border-t border-gray-100 mt-2 pt-2">
                             <button 
-                              onClick={handleDeveloperPortal}
-                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                              onClick={handleToggleRole}
+                              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-2 transition-colors ${
+                                profile?.role === 'developer' ? 'text-blue-700' : 'text-purple-700'
+                              }`}
                             >
-                              <Code className="w-4 h-4" />
-                              <span>Developer Portal</span>
+                              {profile?.role === 'developer' ? (
+                                <>
+                                  <User className="w-4 h-4" />
+                                  <span>Switch to Consumer</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Code className="w-4 h-4" />
+                                  <span>Switch to Developer</span>
+                                </>
+                              )}
                             </button>
-                          ) : profile?.role !== 'admin' && (
-                            <button 
-                              onClick={handleBecomeDeveloper}
-                              className="w-full text-left px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 flex items-center space-x-2 transition-colors"
-                            >
-                              <Plus className="w-4 h-4" />
-                              <span>Become a Developer</span>
-                            </button>
-                          )}
+                          </div>
                           
                           <div className="border-t border-gray-100 mt-2 pt-2">
                             <button
@@ -370,7 +422,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {profile?.role === 'developer' && (
+                  {profile?.role === 'developer' ? (
                     <Button 
                       variant="ghost" 
                       className="w-full justify-start"
@@ -378,6 +430,15 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                       icon={Code}
                     >
                       Developer Portal
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start"
+                      onClick={handleViewProfile}
+                      icon={User}
+                    >
+                      View Profile
                     </Button>
                   )}
                   {profile?.role === 'admin' && (
