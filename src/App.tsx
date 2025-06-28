@@ -31,7 +31,7 @@ function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
-  const { initialize, user, profile } = useAuthStore()
+  const { initialize, user, profile, error, clearError } = useAuthStore()
   const { fetchApps } = useAppStore()
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function App() {
 
   // Initialize real-time subscriptions when user logs in
   useEffect(() => {
-    if (user) {
+    if (user && profile) {
       try {
         // Subscribe to notifications
         realtimeManager.subscribeToNotifications(user.id)
@@ -96,28 +96,38 @@ function App() {
         realtimeManager.subscribeToFollows(user.id)
         
         // Subscribe to app status changes for developers
-        if (profile?.role === 'developer') {
+        if (profile.role === 'developer') {
           realtimeManager.subscribeToAppStatus(user.id)
         }
 
         // Request notification permission
-        if (Notification.permission === 'default') {
-          Notification.requestPermission()
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+          Notification.requestPermission().catch(console.error)
         }
       } catch (error) {
         console.error('Failed to initialize real-time subscriptions:', error)
       }
-    } else {
-      // Clean up subscriptions when user logs out
-      realtimeManager.unsubscribeAll()
     }
 
+    // Cleanup function
     return () => {
       if (!user) {
         realtimeManager.unsubscribeAll()
       }
     }
   }, [user, profile])
+
+  // Clear errors when they occur
+  useEffect(() => {
+    if (error) {
+      console.error('Auth error:', error)
+      // Auto-clear error after 5 seconds
+      const timer = setTimeout(() => {
+        clearError()
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, clearError])
 
   const handleNavigation = (page: PageType) => {
     // Check permissions for admin dashboard

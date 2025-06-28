@@ -7,7 +7,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+})
 
 // Types for our database
 export interface Profile {
@@ -144,63 +150,100 @@ export interface Bookmark {
   app?: App
 }
 
-// Auth helper functions
+// Auth helper functions with error handling
 export const signInWithProvider = async (provider: 'google' | 'github') => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: `${window.location.origin}/auth/callback`
-    }
-  })
-  return { data, error }
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    })
+    return { data, error }
+  } catch (error) {
+    console.error(`Error signing in with ${provider}:`, error)
+    return { data: null, error }
+  }
 }
 
-// User following functions
+// User following functions with error handling
 export const followUser = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('user_follows')
-    .insert({ following_id: userId })
-    .select()
-  return { data, error }
+  try {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .insert({ following_id: userId })
+      .select()
+    return { data, error }
+  } catch (error) {
+    console.error('Error following user:', error)
+    return { data: null, error }
+  }
 }
 
 export const unfollowUser = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('user_follows')
-    .delete()
-    .eq('following_id', userId)
-    .eq('follower_id', (await supabase.auth.getUser()).data.user?.id)
-  return { data, error }
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Not authenticated')
+
+    const { data, error } = await supabase
+      .from('user_follows')
+      .delete()
+      .eq('following_id', userId)
+      .eq('follower_id', user.id)
+    return { data, error }
+  } catch (error) {
+    console.error('Error unfollowing user:', error)
+    return { data: null, error }
+  }
 }
 
 export const checkIfFollowing = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('user_follows')
-    .select('id')
-    .eq('following_id', userId)
-    .eq('follower_id', (await supabase.auth.getUser()).data.user?.id)
-    .single()
-  return { isFollowing: !!data, error }
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { isFollowing: false, error: null }
+
+    const { data, error } = await supabase
+      .from('user_follows')
+      .select('id')
+      .eq('following_id', userId)
+      .eq('follower_id', user.id)
+      .single()
+    
+    return { isFollowing: !!data, error }
+  } catch (error) {
+    console.error('Error checking follow status:', error)
+    return { isFollowing: false, error }
+  }
 }
 
 export const getUserFollowers = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('user_follows')
-    .select(`
-      *,
-      follower:profiles(*)
-    `)
-    .eq('following_id', userId)
-  return { data, error }
+  try {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .select(`
+        *,
+        follower:profiles(*)
+      `)
+      .eq('following_id', userId)
+    return { data, error }
+  } catch (error) {
+    console.error('Error getting followers:', error)
+    return { data: null, error }
+  }
 }
 
 export const getUserFollowing = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('user_follows')
-    .select(`
-      *,
-      following:profiles(*)
-    `)
-    .eq('follower_id', userId)
-  return { data, error }
+  try {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .select(`
+        *,
+        following:profiles(*)
+      `)
+      .eq('follower_id', userId)
+    return { data, error }
+  } catch (error) {
+    console.error('Error getting following:', error)
+    return { data: null, error }
+  }
 }
