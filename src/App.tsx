@@ -16,6 +16,7 @@ import { ProfileView } from './components/developer/ProfileView'
 import { DeveloperSettings } from './components/developer/DeveloperSettings'
 import { AuthModal } from './components/auth/AuthModal'
 import { useAuthStore } from './store/authStore'
+import { useAppStore } from './store/appStore'
 import { realtimeManager } from './lib/realtime'
 
 type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings'
@@ -23,7 +24,10 @@ type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home')
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
+  const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null)
   const { initialize, user, profile } = useAuthStore()
+  const { fetchApps } = useAppStore()
 
   useEffect(() => {
     initialize()
@@ -126,6 +130,25 @@ function App() {
   const handleOpenSettings = () => {
     setCurrentPage('settings')
     window.history.pushState({}, '', '/settings')
+  }
+
+  const handleCategorySelect = (categoryId: string, categoryName: string) => {
+    setSelectedCategoryId(categoryId)
+    setSelectedCategoryName(categoryName)
+    
+    // Scroll to apps section
+    setTimeout(() => {
+      const appsSection = document.getElementById('apps-section')
+      if (appsSection) {
+        appsSection.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 100)
+  }
+
+  const handleClearCategoryFilter = () => {
+    setSelectedCategoryId(null)
+    setSelectedCategoryName(null)
+    fetchApps() // Reset to show all apps
   }
 
   // Show mobile page
@@ -279,8 +302,12 @@ function App() {
         {!user && <Hero />}
         
         {/* Always show app browsing sections for authenticated users */}
-        <FeaturedApps />
-        <Categories />
+        <FeaturedApps 
+          selectedCategoryId={selectedCategoryId}
+          selectedCategoryName={selectedCategoryName}
+          onClearFilter={handleClearCategoryFilter}
+        />
+        <Categories onCategorySelect={handleCategorySelect} />
         <Collections />
       </main>
       

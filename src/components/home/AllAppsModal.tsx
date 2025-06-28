@@ -14,6 +14,8 @@ interface AllAppsModalProps {
   purchasedApps: Set<string>
   getActionButtonText: (app: any) => string
   getActionButtonIcon: (app: any) => any
+  initialCategoryFilter?: string | null
+  initialCategoryName?: string | null
 }
 
 export const AllAppsModal: React.FC<AllAppsModalProps> = ({
@@ -22,26 +24,51 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
   onAppAction,
   purchasedApps,
   getActionButtonText,
-  getActionButtonIcon
+  getActionButtonIcon,
+  initialCategoryFilter,
+  initialCategoryName
 }) => {
-  const { apps, categories, loading, fetchApps, fetchCategories, searchApps } = useAppStore()
+  const { apps, categories, loading, fetchApps, fetchCategories, searchApps, filterByCategory } = useAppStore()
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter || 'all')
   const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'rating'>('popular')
 
   useEffect(() => {
     if (isOpen) {
       fetchApps()
       fetchCategories()
+      
+      // Apply initial category filter if provided
+      if (initialCategoryFilter) {
+        setSelectedCategory(initialCategoryFilter)
+        filterByCategory(initialCategoryFilter)
+      }
     }
-  }, [isOpen, fetchApps, fetchCategories])
+  }, [isOpen, initialCategoryFilter, fetchApps, fetchCategories, filterByCategory])
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
     if (query.trim()) {
       searchApps(query)
     } else {
-      fetchApps()
+      if (selectedCategory !== 'all') {
+        filterByCategory(selectedCategory)
+      } else {
+        fetchApps()
+      }
+    }
+  }
+
+  const handleCategoryChange = async (categoryId: string) => {
+    setSelectedCategory(categoryId)
+    if (categoryId === 'all') {
+      if (searchQuery.trim()) {
+        searchApps(searchQuery)
+      } else {
+        fetchApps()
+      }
+    } else {
+      await filterByCategory(categoryId)
     }
   }
 
@@ -62,6 +89,15 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
     }
   })
 
+  const getSelectedCategoryName = () => {
+    if (selectedCategory === 'all') return 'All Categories'
+    if (initialCategoryFilter === selectedCategory && initialCategoryName) {
+      return initialCategoryName
+    }
+    const category = categories.find(c => c.id === selectedCategory)
+    return category?.name || 'Unknown Category'
+  }
+
   if (!isOpen) return null
 
   return (
@@ -70,7 +106,16 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">All AI Apps</h2>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {selectedCategory === 'all' ? 'All AI Apps' : `${getSelectedCategoryName()} Apps`}
+              </h2>
+              {selectedCategory !== 'all' && (
+                <p className="text-gray-600 mt-1">
+                  Explore {getSelectedCategoryName().toLowerCase()} applications
+                </p>
+              )}
+            </div>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -93,7 +138,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
             <div className="flex gap-2">
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
                 <option value="all">All Categories</option>
@@ -115,6 +160,22 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
               </select>
             </div>
           </div>
+
+          {/* Active Filter Badge */}
+          {selectedCategory !== 'all' && (
+            <div className="flex items-center mt-4">
+              <div className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                <Filter className="w-4 h-4 mr-2" />
+                {getSelectedCategoryName()}
+                <button
+                  onClick={() => handleCategoryChange('all')}
+                  className="ml-2 text-purple-600 hover:text-purple-800"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Apps Grid */}
@@ -133,7 +194,21 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                 <Search className="w-12 h-12 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Apps Found</h3>
-              <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+              <p className="text-gray-600">
+                {selectedCategory !== 'all' 
+                  ? `No apps found in ${getSelectedCategoryName()}. Try browsing other categories.`
+                  : 'Try adjusting your search or filter criteria'
+                }
+              </p>
+              {selectedCategory !== 'all' && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleCategoryChange('all')}
+                  className="mt-4"
+                >
+                  Browse All Categories
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -272,6 +347,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
               Showing {filteredApps.length} of {apps.length} apps
+              {selectedCategory !== 'all' && ` in ${getSelectedCategoryName()}`}
             </p>
             <Button variant="outline" onClick={onClose}>
               Close

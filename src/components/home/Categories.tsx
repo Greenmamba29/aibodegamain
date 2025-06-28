@@ -27,19 +27,30 @@ const iconMap = {
   Palette
 }
 
-export const Categories: React.FC = () => {
+interface CategoriesProps {
+  onCategorySelect?: (categoryId: string, categoryName: string) => void
+}
+
+export const Categories: React.FC<CategoriesProps> = ({ onCategorySelect }) => {
   const { categories, loading, fetchCategories, filterByCategory } = useAppStore()
 
   useEffect(() => {
     fetchCategories()
   }, [fetchCategories])
 
-  const handleCategoryClick = (categoryId: string) => {
-    filterByCategory(categoryId)
-    // Scroll to apps section or navigate to apps page
-    const appsSection = document.getElementById('apps-section')
-    if (appsSection) {
-      appsSection.scrollIntoView({ behavior: 'smooth' })
+  const handleCategoryClick = async (categoryId: string, categoryName: string) => {
+    // Filter apps by category
+    await filterByCategory(categoryId)
+    
+    // If parent component provided a callback, use it
+    if (onCategorySelect) {
+      onCategorySelect(categoryId, categoryName)
+    } else {
+      // Default behavior: scroll to apps section
+      const appsSection = document.getElementById('apps-section')
+      if (appsSection) {
+        appsSection.scrollIntoView({ behavior: 'smooth' })
+      }
     }
   }
 
@@ -80,16 +91,16 @@ export const Categories: React.FC = () => {
               <Card 
                 key={category.id} 
                 hover 
-                className="cursor-pointer"
-                onClick={() => handleCategoryClick(category.id)}
+                className="cursor-pointer transform transition-all duration-200 hover:scale-105"
+                onClick={() => handleCategoryClick(category.id, category.name)}
               >
                 <CardContent className="p-6 text-center">
                   <div 
-                    className="w-12 h-12 rounded-lg mx-auto mb-4 flex items-center justify-center"
+                    className="w-12 h-12 rounded-lg mx-auto mb-4 flex items-center justify-center transition-all duration-200 hover:scale-110"
                     style={{ backgroundColor: `${category.color}20` }}
                   >
                     <IconComponent 
-                      className="w-6 h-6" 
+                      className="w-6 h-6 transition-all duration-200" 
                       style={{ color: category.color }}
                     />
                   </div>

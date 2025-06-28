@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Star, Download, ExternalLink, Github, Globe, ShoppingCart } from 'lucide-react'
+import { Star, Download, ExternalLink, Github, Globe, ShoppingCart, Filter, X } from 'lucide-react'
 import { Card, CardContent } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { FollowButton } from '../ui/FollowButton'
@@ -10,8 +10,18 @@ import { useAppStore } from '../../store/appStore'
 import { useAuthStore } from '../../store/authStore'
 import { usePaymentStore } from '../../store/paymentStore'
 
-export const FeaturedApps: React.FC = () => {
-  const { featuredApps, loading, fetchFeaturedApps } = useAppStore()
+interface FeaturedAppsProps {
+  selectedCategoryId?: string | null
+  selectedCategoryName?: string | null
+  onClearFilter?: () => void
+}
+
+export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
+  selectedCategoryId,
+  selectedCategoryName,
+  onClearFilter
+}) => {
+  const { featuredApps, apps, loading, fetchFeaturedApps, fetchApps } = useAppStore()
   const { user } = useAuthStore()
   const { purchasedApps, fetchPurchases } = usePaymentStore()
   const [selectedApp, setSelectedApp] = useState<any>(null)
@@ -19,8 +29,13 @@ export const FeaturedApps: React.FC = () => {
   const [isAllAppsModalOpen, setIsAllAppsModalOpen] = useState(false)
 
   useEffect(() => {
-    fetchFeaturedApps()
-  }, [fetchFeaturedApps])
+    if (selectedCategoryId) {
+      // If a category is selected, show filtered apps instead of featured apps
+      fetchApps()
+    } else {
+      fetchFeaturedApps()
+    }
+  }, [selectedCategoryId, fetchFeaturedApps, fetchApps])
 
   useEffect(() => {
     if (user) {
@@ -63,17 +78,22 @@ export const FeaturedApps: React.FC = () => {
     return ShoppingCart
   }
 
+  // Determine which apps to show
+  const appsToShow = selectedCategoryId ? apps : featuredApps
+  const sectionTitle = selectedCategoryId 
+    ? `${selectedCategoryName} Apps` 
+    : user ? 'Discover AI Apps' : 'Featured Apps'
+  const sectionDescription = selectedCategoryId
+    ? `Explore ${selectedCategoryName.toLowerCase()} applications`
+    : user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves'
+
   if (loading) {
     return (
       <section id="apps-section" className={`py-20 ${user ? 'bg-gray-50' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              {user ? 'Discover AI Apps' : 'Featured Apps'}
-            </h2>
-            <p className="text-gray-600">
-              {user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves'}
-            </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{sectionTitle}</h2>
+            <p className="text-gray-600">{sectionDescription}</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -93,16 +113,43 @@ export const FeaturedApps: React.FC = () => {
       <section id="apps-section" className={`py-20 ${user ? 'bg-gray-50' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              {user ? 'Discover AI Apps' : 'Featured Apps'}
-            </h2>
-            <p className="text-gray-600">
-              {user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves'}
-            </p>
+            <div className="flex items-center justify-center mb-4">
+              <h2 className="text-3xl font-bold text-gray-900">{sectionTitle}</h2>
+              {selectedCategoryId && onClearFilter && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon={X}
+                  onClick={onClearFilter}
+                  className="ml-4"
+                >
+                  Clear Filter
+                </Button>
+              )}
+            </div>
+            <p className="text-gray-600">{sectionDescription}</p>
+            
+            {/* Category Filter Badge */}
+            {selectedCategoryId && (
+              <div className="flex justify-center mt-4">
+                <div className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                  <Filter className="w-4 h-4 mr-2" />
+                  Filtered by: {selectedCategoryName}
+                  {onClearFilter && (
+                    <button
+                      onClick={onClearFilter}
+                      className="ml-2 text-purple-600 hover:text-purple-800"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredApps.map((app) => {
+            {appsToShow.map((app) => {
               const isPurchased = purchasedApps.has(app.id)
               const ActionIcon = getActionButtonIcon(app)
               
@@ -252,7 +299,7 @@ export const FeaturedApps: React.FC = () => {
               onClick={() => setIsAllAppsModalOpen(true)}
               className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 text-white border-none hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
             >
-              View All Apps
+              {selectedCategoryId ? `View All ${selectedCategoryName} Apps` : 'View All Apps'}
             </Button>
           </div>
         </div>
@@ -266,6 +313,8 @@ export const FeaturedApps: React.FC = () => {
         purchasedApps={purchasedApps}
         getActionButtonText={getActionButtonText}
         getActionButtonIcon={getActionButtonIcon}
+        initialCategoryFilter={selectedCategoryId}
+        initialCategoryName={selectedCategoryName}
       />
 
       {/* Payment Modal */}
