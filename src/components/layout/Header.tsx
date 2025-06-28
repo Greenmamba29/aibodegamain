@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
-import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone, Bell, ToggleLeft, ToggleRight } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
-import { NotificationBell } from '../ui/NotificationBell'
-import { AuthModal } from '../auth/AuthModal'
-import { useAuthStore } from '../../store/authStore'
-import { useAppStore } from '../../store/appStore'
+import React, { useState } from 'react';
+import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone, Bell, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { NotificationBell } from '../ui/NotificationBell';
+import { AuthModal } from '../auth/AuthModal';
+import { useAuthStore } from '../../store/authStore';
+import { useAppStore } from '../../store/appStore';
+import { toast } from 'react-hot-toast';
 
 interface HeaderProps {
-  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile') => void
-  onOpenProfile?: () => void
-  onOpenPurchaseHistory?: () => void
-  onOpenSettings?: () => void
+  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'purchase-history' | 'settings') => void;
+  onOpenProfile?: () => void;
+  onOpenPurchaseHistory?: () => void;
+  onOpenSettings?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -20,106 +21,109 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPurchaseHistory, 
   onOpenSettings 
 }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
-  const [isRoleToggleOpen, setIsRoleToggleOpen] = useState(false)
-  const { user, profile, signOut, updateProfile } = useAuthStore()
-  const { searchQuery, setSearchQuery, searchApps } = useAppStore()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [isRoleToggleOpen, setIsRoleToggleOpen] = useState(false);
+  const { user, profile, signOut, updateProfile } = useAuthStore();
+  const { searchQuery, setSearchQuery, searchApps } = useAppStore();
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    searchApps(searchQuery)
+    e.preventDefault();
+    searchApps(searchQuery);
     // Scroll to apps section
-    const appsSection = document.getElementById('apps-section')
+    const appsSection = document.getElementById('apps-section');
     if (appsSection) {
-      appsSection.scrollIntoView({ behavior: 'smooth' })
+      appsSection.scrollIntoView({ behavior: 'smooth' });
     }
-  }
+  };
 
   const handleSignOut = async () => {
     try {
-      await signOut()
-      setIsProfileOpen(false)
-      if (onNavigate) onNavigate('home')
+      await signOut();
+      setIsProfileOpen(false);
+      if (onNavigate) onNavigate('home');
     } catch (error) {
-      console.error('Error signing out:', error)
+      console.error('Error signing out:', error);
     }
-  }
+  };
 
   const handleDeveloperPortal = () => {
-    if (onNavigate) onNavigate('developer')
-    setIsProfileOpen(false)
-    setIsRoleToggleOpen(false)
-  }
+    if (onNavigate) onNavigate('developer');
+    setIsProfileOpen(false);
+    setIsRoleToggleOpen(false);
+  };
 
   const handleAdminDashboard = () => {
-    if (onNavigate) onNavigate('admin')
-    setIsProfileOpen(false)
-  }
+    if (onNavigate) onNavigate('admin');
+    setIsProfileOpen(false);
+  };
 
   const handleProductsPage = () => {
-    if (onNavigate) onNavigate('products')
-    setIsProfileOpen(false)
-  }
+    if (onNavigate) onNavigate('products');
+    setIsProfileOpen(false);
+  };
 
   const handleMobileView = () => {
-    if (onNavigate) onNavigate('mobile')
-    setIsProfileOpen(false)
-  }
+    if (onNavigate) onNavigate('mobile');
+    setIsProfileOpen(false);
+  };
 
   const handleViewProfile = () => {
-    if (onOpenProfile) onOpenProfile()
-    setIsProfileOpen(false)
-    setIsRoleToggleOpen(false)
-  }
+    if (onOpenProfile) onOpenProfile();
+    setIsProfileOpen(false);
+    setIsRoleToggleOpen(false);
+  };
 
   const handlePurchaseHistory = () => {
-    if (onOpenPurchaseHistory) onOpenPurchaseHistory()
-    setIsProfileOpen(false)
-  }
+    if (onOpenPurchaseHistory) onOpenPurchaseHistory();
+    setIsProfileOpen(false);
+  };
 
   const handleSettings = () => {
-    if (onOpenSettings) onOpenSettings()
-    setIsProfileOpen(false)
-  }
+    if (onOpenSettings) onOpenSettings();
+    setIsProfileOpen(false);
+  };
 
   const handleToggleRole = async () => {
     try {
-      const newRole = profile?.role === 'developer' ? 'consumer' : 'developer'
-      await updateProfile({ role: newRole })
-      setIsProfileOpen(false)
-      setIsRoleToggleOpen(false)
+      const newRole = profile?.role === 'developer' ? 'consumer' : 'developer';
+      await updateProfile({ role: newRole });
+      
+      toast.success(`Switched to ${newRole} mode`);
+      
+      setIsProfileOpen(false);
+      setIsRoleToggleOpen(false);
       
       // Navigate appropriately based on new role
       if (newRole === 'developer' && onNavigate) {
-        onNavigate('developer')
+        onNavigate('developer');
       } else if (onNavigate) {
-        onNavigate('home')
+        onNavigate('home');
       }
     } catch (error) {
-      console.error('Error toggling role:', error)
-      alert('Error changing role. Please try again.')
+      console.error('Error toggling role:', error);
+      toast.error('Error changing role. Please try again.');
     }
-  }
+  };
 
   const handleRoleToggleClick = () => {
     if (profile?.role === 'developer') {
-      setIsRoleToggleOpen(!isRoleToggleOpen)
+      setIsRoleToggleOpen(!isRoleToggleOpen);
     } else {
       // Direct toggle for consumers
-      handleToggleRole()
+      handleToggleRole();
     }
-  }
+  };
 
   const openAuthModal = (mode: 'signin' | 'signup') => {
-    setAuthMode(mode)
-    setIsAuthModalOpen(true)
-  }
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
+  };
 
   const getSubscriptionBadge = () => {
-    if (!profile?.subscription_tier || profile.subscription_tier === 'free') return null
+    if (!profile?.subscription_tier || profile.subscription_tier === 'free') return null;
     
     return (
       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -130,8 +134,8 @@ export const Header: React.FC<HeaderProps> = ({
         <Crown className="w-3 h-3 mr-1" />
         {profile.subscription_tier.toUpperCase()}
       </span>
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -510,5 +514,5 @@ export const Header: React.FC<HeaderProps> = ({
         initialMode={authMode}
       />
     </>
-  )
-}
+  );
+};

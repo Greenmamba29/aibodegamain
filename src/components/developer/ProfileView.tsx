@@ -1,45 +1,50 @@
-import React from 'react'
-import { Github, Globe, Twitter, MapPin, Building, Users, Star, Download, Calendar, Edit, Camera } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { useAuthStore } from '../../store/authStore'
-import { useDeveloperStore } from '../../store/developerStore'
-import { uploadUserAvatar } from '../../lib/storage'
+import React, { useState } from 'react';
+import { Github, Globe, Twitter, MapPin, Building, Users, Star, Download, Calendar, Edit, Camera } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { useAuthStore } from '../../store/authStore';
+import { useDeveloperStore } from '../../store/developerStore';
+import { uploadUserAvatar } from '../../lib/storage';
+import { toast } from 'react-hot-toast';
 
 export const ProfileView: React.FC = () => {
-  const { profile, updateProfile } = useAuthStore()
-  const { apps, stats } = useDeveloperStore()
+  const { profile, updateProfile } = useAuthStore();
+  const { apps, stats } = useDeveloperStore();
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file || !profile) return
+    const file = event.target.files?.[0];
+    if (!file || !profile) return;
 
+    setAvatarUploading(true);
     try {
-      const result = await uploadUserAvatar(file, profile.id)
+      const result = await uploadUserAvatar(file, profile.id);
       if (result.error) {
-        throw new Error(result.error)
+        throw new Error(result.error);
       }
 
-      await updateProfile({ avatar_url: result.url })
-      alert('Avatar updated successfully!')
+      await updateProfile({ avatar_url: result.url });
+      toast.success('Avatar updated successfully!');
     } catch (error: any) {
-      console.error('Error uploading avatar:', error)
-      alert('Error uploading avatar. Please try again.')
+      console.error('Error uploading avatar:', error);
+      toast.error('Error uploading avatar. Please try again.');
+    } finally {
+      setAvatarUploading(false);
     }
-  }
+  };
 
   const socialLinks = [
     { icon: Github, label: 'GitHub', url: 'https://github.com/username', color: 'text-gray-700' },
     { icon: Globe, label: 'Website', url: 'https://yourwebsite.com', color: 'text-blue-600' },
     { icon: Twitter, label: 'X (Twitter)', url: 'https://x.com/username', color: 'text-black' },
-  ]
+  ];
 
   const achievements = [
     { label: 'Total Downloads', value: stats?.totalDownloads?.toLocaleString() || '0', icon: Download },
     { label: 'Average Rating', value: stats?.averageRating?.toFixed(1) || '0.0', icon: Star },
     { label: 'Total Apps', value: stats?.totalApps || 0, icon: Users },
     { label: 'Member Since', value: new Date(profile?.created_at || '').getFullYear() || '2024', icon: Calendar },
-  ]
+  ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -52,6 +57,7 @@ export const ProfileView: React.FC = () => {
               <button
                 onClick={() => document.getElementById('profile-avatar-upload')?.click()}
                 className="relative group"
+                disabled={avatarUploading}
               >
                 {profile?.avatar_url ? (
                   <img
@@ -76,7 +82,13 @@ export const ProfileView: React.FC = () => {
                 accept="image/*"
                 onChange={handleAvatarUpload}
                 className="hidden"
+                disabled={avatarUploading}
               />
+              {avatarUploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
+                  <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full"></div>
+                </div>
+              )}
             </div>
 
             {/* Profile Info */}
@@ -111,7 +123,7 @@ export const ProfileView: React.FC = () => {
               {/* Social Links */}
               <div className="flex items-center space-x-4">
                 {socialLinks.map((link, index) => {
-                  const Icon = link.icon
+                  const Icon = link.icon;
                   return (
                     <a
                       key={index}
@@ -123,7 +135,7 @@ export const ProfileView: React.FC = () => {
                       <Icon className="w-4 h-4" />
                       <span>{link.label}</span>
                     </a>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -134,7 +146,7 @@ export const ProfileView: React.FC = () => {
       {/* Achievements */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {achievements.map((achievement, index) => {
-          const Icon = achievement.icon
+          const Icon = achievement.icon;
           return (
             <Card key={index}>
               <CardContent className="p-6 text-center">
@@ -143,7 +155,7 @@ export const ProfileView: React.FC = () => {
                 <p className="text-sm text-gray-600">{achievement.label}</p>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -226,5 +238,5 @@ export const ProfileView: React.FC = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};

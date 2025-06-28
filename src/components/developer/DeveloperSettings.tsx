@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { Save, Upload, Github, Globe, Twitter, MapPin, Building, User, Info, Camera } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
-import { useAuthStore } from '../../store/authStore'
-import { uploadUserAvatar } from '../../lib/storage'
+import React, { useState, useEffect } from 'react';
+import { Save, Upload, Github, Globe, Twitter, MapPin, Building, User, Info, Camera } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { useAuthStore } from '../../store/authStore';
+import { uploadUserAvatar } from '../../lib/storage';
+import { supabase } from '../../lib/supabase';
+import { toast } from 'react-hot-toast';
 
 export const DeveloperSettings: React.FC = () => {
-  const { profile, updateProfile } = useAuthStore()
-  const [loading, setLoading] = useState(false)
-  const [avatarUploading, setAvatarUploading] = useState(false)
+  const { profile, updateProfile } = useAuthStore();
+  const [loading, setLoading] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [userSettings, setUserSettings] = useState<any>(null);
   const [settings, setSettings] = useState({
     full_name: '',
     bio: '',
@@ -31,38 +34,61 @@ export const DeveloperSettings: React.FC = () => {
       show_followers: true,
       show_github: true
     }
-  })
+  });
 
   useEffect(() => {
     if (profile) {
-      setSettings({
-        full_name: profile.full_name || '',
-        bio: '',
-        github_url: '',
-        website_url: '',
-        twitter_handle: '',
-        location: '',
-        company: '',
-        notification_preferences: {
-          email: true,
-          push: true,
-          follows: true,
-          reviews: true,
-          app_updates: true
-        },
-        privacy_settings: {
-          profile_public: true,
-          email_public: false,
-          show_followers: true,
-          show_github: true
-        }
-      })
+      setSettings(prev => ({
+        ...prev,
+        full_name: profile.full_name || ''
+      }));
+      fetchUserSettings();
     }
-  }, [profile])
+  }, [profile]);
+
+  const fetchUserSettings = async () => {
+    if (!profile) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('*')
+        .eq('user_id', profile.id)
+        .single();
+        
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching user settings:', error);
+        return;
+      }
+      
+      if (data) {
+        setUserSettings(data);
+        setSettings(prev => ({
+          ...prev,
+          bio: data.bio || '',
+          github_url: data.github_url || '',
+          website_url: data.website_url || '',
+          twitter_handle: data.twitter_handle || '',
+          location: data.location || '',
+          company: data.company || '',
+          notification_preferences: {
+            ...prev.notification_preferences,
+            ...(data.notification_preferences || {})
+          },
+          privacy_settings: {
+            ...prev.privacy_settings,
+            ...(data.privacy_settings || {})
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching user settings:', error);
+    }
+  };
 
   const handleInputChange = (field: string, value: any) => {
-    setSettings(prev => ({ ...prev, [field]: value }))
-  }
+    setSettings(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleNotificationChange = (field: string, value: boolean) => {
     setSettings(prev => ({
@@ -71,8 +97,8 @@ export const DeveloperSettings: React.FC = () => {
         ...prev.notification_preferences,
         [field]: value
       }
-    }))
-  }
+    }));
+  };
 
   const handlePrivacyChange = (field: string, value: boolean) => {
     setSettings(prev => ({
@@ -81,48 +107,82 @@ export const DeveloperSettings: React.FC = () => {
         ...prev.privacy_settings,
         [field]: value
       }
-    }))
-  }
+    }));
+  };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file || !profile) return
+    const file = event.target.files?.[0];
+    if (!file || !profile) return;
 
-    setAvatarUploading(true)
+    setAvatarUploading(true);
     try {
-      const result = await uploadUserAvatar(file, profile.id)
+      const result = await uploadUserAvatar(file, profile.id);
       if (result.error) {
-        throw new Error(result.error)
+        throw new Error(result.error);
       }
 
-      await updateProfile({ avatar_url: result.url })
-      alert('Avatar updated successfully!')
+      await updateProfile({ avatar_url: result.url });
+      toast.success('Avatar updated successfully!');
     } catch (error: any) {
-      console.error('Error uploading avatar:', error)
-      alert('Error uploading avatar. Please try again.')
+      console.error('Error uploading avatar:', error);
+      toast.error('Error uploading avatar. Please try again.');
     } finally {
-      setAvatarUploading(false)
+      setAvatarUploading(false);
     }
-  }
+  };
 
   const handleSave = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
+      // Update profile
       await updateProfile({
         full_name: settings.full_name
-      })
+      });
       
-      // Save additional settings to user_settings table
-      // This would require additional API calls
+      // Update user settings
+      if (userSettings) {
+        const { error } = await supabase
+          .from('user_settings')
+          .update({
+            bio: settings.bio,
+            github_url: settings.github_url,
+            website_url: settings.website_url,
+            twitter_handle: settings.twitter_handle,
+            location: settings.location,
+            company: settings.company,
+            notification_preferences: settings.notification_preferences,
+            privacy_settings: settings.privacy_settings
+          })
+          .eq('user_id', profile?.id);
+          
+        if (error) throw error;
+      } else {
+        // Create user settings if they don't exist
+        const { error } = await supabase
+          .from('user_settings')
+          .insert({
+            user_id: profile?.id,
+            bio: settings.bio,
+            github_url: settings.github_url,
+            website_url: settings.website_url,
+            twitter_handle: settings.twitter_handle,
+            location: settings.location,
+            company: settings.company,
+            notification_preferences: settings.notification_preferences,
+            privacy_settings: settings.privacy_settings
+          });
+          
+        if (error) throw error;
+      }
       
-      alert('Settings saved successfully!')
+      toast.success('Settings saved successfully!');
     } catch (error) {
-      console.error('Error saving settings:', error)
-      alert('Error saving settings. Please try again.')
+      console.error('Error saving settings:', error);
+      toast.error('Error saving settings. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -185,7 +245,7 @@ export const DeveloperSettings: React.FC = () => {
               <div className="flex items-center space-x-1 mt-1">
                 <Info className="w-3 h-3 text-gray-400" />
                 <span className="text-xs text-gray-500">
-                  Changing your username may require additional changes and won't go into effect immediately
+                  This is how your name will appear across the platform
                 </span>
               </div>
             </div>
@@ -288,7 +348,7 @@ export const DeveloperSettings: React.FC = () => {
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={value}
+                  checked={value as boolean}
                   onChange={(e) => handleNotificationChange(key, e.target.checked)}
                   className="sr-only peer"
                 />
@@ -319,7 +379,7 @@ export const DeveloperSettings: React.FC = () => {
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={value}
+                  checked={value as boolean}
                   onChange={(e) => handlePrivacyChange(key, e.target.checked)}
                   className="sr-only peer"
                 />
@@ -342,5 +402,5 @@ export const DeveloperSettings: React.FC = () => {
         </Button>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,8 +1,9 @@
-import React from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
-import { Card, CardContent, CardHeader } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { TrendingUp, TrendingDown, Users, Download, Star, DollarSign, FileDown } from 'lucide-react'
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { Card, CardContent, CardHeader } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { TrendingUp, TrendingDown, Users, Download, Star, DollarSign, FileDown } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const downloadData = [
   { name: 'Jan', downloads: 400 },
@@ -11,7 +12,7 @@ const downloadData = [
   { name: 'Apr', downloads: 800 },
   { name: 'May', downloads: 700 },
   { name: 'Jun', downloads: 900 },
-]
+];
 
 const ratingData = [
   { name: 'Jan', rating: 4.2 },
@@ -20,7 +21,7 @@ const ratingData = [
   { name: 'Apr', rating: 4.5 },
   { name: 'May', rating: 4.4 },
   { name: 'Jun', rating: 4.6 },
-]
+];
 
 const categoryData = [
   { name: 'NLP', value: 35, color: '#8B5CF6' },
@@ -28,13 +29,43 @@ const categoryData = [
   { name: 'ML Tools', value: 20, color: '#10B981' },
   { name: 'Data Analysis', value: 15, color: '#F59E0B' },
   { name: 'Other', value: 5, color: '#EF4444' },
-]
+];
 
 interface DeveloperAnalyticsProps {
-  onExportDownloads: () => void
+  onExportDownloads: () => void;
 }
 
 export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExportDownloads }) => {
+  const handleExportCSV = () => {
+    // Generate CSV data
+    const csvData = [
+      ['Date', 'App', 'Downloads', 'Revenue'],
+      ['2024-06-01', 'DreamCanvas AI', '150', '$105.00'],
+      ['2024-06-02', 'TextMind Pro', '200', '$140.00'],
+      ['2024-06-03', 'CodeGenius AI', '175', '$122.50'],
+      ['2024-06-04', 'VoiceClone Studio', '125', '$87.50'],
+      ['2024-06-05', 'DataViz Intelligence', '100', '$70.00'],
+      ['2024-06-06', 'MindMate AI', '225', '$157.50'],
+      ['2024-06-07', 'DreamCanvas AI', '180', '$126.00'],
+    ];
+    
+    // Convert to CSV string
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'downloads_report.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('CSV file downloaded successfully');
+  };
+
   return (
     <div className="space-y-8">
       {/* Key Metrics */}
@@ -75,15 +106,13 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
                 <span className="text-green-600 font-medium">+8%</span>
                 <span className="text-gray-500 ml-1">vs last month</span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                icon={FileDown}
-                onClick={onExportDownloads}
-                className="text-xs"
+              <button
+                onClick={handleExportCSV}
+                className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                title="Export CSV"
               >
-                Export CSV
-              </Button>
+                <FileDown className="w-4 h-4" />
+              </button>
             </div>
           </CardContent>
         </Card>
@@ -134,14 +163,13 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
           <CardHeader>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900">Downloads Over Time</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                icon={FileDown}
-                onClick={onExportDownloads}
+              <button
+                onClick={handleExportCSV}
+                className="text-blue-600 hover:text-blue-800 transition-colors"
+                title="Export CSV"
               >
-                Export Data
-              </Button>
+                <FileDown className="w-5 h-5" />
+              </button>
             </div>
           </CardHeader>
           <CardContent>
@@ -244,5 +272,5 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};

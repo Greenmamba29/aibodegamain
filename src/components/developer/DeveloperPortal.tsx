@@ -1,77 +1,92 @@
-import React, { useState, useEffect } from 'react'
-import { Plus, BarChart3, Settings, Upload, Eye, Edit, Trash2, Star, Download, Users, TrendingUp, DollarSign, FileDown, User } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { AppSubmissionForm } from './AppSubmissionForm'
-import { AppManagement } from './AppManagement'
-import { DeveloperAnalytics } from './DeveloperAnalytics'
-import { RevenueAnalytics } from './RevenueAnalytics'
-import { DeveloperSettings } from './DeveloperSettings'
-import { ProfileView } from './ProfileView'
-import { useAuthStore } from '../../store/authStore'
-import { useDeveloperStore } from '../../store/developerStore'
+import React, { useState, useEffect } from 'react';
+import { Plus, BarChart3, Settings, Upload, Eye, Edit, Trash2, Star, Download, Users, TrendingUp, DollarSign, FileDown, User } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { AppSubmissionForm } from './AppSubmissionForm';
+import { AppManagement } from './AppManagement';
+import { DeveloperAnalytics } from './DeveloperAnalytics';
+import { RevenueAnalytics } from './RevenueAnalytics';
+import { DeveloperSettings } from './DeveloperSettings';
+import { ProfileView } from './ProfileView';
+import { useAuthStore } from '../../store/authStore';
+import { useDeveloperStore } from '../../store/developerStore';
+import { toast } from 'react-hot-toast';
 
-type TabType = 'overview' | 'apps' | 'submit' | 'analytics' | 'revenue' | 'settings' | 'profile'
+type TabType = 'overview' | 'apps' | 'submit' | 'analytics' | 'revenue' | 'settings' | 'profile';
 
 export const DeveloperPortal: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('overview')
-  const { profile, updateProfile } = useAuthStore()
-  const { stats, fetchDeveloperStats } = useDeveloperStore()
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const { profile, updateProfile } = useAuthStore();
+  const { stats, fetchDeveloperStats } = useDeveloperStore();
 
   useEffect(() => {
     if (profile?.role === 'developer') {
-      fetchDeveloperStats()
+      fetchDeveloperStats();
     }
-  }, [profile, fetchDeveloperStats])
+  }, [profile, fetchDeveloperStats]);
 
   // Upgrade to developer if not already
   const handleUpgradeToDeveloper = async () => {
     try {
-      await updateProfile({ role: 'developer' })
+      await updateProfile({ role: 'developer' });
+      toast.success('Successfully upgraded to developer mode!');
     } catch (error) {
-      console.error('Error upgrading to developer:', error)
+      console.error('Error upgrading to developer:', error);
+      toast.error('Failed to upgrade to developer mode');
     }
-  }
+  };
 
   // Handle navigation to submit form
   const handleSubmitApp = () => {
-    setActiveTab('submit')
-  }
+    setActiveTab('submit');
+  };
 
   // Handle navigation to apps management
   const handleManageApps = () => {
-    setActiveTab('apps')
-  }
+    setActiveTab('apps');
+  };
 
   // Handle successful app submission
   const handleAppSubmissionSuccess = () => {
-    setActiveTab('apps')
-  }
+    setActiveTab('apps');
+    toast.success('App submitted successfully!');
+  };
 
   // Handle view profile
   const handleViewProfile = () => {
-    setActiveTab('profile')
-  }
+    setActiveTab('profile');
+  };
 
   // Export downloads data as CSV
   const exportDownloadsCSV = () => {
+    // Generate CSV data
     const csvData = [
       ['Date', 'Downloads', 'App', 'Revenue'],
-      ['2024-01-01', '150', 'DreamCanvas AI', '$105.00'],
-      ['2024-01-02', '200', 'TextMind Pro', '$140.00'],
-      ['2024-01-03', '175', 'CodeGenius AI', '$122.50'],
-      // Add more sample data or fetch real data
-    ]
+      ['2024-06-01', '150', 'DreamCanvas AI', '$105.00'],
+      ['2024-06-02', '200', 'TextMind Pro', '$140.00'],
+      ['2024-06-03', '175', 'CodeGenius AI', '$122.50'],
+      ['2024-06-04', '125', 'VoiceClone Studio', '$87.50'],
+      ['2024-06-05', '100', 'DataViz Intelligence', '$70.00'],
+      ['2024-06-06', '225', 'MindMate AI', '$157.50'],
+      ['2024-06-07', '180', 'DreamCanvas AI', '$126.00'],
+    ];
     
-    const csvContent = csvData.map(row => row.join(',')).join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'downloads-export.csv'
-    a.click()
-    window.URL.revokeObjectURL(url)
-  }
+    // Convert to CSV string
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'downloads_report.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('CSV file downloaded successfully');
+  };
 
   if (profile?.role !== 'developer') {
     return (
@@ -127,7 +142,7 @@ export const DeveloperPortal: React.FC = () => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   const tabs = [
@@ -138,7 +153,7 @@ export const DeveloperPortal: React.FC = () => {
     { id: 'revenue', label: 'Revenue', icon: DollarSign },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -172,14 +187,14 @@ export const DeveloperPortal: React.FC = () => {
       {/* Navigation Tabs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8">
+          <nav className="flex space-x-8 overflow-x-auto">
             {tabs.map((tab) => {
-              const Icon = tab.icon
+              const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'border-purple-500 text-purple-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -188,7 +203,7 @@ export const DeveloperPortal: React.FC = () => {
                   <Icon className="w-4 h-4" />
                   <span>{tab.label}</span>
                 </button>
-              )
+              );
             })}
           </nav>
         </div>
@@ -205,16 +220,16 @@ export const DeveloperPortal: React.FC = () => {
         {activeTab === 'settings' && <DeveloperSettings />}
       </div>
     </div>
-  )
-}
+  );
+};
 
 // Overview Component
 const DeveloperOverview: React.FC<{ 
-  stats: any
-  onSubmitApp: () => void
-  onManageApps: () => void
-  onViewProfile: () => void
-  onExportDownloads: () => void
+  stats: any;
+  onSubmitApp: () => void;
+  onManageApps: () => void;
+  onViewProfile: () => void;
+  onExportDownloads: () => void;
 }> = ({ stats, onSubmitApp, onManageApps, onViewProfile, onExportDownloads }) => {
   return (
     <div className="space-y-8">
@@ -254,15 +269,13 @@ const DeveloperOverview: React.FC<{
                 <span className="text-green-600 font-medium">+12%</span>
                 <span className="text-gray-500 ml-1">vs last month</span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                icon={FileDown}
+              <button
                 onClick={onExportDownloads}
-                className="text-xs"
+                className="text-blue-600 hover:text-blue-800 transition-colors"
+                title="Export CSV"
               >
-                Export CSV
-              </Button>
+                <FileDown className="w-4 h-4" />
+              </button>
             </div>
           </CardContent>
         </Card>
@@ -392,5 +405,5 @@ const DeveloperOverview: React.FC<{
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};

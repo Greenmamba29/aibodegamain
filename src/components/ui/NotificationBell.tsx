@@ -1,96 +1,103 @@
-import React, { useState, useEffect } from 'react'
-import { Bell, X, Check, User, Star, Download, CheckCircle } from 'lucide-react'
-import { Button } from './Button'
-import { useAuthStore } from '../../store/authStore'
-import { realtimeManager, NotificationData, getUnreadNotifications, markNotificationAsRead } from '../../lib/realtime'
+import React, { useState, useEffect } from 'react';
+import { Bell, X, Check, User, Star, Download, CheckCircle } from 'lucide-react';
+import { Button } from './Button';
+import { useAuthStore } from '../../store/authStore';
+import { realtimeManager, NotificationData, getUnreadNotifications, markNotificationAsRead } from '../../lib/realtime';
+import { toast } from 'react-hot-toast';
 
 export const NotificationBell: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [notifications, setNotifications] = useState<NotificationData[]>([])
-  const [loading, setLoading] = useState(false)
-  const { user } = useAuthStore()
+  const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    if (!user) return
+    if (!user) return;
 
     // Fetch initial notifications
-    loadNotifications()
+    loadNotifications();
 
     // Subscribe to real-time notifications
-    realtimeManager.subscribeToNotifications(user.id)
+    realtimeManager.subscribeToNotifications(user.id);
     
     const unsubscribe = realtimeManager.onNotification((notification) => {
-      setNotifications(prev => [notification, ...prev])
+      setNotifications(prev => [notification, ...prev]);
       
       // Show browser notification if permission granted
       if (Notification.permission === 'granted') {
         new Notification(notification.title, {
           body: notification.message,
           icon: '/icon-192.png'
-        })
+        });
       }
-    })
+      
+      // Show toast notification
+      toast.success(notification.title, {
+        description: notification.message
+      });
+    });
 
     return () => {
-      unsubscribe()
-      realtimeManager.unsubscribe(`notifications:${user.id}`)
-    }
-  }, [user])
+      unsubscribe();
+      realtimeManager.unsubscribe(`notifications:${user.id}`);
+    };
+  }, [user]);
 
   const loadNotifications = async () => {
-    if (!user) return
+    if (!user) return;
     
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await getUnreadNotifications(user.id)
-      setNotifications(data)
+      const data = await getUnreadNotifications(user.id);
+      setNotifications(data);
     } catch (error) {
-      console.error('Error loading notifications:', error)
+      console.error('Error loading notifications:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleMarkAsRead = async (notificationId: string) => {
-    await markNotificationAsRead(notificationId)
-    setNotifications(prev => prev.filter(n => n.id !== notificationId))
-  }
+    await markNotificationAsRead(notificationId);
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+  };
 
   const handleMarkAllAsRead = async () => {
-    const promises = notifications.map(n => markNotificationAsRead(n.id))
-    await Promise.all(promises)
-    setNotifications([])
-  }
+    const promises = notifications.map(n => markNotificationAsRead(n.id));
+    await Promise.all(promises);
+    setNotifications([]);
+    toast.success('All notifications marked as read');
+  };
 
   const getNotificationIcon = (type: NotificationData['type']) => {
     switch (type) {
       case 'follow':
-        return <User className="w-4 h-4 text-blue-600" />
+        return <User className="w-4 h-4 text-blue-600" />;
       case 'review':
-        return <Star className="w-4 h-4 text-yellow-600" />
+        return <Star className="w-4 h-4 text-yellow-600" />;
       case 'download':
-        return <Download className="w-4 h-4 text-green-600" />
+        return <Download className="w-4 h-4 text-green-600" />;
       case 'app_approved':
-        return <CheckCircle className="w-4 h-4 text-green-600" />
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
       case 'app_rejected':
-        return <X className="w-4 h-4 text-red-600" />
+        return <X className="w-4 h-4 text-red-600" />;
       default:
-        return <Bell className="w-4 h-4 text-gray-600" />
+        return <Bell className="w-4 h-4 text-gray-600" />;
     }
-  }
+  };
 
   const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffInSeconds < 60) return 'Just now'
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-    return `${Math.floor(diffInSeconds / 86400)}d ago`
-  }
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
 
-  if (!user) return null
+  if (!user) return null;
 
   return (
     <div className="relative">
@@ -179,5 +186,5 @@ export const NotificationBell: React.FC = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};

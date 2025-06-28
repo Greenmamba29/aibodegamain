@@ -1,95 +1,105 @@
-import React, { useState, useEffect } from 'react'
-import { Edit, Trash2, Eye, BarChart3, Star, Download, Clock, CheckCircle, XCircle, AlertCircle, Upload, ExternalLink, FileText } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { useDeveloperStore } from '../../store/developerStore'
-import { EditContentCardModal } from './EditContentCardModal'
-import { App } from '../../lib/supabase'
+import React, { useState, useEffect } from 'react';
+import { Edit, Trash2, Eye, BarChart3, Star, Download, Clock, CheckCircle, XCircle, AlertCircle, Upload, ExternalLink, FileText } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { useDeveloperStore } from '../../store/developerStore';
+import { EditContentCardModal } from './EditContentCardModal';
+import { App } from '../../lib/supabase';
+import { toast } from 'react-hot-toast';
 
 export const AppManagement: React.FC = () => {
-  const { apps, drafts, loading, fetchDeveloperApps, fetchDrafts, deleteDraft, deleteApp } = useDeveloperStore()
-  const [activeTab, setActiveTab] = useState<'published' | 'drafts'>('published')
-  const [selectedApp, setSelectedApp] = useState<App | null>(null)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const { apps, drafts, loading, fetchDeveloperApps, fetchDrafts, deleteDraft, deleteApp } = useDeveloperStore();
+  const [activeTab, setActiveTab] = useState<'published' | 'drafts'>('published');
+  const [selectedApp, setSelectedApp] = useState<App | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchDeveloperApps()
-    fetchDrafts()
-  }, [fetchDeveloperApps, fetchDrafts])
+    fetchDeveloperApps();
+    fetchDrafts();
+  }, [fetchDeveloperApps, fetchDrafts]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle className="w-4 h-4 text-green-600" />
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
       case 'pending':
-        return <Clock className="w-4 h-4 text-yellow-600" />
+        return <Clock className="w-4 h-4 text-yellow-600" />;
       case 'rejected':
-        return <XCircle className="w-4 h-4 text-red-600" />
+        return <XCircle className="w-4 h-4 text-red-600" />;
       default:
-        return <AlertCircle className="w-4 h-4 text-gray-600" />
+        return <AlertCircle className="w-4 h-4 text-gray-600" />;
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800';
       case 'rejected':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const handleViewApp = (app: any) => {
     if (app.app_url) {
-      window.open(app.app_url, '_blank')
+      window.open(app.app_url, '_blank');
+    } else {
+      toast.error('App URL not available');
     }
-  }
+  };
 
   const handleEditApp = (app: App) => {
-    setSelectedApp(app)
-    setIsEditModalOpen(true)
-  }
+    setSelectedApp(app);
+    setIsEditModalOpen(true);
+  };
 
   const handleViewAnalytics = (appId: string) => {
     // Navigate to analytics view (would implement routing here)
-    console.log('View analytics for app:', appId)
-  }
+    toast.info('Analytics view coming soon');
+  };
 
   const handleDeleteApp = async (appId: string, appTitle: string) => {
     if (window.confirm(`Are you sure you want to delete "${appTitle}"? This action cannot be undone.`)) {
       try {
-        await deleteApp(appId)
-        alert('App deleted successfully')
+        await deleteApp(appId);
+        toast.success('App deleted successfully');
       } catch (error) {
-        console.error('Error deleting app:', error)
-        alert('Error deleting app. Please try again.')
+        console.error('Error deleting app:', error);
+        toast.error('Error deleting app. Please try again.');
       }
     }
-  }
+  };
 
   const handleDeleteDraft = async (draftId: string, draftTitle: string) => {
     if (window.confirm(`Are you sure you want to delete the draft "${draftTitle}"?`)) {
       try {
-        await deleteDraft(draftId)
+        await deleteDraft(draftId);
+        toast.success('Draft deleted successfully');
       } catch (error) {
-        console.error('Error deleting draft:', error)
-        alert('Error deleting draft. Please try again.')
+        console.error('Error deleting draft:', error);
+        toast.error('Error deleting draft. Please try again.');
       }
     }
-  }
+  };
 
   const handleContinueDraft = (draft: any) => {
     // Load draft data into submission form
-    console.log('Continue draft:', draft)
-  }
+    toast.info('Draft editing coming soon');
+  };
 
   const handleEditSuccess = () => {
-    fetchDeveloperApps()
-  }
+    fetchDeveloperApps();
+    toast.success('App updated successfully');
+  };
+
+  const handleSubmitNewApp = () => {
+    // Navigate to app submission form
+    toast.info('App submission form coming soon');
+  };
 
   if (loading) {
     return (
@@ -100,7 +110,7 @@ export const AppManagement: React.FC = () => {
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -130,7 +140,7 @@ export const AppManagement: React.FC = () => {
           </button>
         </div>
         
-        <Button icon={Upload}>Submit New App</Button>
+        <Button icon={Upload} onClick={handleSubmitNewApp}>Submit New App</Button>
       </div>
 
       {/* Published Apps Tab */}
@@ -143,7 +153,7 @@ export const AppManagement: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Apps Yet</h3>
               <p className="text-gray-600 mb-6">You haven't submitted any apps yet. Start by submitting your first app!</p>
-              <Button icon={Upload}>Submit Your First App</Button>
+              <Button icon={Upload} onClick={handleSubmitNewApp}>Submit Your First App</Button>
             </div>
           ) : (
             <div className="grid gap-6">
@@ -281,7 +291,7 @@ export const AppManagement: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Drafts</h3>
               <p className="text-gray-600 mb-6">You don't have any saved drafts. Start creating an app to save drafts!</p>
-              <Button icon={Upload}>Submit New App</Button>
+              <Button icon={Upload} onClick={handleSubmitNewApp}>Submit New App</Button>
             </div>
           ) : (
             <div className="grid gap-6">
@@ -341,5 +351,5 @@ export const AppManagement: React.FC = () => {
         onSuccess={handleEditSuccess}
       />
     </div>
-  )
-}
+  );
+};
