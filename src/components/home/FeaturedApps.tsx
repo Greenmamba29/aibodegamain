@@ -6,6 +6,7 @@ import { FollowButton } from '../ui/FollowButton'
 import { PricingBadge } from '../ui/PricingBadge'
 import { PaymentModal } from '../payment/PaymentModal'
 import { AllAppsModal } from './AllAppsModal'
+import { ContentCardModal } from './ContentCardModal'
 import { useAppStore } from '../../store/appStore'
 import { useAuthStore } from '../../store/authStore'
 import { usePaymentStore } from '../../store/paymentStore'
@@ -27,6 +28,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
   const [selectedApp, setSelectedApp] = useState<any>(null)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [isAllAppsModalOpen, setIsAllAppsModalOpen] = useState(false)
+  const [isContentCardModalOpen, setIsContentCardModalOpen] = useState(false)
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -52,6 +54,11 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
       setSelectedApp(app)
       setIsPaymentModalOpen(true)
     }
+  }
+
+  const handleAppClick = (app: any) => {
+    setSelectedApp(app)
+    setIsContentCardModalOpen(true)
   }
 
   const handlePurchaseSuccess = () => {
@@ -84,7 +91,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
     ? `${selectedCategoryName} Apps` 
     : user ? 'Discover AI Apps' : 'Featured Apps'
   const sectionDescription = selectedCategoryId
-    ? `Explore ${selectedCategoryName.toLowerCase()} applications`
+    ? `Explore ${selectedCategoryName?.toLowerCase()} applications`
     : user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves'
 
   if (loading) {
@@ -154,7 +161,12 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
               const ActionIcon = getActionButtonIcon(app)
               
               return (
-                <Card key={app.id} hover className="h-full overflow-hidden">
+                <Card 
+                  key={app.id} 
+                  hover 
+                  className="h-full overflow-hidden cursor-pointer"
+                  onClick={() => handleAppClick(app)}
+                >
                   <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 rounded-t-xl flex items-center justify-center relative">
                     {app.logo_url ? (
                       <img
@@ -250,7 +262,10 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
                         variant="primary" 
                         size="sm" 
                         className="flex-1"
-                        onClick={() => handleAppAction(app)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAppAction(app);
+                        }}
                         icon={ActionIcon}
                       >
                         {getActionButtonText(app)}
@@ -262,7 +277,10 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
                             variant="outline" 
                             size="sm"
                             icon={ExternalLink}
-                            onClick={() => window.open(app.demo_url, '_blank')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(app.demo_url, '_blank');
+                            }}
                             className="px-3"
                           />
                         )}
@@ -271,7 +289,10 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
                             variant="outline" 
                             size="sm"
                             icon={Github}
-                            onClick={() => window.open(app.github_url, '_blank')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(app.github_url, '_blank');
+                            }}
                             className="px-3"
                           />
                         )}
@@ -280,7 +301,10 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
                             variant="outline" 
                             size="sm"
                             icon={Globe}
-                            onClick={() => window.open(app.repository_url, '_blank')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(app.repository_url, '_blank');
+                            }}
                             className="px-3"
                           />
                         )}
@@ -315,6 +339,17 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
         getActionButtonIcon={getActionButtonIcon}
         initialCategoryFilter={selectedCategoryId}
         initialCategoryName={selectedCategoryName}
+      />
+
+      {/* Content Card Modal */}
+      <ContentCardModal
+        isOpen={isContentCardModalOpen}
+        onClose={() => setIsContentCardModalOpen(false)}
+        app={selectedApp}
+        onAppAction={handleAppAction}
+        isPurchased={selectedApp ? purchasedApps.has(selectedApp.id) : false}
+        getActionButtonText={getActionButtonText}
+        getActionButtonIcon={getActionButtonIcon}
       />
 
       {/* Payment Modal */}

@@ -3,10 +3,14 @@ import { Edit, Trash2, Eye, BarChart3, Star, Download, Clock, CheckCircle, XCirc
 import { Card, CardContent, CardHeader } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { useDeveloperStore } from '../../store/developerStore'
+import { EditContentCardModal } from './EditContentCardModal'
+import { App } from '../../lib/supabase'
 
 export const AppManagement: React.FC = () => {
-  const { apps, drafts, loading, fetchDeveloperApps, fetchDrafts, deleteDraft } = useDeveloperStore()
+  const { apps, drafts, loading, fetchDeveloperApps, fetchDrafts, deleteDraft, deleteApp } = useDeveloperStore()
   const [activeTab, setActiveTab] = useState<'published' | 'drafts'>('published')
+  const [selectedApp, setSelectedApp] = useState<App | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => {
     fetchDeveloperApps()
@@ -45,9 +49,9 @@ export const AppManagement: React.FC = () => {
     }
   }
 
-  const handleEditApp = (appId: string) => {
-    // Navigate to edit form (would implement routing here)
-    console.log('Edit app:', appId)
+  const handleEditApp = (app: App) => {
+    setSelectedApp(app)
+    setIsEditModalOpen(true)
   }
 
   const handleViewAnalytics = (appId: string) => {
@@ -58,8 +62,8 @@ export const AppManagement: React.FC = () => {
   const handleDeleteApp = async (appId: string, appTitle: string) => {
     if (window.confirm(`Are you sure you want to delete "${appTitle}"? This action cannot be undone.`)) {
       try {
-        // Would implement delete functionality
-        console.log('Delete app:', appId)
+        await deleteApp(appId)
+        alert('App deleted successfully')
       } catch (error) {
         console.error('Error deleting app:', error)
         alert('Error deleting app. Please try again.')
@@ -81,6 +85,10 @@ export const AppManagement: React.FC = () => {
   const handleContinueDraft = (draft: any) => {
     // Load draft data into submission form
     console.log('Continue draft:', draft)
+  }
+
+  const handleEditSuccess = () => {
+    fetchDeveloperApps()
   }
 
   if (loading) {
@@ -205,7 +213,7 @@ export const AppManagement: React.FC = () => {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              icon={ExternalLink}
+                              icon={Eye}
                               onClick={() => handleViewApp(app)}
                               disabled={!app.app_url}
                             >
@@ -223,7 +231,7 @@ export const AppManagement: React.FC = () => {
                               variant="outline" 
                               size="sm" 
                               icon={Edit}
-                              onClick={() => handleEditApp(app.id)}
+                              onClick={() => handleEditApp(app)}
                             >
                               Edit
                             </Button>
@@ -324,6 +332,14 @@ export const AppManagement: React.FC = () => {
           )}
         </>
       )}
+
+      {/* Edit Content Card Modal */}
+      <EditContentCardModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        app={selectedApp}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   )
 }
