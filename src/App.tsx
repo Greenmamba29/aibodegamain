@@ -10,11 +10,12 @@ import { AdminDashboard } from './components/admin/AdminDashboard'
 import { ProductsPage } from './components/payment/ProductsPage'
 import { PaymentSuccess } from './components/payment/PaymentSuccess'
 import { PaymentCancel } from './components/payment/PaymentCancel'
+import { MobilePage } from './components/mobile/MobilePage'
 import { AuthModal } from './components/auth/AuthModal'
 import { useAuthStore } from './store/authStore'
 import { realtimeManager } from './lib/realtime'
 
-type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel'
+type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile'
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home')
@@ -40,6 +41,8 @@ function App() {
       setCurrentPage('developer')
     } else if (path === '/admin') {
       setCurrentPage('admin')
+    } else if (path === '/mobile') {
+      setCurrentPage('mobile')
     } else {
       setCurrentPage('home')
     }
@@ -91,10 +94,16 @@ function App() {
       admin: '/admin',
       products: '/products',
       'payment-success': '/payment/success',
-      'payment-cancel': '/payment/cancel'
+      'payment-cancel': '/payment/cancel',
+      mobile: '/mobile'
     }
     
     window.history.pushState({}, '', urls[page])
+  }
+
+  // Show mobile page
+  if (currentPage === 'mobile') {
+    return <MobilePage onNavigate={handleNavigation} />
   }
 
   // Show payment success page
