@@ -101,8 +101,28 @@ export const uploadAppVideo = async (file: File, appId: string): Promise<FileUpl
   return uploadFile(file, {
     bucket: 'app-assets',
     folder: `${appId}/videos`,
-    maxSize: 50 * 1024 * 1024, // 50MB
-    allowedTypes: ['video/mp4', 'video/webm', 'video/quicktime']
+    maxSize: 100 * 1024 * 1024, // 100MB
+    allowedTypes: ['video/mp4', 'video/webm', 'video/quicktime', 'video/avi', 'video/mov']
+  })
+}
+
+// Upload user content video
+export const uploadUserVideo = async (file: File, userId: string): Promise<FileUploadResult> => {
+  return uploadFile(file, {
+    bucket: 'user-content',
+    folder: `${userId}/videos`,
+    maxSize: 100 * 1024 * 1024, // 100MB
+    allowedTypes: ['video/mp4', 'video/webm', 'video/quicktime', 'video/avi', 'video/mov']
+  })
+}
+
+// Upload user content image
+export const uploadUserImage = async (file: File, userId: string): Promise<FileUploadResult> => {
+  return uploadFile(file, {
+    bucket: 'user-content',
+    folder: `${userId}/images`,
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
   })
 }
 
@@ -153,4 +173,27 @@ export const isValidFileType = (file: File, allowedTypes: string[]): boolean => 
 // Get file extension
 export const getFileExtension = (filename: string): string => {
   return filename.split('.').pop()?.toLowerCase() || ''
+}
+
+// Request media permissions
+export const requestMediaPermissions = async (): Promise<boolean> => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      video: true, 
+      audio: true 
+    })
+    
+    // Stop the stream immediately as we just needed permission
+    stream.getTracks().forEach(track => track.stop())
+    
+    return true
+  } catch (error) {
+    console.error('Media access denied:', error)
+    return false
+  }
+}
+
+// Check if device supports media capture
+export const supportsMediaCapture = (): boolean => {
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
 }
