@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Save, Upload, Github, Globe, Twitter, Linkedin, MapPin, Building, User, Info, Camera } from 'lucide-react'
+import { Save, Upload, Github, Globe, Twitter, MapPin, Building, User, Info, Camera } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
@@ -16,7 +16,6 @@ export const DeveloperSettings: React.FC = () => {
     github_url: '',
     website_url: '',
     twitter_handle: '',
-    linkedin_url: '',
     location: '',
     company: '',
     notification_preferences: {
@@ -42,7 +41,6 @@ export const DeveloperSettings: React.FC = () => {
         github_url: '',
         website_url: '',
         twitter_handle: '',
-        linkedin_url: '',
         location: '',
         company: '',
         notification_preferences: {
@@ -138,31 +136,38 @@ export const DeveloperSettings: React.FC = () => {
           {/* Avatar Upload */}
           <div className="flex items-center space-x-6">
             <div className="relative">
-              {profile?.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover ring-4 ring-purple-200"
-                />
-              ) : (
-                <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center ring-4 ring-purple-200">
-                  <User className="w-8 h-8 text-white" />
+              <button
+                onClick={() => document.getElementById('avatar-upload')?.click()}
+                className="relative group"
+                disabled={avatarUploading}
+              >
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-full object-cover ring-4 ring-purple-200 group-hover:ring-purple-300 transition-all"
+                  />
+                ) : (
+                  <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center ring-4 ring-purple-200 group-hover:ring-purple-300 transition-all">
+                    <User className="w-8 h-8 text-white" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="w-6 h-6 text-white" />
                 </div>
-              )}
-              <label className="absolute bottom-0 right-0 w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-purple-700 transition-colors">
-                <Camera className="w-3 h-3 text-white" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                  disabled={avatarUploading}
-                />
-              </label>
+              </button>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+                disabled={avatarUploading}
+              />
             </div>
             <div>
               <h4 className="font-medium text-gray-900">Profile Picture</h4>
-              <p className="text-sm text-gray-600">Upload a new avatar for your profile</p>
+              <p className="text-sm text-gray-600">Click on your avatar to upload a new picture</p>
               {avatarUploading && (
                 <p className="text-sm text-purple-600">Uploading...</p>
               )}
@@ -253,19 +258,11 @@ export const DeveloperSettings: React.FC = () => {
             />
 
             <Input
-              label="Twitter Handle"
+              label="X (Twitter) Handle"
               icon={Twitter}
               value={settings.twitter_handle}
               onChange={(e) => handleInputChange('twitter_handle', e.target.value)}
               placeholder="@username"
-            />
-
-            <Input
-              label="LinkedIn Profile"
-              icon={Linkedin}
-              value={settings.linkedin_url}
-              onChange={(e) => handleInputChange('linkedin_url', e.target.value)}
-              placeholder="https://linkedin.com/in/username"
             />
           </div>
         </CardContent>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal } from 'lucide-react'
-import { AppCard } from '../ui/AppCard'
+import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, ExternalLink, ShoppingCart } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { useAppStore } from '../../store/appStore'
 import { useAuthStore } from '../../store/authStore'
@@ -77,13 +76,24 @@ export const MobileAppFeed: React.FC = () => {
     })
   }
 
+  const getActionButtonText = (app: App) => {
+    if (app.pricing_type === 'free') return 'Try Free'
+    if (purchasedApps.has(app.id)) return 'Open App'
+    return `Get for $${app.price}`
+  }
+
+  const getActionButtonIcon = (app: App) => {
+    if (app.pricing_type === 'free' || purchasedApps.has(app.id)) {
+      return ExternalLink
+    }
+    return ShoppingCart
+  }
+
   if (loading) {
     return (
-      <div className="space-y-6 pb-20">
+      <div className="space-y-0 pb-20">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="bg-gray-200 rounded-xl h-96"></div>
-          </div>
+          <div key={i} className="animate-pulse h-screen bg-gray-200"></div>
         ))}
       </div>
     )
@@ -93,134 +103,128 @@ export const MobileAppFeed: React.FC = () => {
     <>
       <div 
         ref={feedRef}
-        className="space-y-6 pb-20 max-w-md mx-auto"
-        style={{ 
-          scrollSnapType: 'y mandatory',
-          overflowY: 'auto',
-          height: '100vh'
-        }}
+        className="snap-y snap-mandatory overflow-y-auto h-screen pb-20"
+        style={{ scrollBehavior: 'smooth' }}
       >
-        {featuredApps.map((app, index) => (
-          <div 
-            key={app.id} 
-            className="scroll-snap-align-start"
-            style={{ scrollSnapAlign: 'start' }}
-          >
-            {/* App Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-4">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                <div className="flex items-center space-x-3">
-                  {app.developer?.avatar_url ? (
-                    <img
-                      src={app.developer.avatar_url}
-                      alt={app.developer.full_name}
-                      className="w-10 h-10 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold">
-                        {app.developer?.full_name?.charAt(0) || 'D'}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {app.developer?.full_name || 'Developer'}
-                    </p>
-                    <p className="text-sm text-gray-500">{app.category?.name}</p>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm" className="p-2">
-                  <MoreHorizontal className="w-5 h-5" />
-                </Button>
-              </div>
-
-              {/* App Image */}
-              <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 relative">
-                {app.logo_url ? (
+        {featuredApps.map((app, index) => {
+          const ActionIcon = getActionButtonIcon(app)
+          
+          return (
+            <div 
+              key={app.id} 
+              className="snap-start h-screen relative flex flex-col"
+            >
+              {/* App Background/Image */}
+              <div className="flex-1 relative bg-gradient-to-br from-purple-900 via-blue-900 to-black">
+                {app.screenshots && app.screenshots[0] ? (
                   <img
-                    src={app.logo_url}
+                    src={app.screenshots[0]}
                     alt={app.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover opacity-80"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-blue-500 rounded-3xl flex items-center justify-center">
-                      <span className="text-white font-bold text-4xl">
+                    <div className="w-48 h-48 bg-gradient-to-r from-purple-500 to-blue-500 rounded-3xl flex items-center justify-center">
+                      <span className="text-white font-bold text-6xl">
                         {app.title.charAt(0)}
                       </span>
                     </div>
                   </div>
                 )}
+                
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
               </div>
 
-              {/* Actions */}
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-2"
-                      onClick={() => handleLike(app.id)}
-                    >
-                      <Heart className={`w-6 h-6 ${likedApps.has(app.id) ? 'fill-red-500 text-red-500' : 'text-gray-700'}`} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-2"
-                      onClick={() => handleShare(app)}
-                    >
-                      <Share2 className="w-6 h-6 text-gray-700" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-2"
-                    >
-                      <MessageCircle className="w-6 h-6 text-gray-700" />
-                    </Button>
+              {/* Header */}
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                <div className="flex items-center space-x-3">
+                  {app.developer?.avatar_url ? (
+                    <img
+                      src={app.developer.avatar_url}
+                      alt={app.developer.full_name}
+                      className="w-10 h-10 rounded-full border-2 border-white"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-white">
+                      <span className="text-white font-semibold text-sm">
+                        {app.developer?.full_name?.charAt(0) || 'D'}
+                      </span>
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-white text-sm">
+                      {app.developer?.full_name || 'Developer'}
+                    </p>
+                    <p className="text-white/80 text-xs">{app.category?.name}</p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-2"
-                    onClick={() => handleBookmark(app.id)}
-                  >
-                    <Bookmark className={`w-6 h-6 ${bookmarkedApps.has(app.id) ? 'fill-gray-700 text-gray-700' : 'text-gray-700'}`} />
-                  </Button>
                 </div>
-
-                {/* Likes count */}
-                <p className="font-semibold text-gray-900 mb-2">
-                  {app.downloads_count.toLocaleString()} downloads
-                </p>
-
-                {/* App info */}
-                <div className="mb-3">
-                  <h3 className="font-semibold text-gray-900 mb-1">{app.title}</h3>
-                  <p className="text-gray-600 text-sm">{app.description}</p>
-                </div>
-
-                {/* Action button */}
-                <Button
-                  variant="primary"
-                  className="w-full"
-                  onClick={() => handleAppAction(app)}
-                >
-                  {app.pricing_type === 'free' 
-                    ? 'Try Free' 
-                    : purchasedApps.has(app.id) 
-                    ? 'Open App' 
-                    : `Get for $${app.price}`
-                  }
+                <Button variant="ghost" size="sm" className="p-2 text-white">
+                  <MoreHorizontal className="w-5 h-5" />
                 </Button>
               </div>
+
+              {/* Side Actions */}
+              <div className="absolute right-4 bottom-32 flex flex-col space-y-4 z-10">
+                <button
+                  onClick={() => handleLike(app.id)}
+                  className="w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"
+                >
+                  <Heart className={`w-6 h-6 ${likedApps.has(app.id) ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                </button>
+                
+                <button
+                  onClick={() => handleShare(app)}
+                  className="w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"
+                >
+                  <Share2 className="w-6 h-6 text-white" />
+                </button>
+                
+                <button
+                  className="w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"
+                >
+                  <MessageCircle className="w-6 h-6 text-white" />
+                </button>
+                
+                <button
+                  onClick={() => handleBookmark(app.id)}
+                  className="w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"
+                >
+                  <Bookmark className={`w-6 h-6 ${bookmarkedApps.has(app.id) ? 'fill-white text-white' : 'text-white'}`} />
+                </button>
+              </div>
+
+              {/* Bottom Content */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                <div className="mb-4">
+                  <h3 className="text-xl font-bold text-white mb-2">{app.title}</h3>
+                  <p className="text-white/90 text-sm mb-3 line-clamp-2">{app.description}</p>
+                  
+                  <div className="flex items-center space-x-4 text-sm text-white/80 mb-4">
+                    <span>{app.downloads_count.toLocaleString()} downloads</span>
+                    <span>⭐ {app.rating_average.toFixed(1)}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      app.pricing_type === 'free' 
+                        ? 'bg-green-500/20 text-green-300' 
+                        : 'bg-purple-500/20 text-purple-300'
+                    }`}>
+                      {app.pricing_type === 'free' ? 'Free' : `$${app.price}`}
+                    </span>
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    className="w-full bg-white text-black hover:bg-gray-100 font-semibold"
+                    onClick={() => handleAppAction(app)}
+                    icon={ActionIcon}
+                  >
+                    {getActionButtonText(app)}
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Payment Modal */}

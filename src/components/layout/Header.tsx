@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone, Bell } from 'lucide-react'
+import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone, Bell, ToggleLeft, ToggleRight } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { NotificationBell } from '../ui/NotificationBell'
@@ -24,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  const [isRoleToggleOpen, setIsRoleToggleOpen] = useState(false)
   const { user, profile, signOut, updateProfile } = useAuthStore()
   const { searchQuery, setSearchQuery, searchApps } = useAppStore()
 
@@ -50,6 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
   const handleDeveloperPortal = () => {
     if (onNavigate) onNavigate('developer')
     setIsProfileOpen(false)
+    setIsRoleToggleOpen(false)
   }
 
   const handleAdminDashboard = () => {
@@ -70,6 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
   const handleViewProfile = () => {
     if (onOpenProfile) onOpenProfile()
     setIsProfileOpen(false)
+    setIsRoleToggleOpen(false)
   }
 
   const handlePurchaseHistory = () => {
@@ -87,6 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
       const newRole = profile?.role === 'developer' ? 'consumer' : 'developer'
       await updateProfile({ role: newRole })
       setIsProfileOpen(false)
+      setIsRoleToggleOpen(false)
       
       // Navigate appropriately based on new role
       if (newRole === 'developer' && onNavigate) {
@@ -97,6 +101,15 @@ export const Header: React.FC<HeaderProps> = ({
     } catch (error) {
       console.error('Error toggling role:', error)
       alert('Error changing role. Please try again.')
+    }
+  }
+
+  const handleRoleToggleClick = () => {
+    if (profile?.role === 'developer') {
+      setIsRoleToggleOpen(!isRoleToggleOpen)
+    } else {
+      // Direct toggle for consumers
+      handleToggleRole()
     }
   }
 
@@ -161,16 +174,18 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center space-x-3">
               {user ? (
                 <>
-                  {/* Mobile View Button - Desktop Only */}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    icon={Smartphone}
-                    onClick={handleMobileView}
-                    className="hidden lg:flex"
-                  >
-                    Mobile View
-                  </Button>
+                  {/* Mobile View Button - Only for consumers */}
+                  {profile?.role !== 'developer' && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      icon={Smartphone}
+                      onClick={handleMobileView}
+                      className="hidden lg:flex"
+                    >
+                      Mobile View
+                    </Button>
+                  )}
 
                   {/* Subscription Badge - Desktop Only */}
                   {profile?.subscription_tier !== 'free' && (
@@ -182,28 +197,64 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Notifications */}
                   <NotificationBell />
 
-                  {/* Role-based Portal Button */}
-                  {profile?.role === 'developer' ? (
+                  {/* Role Toggle Button */}
+                  <div className="relative">
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      icon={Code}
-                      onClick={handleDeveloperPortal}
-                      className="hidden sm:flex"
+                      onClick={handleRoleToggleClick}
+                      className="hidden sm:flex items-center space-x-2"
                     >
-                      Developer
+                      {profile?.role === 'developer' ? (
+                        <>
+                          <Code className="w-4 h-4" />
+                          <span>Developer</span>
+                          <ToggleRight className="w-4 h-4 text-purple-600" />
+                        </>
+                      ) : (
+                        <>
+                          <User className="w-4 h-4" />
+                          <span>Consumer</span>
+                          <ToggleLeft className="w-4 h-4 text-gray-400" />
+                        </>
+                      )}
                     </Button>
-                  ) : (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      icon={User}
-                      onClick={handleViewProfile}
-                      className="hidden sm:flex"
-                    >
-                      Profile
-                    </Button>
-                  )}
+
+                    {/* Developer Toggle Dropdown */}
+                    {isRoleToggleOpen && profile?.role === 'developer' && (
+                      <>
+                        <div 
+                          className="fixed inset-0 z-40" 
+                          onClick={() => setIsRoleToggleOpen(false)}
+                        />
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                          <button 
+                            onClick={handleDeveloperPortal}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                          >
+                            <Code className="w-4 h-4" />
+                            <span>Developer Portal</span>
+                          </button>
+                          <button 
+                            onClick={handleViewProfile}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                          >
+                            <User className="w-4 h-4" />
+                            <span>View Profile</span>
+                          </button>
+                          <div className="border-t border-gray-100 mt-2 pt-2">
+                            <button 
+                              onClick={handleToggleRole}
+                              className="w-full text-left px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 flex items-center space-x-2"
+                            >
+                              <ToggleLeft className="w-4 h-4" />
+                              <span>Switch to Consumer</span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
 
                   {/* Admin Button */}
                   {profile?.role === 'admin' && (
@@ -318,28 +369,6 @@ export const Header: React.FC<HeaderProps> = ({
                             </button>
                           )}
                           
-                          {/* Role Toggle */}
-                          <div className="border-t border-gray-100 mt-2 pt-2">
-                            <button 
-                              onClick={handleToggleRole}
-                              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-2 transition-colors ${
-                                profile?.role === 'developer' ? 'text-blue-700' : 'text-purple-700'
-                              }`}
-                            >
-                              {profile?.role === 'developer' ? (
-                                <>
-                                  <User className="w-4 h-4" />
-                                  <span>Switch to Consumer</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Code className="w-4 h-4" />
-                                  <span>Switch to Developer</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-                          
                           <div className="border-t border-gray-100 mt-2 pt-2">
                             <button
                               onClick={handleSignOut}
@@ -422,7 +451,15 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {profile?.role === 'developer' ? (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={handleViewProfile}
+                    icon={User}
+                  >
+                    View Profile
+                  </Button>
+                  {profile?.role === 'developer' && (
                     <Button 
                       variant="ghost" 
                       className="w-full justify-start"
@@ -430,15 +467,6 @@ export const Header: React.FC<HeaderProps> = ({
                       icon={Code}
                     >
                       Developer Portal
-                    </Button>
-                  ) : (
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start"
-                      onClick={handleViewProfile}
-                      icon={User}
-                    >
-                      View Profile
                     </Button>
                   )}
                   {profile?.role === 'admin' && (
@@ -451,13 +479,23 @@ export const Header: React.FC<HeaderProps> = ({
                       Admin Dashboard
                     </Button>
                   )}
+                  {profile?.role !== 'developer' && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start"
+                      onClick={handleMobileView}
+                      icon={Smartphone}
+                    >
+                      Mobile View
+                    </Button>
+                  )}
                   <Button 
                     variant="ghost" 
                     className="w-full justify-start"
-                    onClick={handleMobileView}
-                    icon={Smartphone}
+                    onClick={handleToggleRole}
+                    icon={profile?.role === 'developer' ? ToggleRight : ToggleLeft}
                   >
-                    Mobile View
+                    Switch to {profile?.role === 'developer' ? 'Consumer' : 'Developer'}
                   </Button>
                 </div>
               )}
