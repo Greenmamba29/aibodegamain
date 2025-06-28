@@ -1,34 +1,56 @@
 # Migration Tracker
 
-This file tracks migration issues and their solutions to prevent repeated errors.
+This document tracks migration issues, solutions, and the current status of each migration.
 
-## Known Migration Issues
+## Known Issues and Solutions
 
 ### 1. Notifications Table Creation
 
-**Problem**: Multiple migrations attempting to create the same notifications table and policies.
+**Issue**: Multiple migrations trying to create the same notifications table and policies.
 
-**Affected Files**:
-- `20250628004131_bright_cell.sql` - Failed due to syntax error with `IF NOT EXISTS`
-- `20250628133113_noisy_field.sql` - Duplicate notifications table creation
-- `20250628134207_nameless_shadow.sql` - Another attempt at notifications table
-- `20250628134629_tender_reef.sql` - Yet another attempt
-- `20250628151423_icy_dust.sql` - Sample data insertion
-- `20250628231751_jade_block.sql` - Failed due to policy already existing
+**Files Affected**:
+- `20250628004131_bright_cell.sql`
+- `20250628134207_sunny_hall.sql`
+- `20250628134629_tender_reef.sql`
+- `20250628151806_hidden_star.sql`
 
 **Solution**: 
-- Created `20250628231818_dry_dune.sql` with proper conditional checks for all objects
-- This migration safely creates the notifications table, indexes, constraint, and policies only if they don't already exist
-
-### 2. Proper Migration Pattern
-
-When creating new migrations, always use this pattern for safety:
+- Use `CREATE TABLE IF NOT EXISTS` for table creation
+- Use DO blocks with existence checks for constraints and policies:
 
 ```sql
--- For tables
-CREATE TABLE IF NOT EXISTS table_name (...);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'notifications' 
+    AND policyname = 'Policy name'
+  ) THEN
+    CREATE POLICY "Policy name"...
+  END IF;
+END $$;
+```
 
--- For constraints (use DO block)
+**Status**: Fixed in `20250628232500_fix_app_functionality.sql`
+
+### 2. README.md in Migrations Directory
+
+**Issue**: README.md was placed in the migrations directory, causing Supabase to try to run it as SQL.
+
+**Solution**: Moved README.md to the supabase root directory.
+
+**Status**: Fixed
+
+### 3. Constraint Syntax Error
+
+**Issue**: `IF NOT EXISTS` syntax error in constraint creation.
+
+**Files Affected**:
+- `20250628004131_bright_cell.sql`
+
+**Solution**: Use DO block for conditional constraint creation:
+
+```sql
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -41,23 +63,27 @@ BEGIN
     CHECK (...);
   END IF;
 END $$;
-
--- For policies (use DO block)
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies 
-    WHERE tablename = 'table_name' 
-    AND policyname = 'Policy name'
-  ) THEN
-    CREATE POLICY "Policy name"
-      ON table_name
-      FOR SELECT
-      TO authenticated
-      USING (...);
-  END IF;
-END $$;
 ```
+
+**Status**: Fixed in `20250628232500_fix_app_functionality.sql`
+
+## App Functionality Issues Fixed
+
+### 1. User Settings
+
+- Added `app_updates` to notification preferences
+- Added `show_github` to privacy settings
+- Fixed profile picture update functionality with proper trigger
+
+### 2. App Likes
+
+- Ensured app_likes table exists with proper constraints
+- Added necessary indexes and RLS policies
+
+### 3. Avatar Updates
+
+- Created function to handle avatar updates
+- Added trigger for avatar timestamp updates
 
 ## Migration Status
 
@@ -69,7 +95,16 @@ END $$;
 | 20250627212058_emerald_feather.sql | ✅ Applied | Fix user creation |
 | 20250627214813_curly_rice.sql | ✅ Applied | Storage buckets |
 | 20250628002124_weathered_term.sql | ✅ Applied | Notifications system |
-| 20250628231818_dry_dune.sql | ✅ Applied | Fixed notifications table |
-| 20250628145438_twilight_mud.sql | ✅ Applied | App purchases table |
-| 20250628151806_hidden_star.sql | ✅ Applied | Stripe integration |
-| 20250628180004_round_coast.sql | ✅ Applied | App likes table |
+| 20250628004131_bright_cell.sql | ❌ Failed | Syntax error in constraint |
+| 20250628004610_nameless_shadow.sql | ✅ Applied | Fixed notifications |
+| 20250628010935_proud_jungle.sql | ✅ Applied | Stripe integration |
+| 20250628015328_white_brook.sql | ✅ Applied | Fix notifications |
+| 20250628020106_divine_spark.sql | ✅ Applied | Sample data |
+| 20250628030527_white_wind.sql | ✅ Applied | App drafts |
+| 20250628134207_sunny_hall.sql | ❌ Failed | Policy already exists |
+| 20250628134629_tender_reef.sql | ❌ Failed | Policy already exists |
+| 20250628145438_twilight_mud.sql | ✅ Applied | App purchases |
+| 20250628151423_icy_dust.sql | ✅ Applied | Sample data |
+| 20250628151806_hidden_star.sql | ❌ Failed | Policy already exists |
+| 20250628180004_round_coast.sql | ✅ Applied | App likes |
+| 20250628232500_fix_app_functionality.sql | ✅ Applied | Fix app functionality |
