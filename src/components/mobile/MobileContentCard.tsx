@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, Play, Pause, Volume2, VolumeX, ExternalLink, ShoppingCart } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { App } from '../../lib/supabase'
 
@@ -87,6 +87,11 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
       videoRef.current.muted = !videoRef.current.muted
       setIsMuted(videoRef.current.muted)
     }
+  }
+
+  const handleActionClick = () => {
+    console.log('Action button clicked for app:', app.title)
+    onAction(app)
   }
 
   return (
@@ -256,9 +261,9 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
           <Button
             variant="primary"
             className="w-full bg-white text-black hover:bg-gray-100 font-semibold"
-            onClick={() => onAction(app)}
-            icon={ActionIcon}
+            onClick={handleActionClick}
           >
+            <ActionIcon className="w-4 h-4 mr-2" />
             {getActionButtonText(app)}
           </Button>
         </div>
