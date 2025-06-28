@@ -211,7 +211,7 @@ export const checkIfFollowing = async (userId: string) => {
       .select('id')
       .eq('following_id', userId)
       .eq('follower_id', user.id)
-      .single()
+      .maybeSingle()
     
     return { isFollowing: !!data, error }
   } catch (error: any) {
@@ -226,7 +226,7 @@ export const getUserFollowers = async (userId: string) => {
       .from('user_follows')
       .select(`
         *,
-        follower:profiles(*)
+        follower:profiles!user_follows_follower_id_fkey(*)
       `)
       .eq('following_id', userId)
     return { data, error }
@@ -242,7 +242,7 @@ export const getUserFollowing = async (userId: string) => {
       .from('user_follows')
       .select(`
         *,
-        following:profiles(*)
+        following:profiles!user_follows_following_id_fkey(*)
       `)
       .eq('follower_id', userId)
     return { data, error }
