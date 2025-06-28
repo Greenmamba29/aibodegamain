@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone } from 'lucide-react'
+import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone, Bell } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { NotificationBell } from '../ui/NotificationBell'
@@ -99,49 +99,51 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
             {/* Logo */}
             <button 
               onClick={() => onNavigate?.('home')}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity group"
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
                 <span className="text-white font-bold text-lg">V</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-yellow-600 bg-clip-text text-transparent">
                   VIBE STORE
                 </h1>
                 <p className="text-xs text-gray-500 -mt-1">AI Indie App Marketplace</p>
               </div>
             </button>
 
-            {/* Search Bar */}
+            {/* Search Bar - Desktop */}
             <div className="flex-1 max-w-2xl mx-8 hidden md:block">
               <form onSubmit={handleSearch}>
-                <Input
-                  type="text"
-                  placeholder="Search AI apps, developers, or categories..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  icon={Search}
-                  className="w-full bg-gray-50 border-gray-200 focus:bg-white"
-                />
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search AI apps, developers, or categories..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white transition-all duration-200"
+                  />
+                </div>
               </form>
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {user ? (
                 <>
-                  {/* Mobile View Button */}
+                  {/* Mobile View Button - Desktop Only */}
                   <Button 
                     variant="outline" 
                     size="sm" 
                     icon={Smartphone}
                     onClick={handleMobileView}
-                    className="hidden sm:flex"
+                    className="hidden lg:flex"
                   >
                     Mobile View
                   </Button>
 
-                  {/* Subscription Badge */}
+                  {/* Subscription Badge - Desktop Only */}
                   {profile?.subscription_tier !== 'free' && (
                     <div className="hidden sm:block">
                       {getSubscriptionBadge()}
@@ -151,18 +153,20 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                   {/* Notifications */}
                   <NotificationBell />
 
+                  {/* Developer Portal Button */}
                   {profile?.role === 'developer' && (
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      icon={Plus}
+                      icon={Code}
                       onClick={handleDeveloperPortal}
                       className="hidden sm:flex"
                     >
-                      Developer Portal
+                      Developer
                     </Button>
                   )}
 
+                  {/* Admin Button */}
                   {profile?.role === 'admin' && (
                     <Button 
                       variant="outline" 
@@ -185,15 +189,15 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                         <img
                           src={profile.avatar_url}
                           alt="Profile"
-                          className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-200"
+                          className="w-8 h-8 rounded-full object-cover ring-2 ring-purple-200"
                         />
                       ) : (
-                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center ring-2 ring-purple-200">
-                          <User className="w-5 h-5 text-white" />
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center ring-2 ring-purple-200">
+                          <User className="w-4 h-4 text-white" />
                         </div>
                       )}
                       <div className="hidden sm:block text-left">
-                        <p className="text-sm font-medium text-gray-700">
+                        <p className="text-sm font-medium text-gray-700 truncate max-w-24">
                           {profile?.full_name || 'User'}
                         </p>
                         <div className="flex items-center space-x-2">
@@ -210,82 +214,91 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                     </button>
 
                     {isProfileOpen && (
-                      <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
-                        <div className="px-4 py-3 border-b border-gray-100">
-                          <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
-                          <p className="text-xs text-gray-500">{profile?.email}</p>
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center space-x-4 text-xs text-gray-500">
-                              <span>{profile?.followers_count || 0} followers</span>
-                              <span>{profile?.following_count || 0} following</span>
+                      <>
+                        {/* Backdrop */}
+                        <div 
+                          className="fixed inset-0 z-40" 
+                          onClick={() => setIsProfileOpen(false)}
+                        />
+                        
+                        {/* Dropdown */}
+                        <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                          <div className="px-4 py-3 border-b border-gray-100">
+                            <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
+                            <p className="text-xs text-gray-500">{profile?.email}</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                <span>{profile?.followers_count || 0} followers</span>
+                                <span>{profile?.following_count || 0} following</span>
+                              </div>
+                              {getSubscriptionBadge()}
                             </div>
-                            {getSubscriptionBadge()}
+                          </div>
+                          
+                          <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors">
+                            <User className="w-4 h-4" />
+                            <span>View Profile</span>
+                          </button>
+                          
+                          <button 
+                            onClick={handleProductsPage}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                          >
+                            <Crown className="w-4 h-4" />
+                            <span>
+                              {profile?.subscription_tier === 'free' ? 'Upgrade Plan' : 'Manage Subscription'}
+                            </span>
+                          </button>
+                          
+                          <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors">
+                            <Package className="w-4 h-4" />
+                            <span>Purchase History</span>
+                          </button>
+                          
+                          <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors">
+                            <Settings className="w-4 h-4" />
+                            <span>Settings</span>
+                          </button>
+                          
+                          {profile?.role === 'admin' && (
+                            <button 
+                              onClick={handleAdminDashboard}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                            >
+                              <Settings className="w-4 h-4" />
+                              <span>Admin Dashboard</span>
+                            </button>
+                          )}
+                          
+                          {profile?.role === 'developer' ? (
+                            <button 
+                              onClick={handleDeveloperPortal}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                            >
+                              <Code className="w-4 h-4" />
+                              <span>Developer Portal</span>
+                            </button>
+                          ) : profile?.role !== 'admin' && (
+                            <button 
+                              onClick={handleBecomeDeveloper}
+                              className="w-full text-left px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 flex items-center space-x-2 transition-colors"
+                            >
+                              <Plus className="w-4 h-4" />
+                              <span>Become a Developer</span>
+                            </button>
+                          )}
+                          
+                          <div className="border-t border-gray-100 mt-2 pt-2">
+                            <button
+                              onClick={handleSignOut}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              <span>Sign Out</span>
+                            </button>
                           </div>
                         </div>
-                        
-                        <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
-                          <User className="w-4 h-4" />
-                          <span>View Profile</span>
-                        </button>
-                        
-                        <button 
-                          onClick={handleProductsPage}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                        >
-                          <Crown className="w-4 h-4" />
-                          <span>
-                            {profile?.subscription_tier === 'free' ? 'Upgrade Plan' : 'Manage Subscription'}
-                          </span>
-                        </button>
-                        
-                        <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
-                          <Package className="w-4 h-4" />
-                          <span>Purchase History</span>
-                        </button>
-                        
-                        <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
-                          <Settings className="w-4 h-4" />
-                          <span>Settings</span>
-                        </button>
-                        
-                        {profile?.role === 'admin' && (
-                          <button 
-                            onClick={handleAdminDashboard}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                          >
-                            <Settings className="w-4 h-4" />
-                            <span>Admin Dashboard</span>
-                          </button>
-                        )}
-                        
-                        {profile?.role === 'developer' ? (
-                          <button 
-                            onClick={handleDeveloperPortal}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                          >
-                            <Code className="w-4 h-4" />
-                            <span>Developer Portal</span>
-                          </button>
-                        ) : profile?.role !== 'admin' && (
-                          <button 
-                            onClick={handleBecomeDeveloper}
-                            className="w-full text-left px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 flex items-center space-x-2"
-                          >
-                            <Plus className="w-4 h-4" />
-                            <span>Become a Developer</span>
-                          </button>
-                        )}
-                        
-                        <div className="border-t border-gray-100 mt-2 pt-2">
-                          <button
-                            onClick={handleSignOut}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            <span>Sign Out</span>
-                          </button>
-                        </div>
-                      </div>
+                      </>
                     )}
                   </div>
                 </>
@@ -295,6 +308,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                     variant="ghost" 
                     size="sm"
                     onClick={() => openAuthModal('signin')}
+                    className="text-gray-600 hover:text-gray-900"
                   >
                     Sign In
                   </Button>
@@ -302,7 +316,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                     variant="primary" 
                     size="sm"
                     onClick={() => openAuthModal('signup')}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600 text-white shadow-lg hover:shadow-xl transition-all"
                   >
                     Sign Up
                   </Button>
@@ -321,31 +335,68 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-200">
+            <div className="md:hidden py-4 border-t border-gray-200 bg-white">
+              {/* Mobile Search */}
               <form onSubmit={handleSearch} className="mb-4">
-                <Input
-                  type="text"
-                  placeholder="Search AI apps..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  icon={Search}
-                />
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search AI apps..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
               </form>
-              {!user && (
+
+              {/* Mobile Navigation */}
+              {!user ? (
                 <div className="space-y-2">
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-start"
+                    className="w-full justify-start text-gray-600"
                     onClick={() => openAuthModal('signin')}
                   >
                     Sign In
                   </Button>
                   <Button 
                     variant="primary" 
-                    className="w-full justify-start bg-gradient-to-r from-purple-600 to-blue-600"
+                    className="w-full justify-start bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 text-white"
                     onClick={() => openAuthModal('signup')}
                   >
                     Sign Up
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {profile?.role === 'developer' && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start"
+                      onClick={handleDeveloperPortal}
+                      icon={Code}
+                    >
+                      Developer Portal
+                    </Button>
+                  )}
+                  {profile?.role === 'admin' && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start"
+                      onClick={handleAdminDashboard}
+                      icon={Settings}
+                    >
+                      Admin Dashboard
+                    </Button>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={handleMobileView}
+                    icon={Smartphone}
+                  >
+                    Mobile View
                   </Button>
                 </div>
               )}
