@@ -271,3 +271,5 @@ export const MobileContentCard: React.FC<MobileContentCardProps> = ({
     </div>
   )
 }
+
+export { MobileContentCard }
