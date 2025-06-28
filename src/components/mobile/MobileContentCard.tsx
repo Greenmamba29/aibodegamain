@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, Play, Pause, Volume2, VolumeX, ExternalLink, ShoppingCart } from 'lucide-react'
+import { Heart, Share2, MessageCircle, Bookmark, MoreHorizontal, Play, Pause, Volume2, VolumeX } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { App } from '../../lib/supabase'
 

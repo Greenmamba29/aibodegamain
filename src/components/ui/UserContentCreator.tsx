@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { X, AtSign, Hash, Image, Video, Send, Users } from 'lucide-react'
 import { Button } from './Button'
-import { VideoUpload, UploadedVideo } from './VideoUpload'
 import { FileUpload, UploadedFile } from './FileUpload'
 import { useAuthStore } from '../../store/authStore'
 
@@ -14,7 +13,7 @@ interface UserContentCreatorProps {
 export interface UserContent {
   caption: string
   images: UploadedFile[]
-  videos: UploadedVideo[]
+  videos: any[] // Simplified for now
   taggedUsers: string[]
   hashtags: string[]
 }
@@ -27,7 +26,7 @@ export const UserContentCreator: React.FC<UserContentCreatorProps> = ({
   const { profile } = useAuthStore()
   const [caption, setCaption] = useState('')
   const [images, setImages] = useState<UploadedFile[]>([])
-  const [videos, setVideos] = useState<UploadedVideo[]>([])
+  const [videos, setVideos] = useState<any[]>([])
   const [taggedUsers, setTaggedUsers] = useState<string[]>([])
   const [showUserSearch, setShowUserSearch] = useState(false)
   const [userSearchQuery, setUserSearchQuery] = useState('')
@@ -184,14 +183,14 @@ export const UserContentCreator: React.FC<UserContentCreatorProps> = ({
               />
             )}
 
-            {/* Video Upload */}
+            {/* Video Upload - Simplified for now */}
             {activeTab === 'video' && (
-              <VideoUpload
-                onVideoChange={setVideos}
-                videos={videos}
-                maxFiles={5}
-                maxSize={100 * 1024 * 1024} // 100MB
-              />
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <Video className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-600 mb-2">
+                  Video upload functionality coming soon
+                </p>
+              </div>
             )}
           </div>
 
