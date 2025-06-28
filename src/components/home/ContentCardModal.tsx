@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { X, Heart, MessageCircle, Share2, Bookmark, User, Send, MoreHorizontal, Edit, Trash2, ExternalLink, Github, Globe, ShoppingCart } from 'lucide-react'
-import { Card, CardContent } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
-import { FollowButton } from '../ui/FollowButton'
-import { PricingBadge } from '../ui/PricingBadge'
-import { useAuthStore } from '../../store/authStore'
-import { useAppStore } from '../../store/appStore'
-import { App, Review } from '../../lib/supabase'
-import { supabase } from '../../lib/supabase'
+import React, { useState, useEffect } from 'react';
+import { X, Heart, MessageCircle, Share2, Bookmark, User, Send, MoreHorizontal, Edit, Trash2, ExternalLink, Github, Globe, ShoppingCart } from 'lucide-react';
+import { Card, CardContent } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { FollowButton } from '../ui/FollowButton';
+import { PricingBadge } from '../ui/PricingBadge';
+import { useAuthStore } from '../../store/authStore';
+import { useAppStore } from '../../store/appStore';
+import { App, Review } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 interface ContentCardModalProps {
-  isOpen: boolean
-  onClose: () => void
-  app: App | null
-  onAppAction: (app: App) => void
-  isPurchased?: boolean
-  getActionButtonText: (app: App) => string
-  getActionButtonIcon: (app: App) => any
+  isOpen: boolean;
+  onClose: () => void;
+  app: App | null;
+  onAppAction: (app: App) => void;
+  isPurchased?: boolean;
+  getActionButtonText: (app: App) => string;
+  getActionButtonIcon: (app: App) => any;
 }
 
 export const ContentCardModal: React.FC<ContentCardModalProps> = ({
@@ -29,30 +29,30 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
   getActionButtonText,
   getActionButtonIcon
 }) => {
-  const [activeTab, setActiveTab] = useState<'comments' | 'likes' | 'followers'>('comments')
-  const [comment, setComment] = useState('')
-  const [comments, setComments] = useState<Review[]>([])
-  const [likes, setLikes] = useState<any[]>([])
-  const [followers, setFollowers] = useState<any[]>([])
-  const [isLiked, setIsLiked] = useState(false)
-  const [isBookmarked, setIsBookmarked] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [commentLoading, setCommentLoading] = useState(false)
-  const { user, profile } = useAuthStore()
+  const [activeTab, setActiveTab] = useState<'comments' | 'likes' | 'followers'>('comments');
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState<Review[]>([]);
+  const [likes, setLikes] = useState<any[]>([]);
+  const [followers, setFollowers] = useState<any[]>([]);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
+  const { user, profile } = useAuthStore();
 
   useEffect(() => {
     if (isOpen && app) {
-      fetchComments()
-      fetchLikes()
-      fetchFollowers()
-      checkUserInteractions()
+      fetchComments();
+      fetchLikes();
+      fetchFollowers();
+      checkUserInteractions();
     }
-  }, [isOpen, app])
+  }, [isOpen, app]);
 
   const fetchComments = async () => {
-    if (!app) return
+    if (!app) return;
     
-    setLoading(true)
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('reviews')
@@ -61,19 +61,19 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
           user:profiles(id, full_name, avatar_url, role)
         `)
         .eq('app_id', app.id)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
-      if (error) throw error
-      setComments(data || [])
+      if (error) throw error;
+      setComments(data || []);
     } catch (error) {
-      console.error('Error fetching comments:', error)
+      console.error('Error fetching comments:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchLikes = async () => {
-    if (!app) return
+    if (!app) return;
     
     // This would be a "likes" table in a real implementation
     // For now, we'll simulate with dummy data
@@ -81,35 +81,35 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
       { id: '1', user: { id: '1', full_name: 'John Doe', avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
       { id: '2', user: { id: '2', full_name: 'Jane Smith', avatar_url: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
       { id: '3', user: { id: '3', full_name: 'Mike Johnson', avatar_url: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
-    ])
-  }
+    ]);
+  };
 
   const fetchFollowers = async () => {
-    if (!app?.developer) return
+    if (!app?.developer) return;
     
     try {
       const { data, error } = await supabase
         .from('user_follows')
         .select(`
           *,
-          follower:profiles(id, full_name, avatar_url, role)
+          follower:profiles!user_follows_follower_id_fkey(id, full_name, avatar_url, role)
         `)
         .eq('following_id', app.developer.id)
-        .limit(10)
+        .limit(10);
 
-      if (error) throw error
-      setFollowers(data || [])
+      if (error) throw error;
+      setFollowers(data || []);
     } catch (error) {
-      console.error('Error fetching followers:', error)
+      console.error('Error fetching followers:', error);
     }
-  }
+  };
 
   const checkUserInteractions = async () => {
-    if (!app || !user) return
+    if (!app || !user) return;
     
     // Check if user has liked the app
     // In a real implementation, this would query a likes table
-    setIsLiked(false)
+    setIsLiked(false);
     
     // Check if user has bookmarked the app
     try {
@@ -118,22 +118,22 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
         .select('id')
         .eq('app_id', app.id)
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle();
         
       if (error && error.code !== 'PGRST116') {
-        console.error('Error checking bookmark:', error)
+        console.error('Error checking bookmark:', error);
       }
       
-      setIsBookmarked(!!data)
+      setIsBookmarked(!!data);
     } catch (error) {
-      console.error('Error checking bookmark:', error)
+      console.error('Error checking bookmark:', error);
     }
-  }
+  };
 
   const handleSubmitComment = async () => {
-    if (!app || !user || !comment.trim()) return
+    if (!app || !user || !comment.trim()) return;
     
-    setCommentLoading(true)
+    setCommentLoading(true);
     try {
       // In a real app, we'd have a comments table
       // For now, we'll use reviews as comments
@@ -150,26 +150,26 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
           *,
           user:profiles(id, full_name, avatar_url, role)
         `)
-        .single()
+        .single();
 
-      if (error) throw error
+      if (error) throw error;
       
       if (data) {
-        setComments([data, ...comments])
-        setComment('')
+        setComments([data, ...comments]);
+        setComment('');
       }
     } catch (error) {
-      console.error('Error submitting comment:', error)
+      console.error('Error submitting comment:', error);
     } finally {
-      setCommentLoading(false)
+      setCommentLoading(false);
     }
-  }
+  };
 
   const handleLike = async () => {
-    if (!app || !user) return
+    if (!app || !user) return;
     
     // Toggle like status
-    setIsLiked(!isLiked)
+    setIsLiked(!isLiked);
     
     // In a real implementation, this would add/remove from a likes table
     // For now, we'll just update the UI
@@ -184,14 +184,14 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
           } 
         },
         ...likes
-      ])
+      ]);
     } else {
-      setLikes(likes.filter(like => like.user.id !== user.id))
+      setLikes(likes.filter(like => like.user.id !== user.id));
     }
-  }
+  };
 
   const handleBookmark = async () => {
-    if (!app || !user) return
+    if (!app || !user) return;
     
     try {
       if (isBookmarked) {
@@ -200,10 +200,10 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
           .from('bookmarks')
           .delete()
           .eq('app_id', app.id)
-          .eq('user_id', user.id)
+          .eq('user_id', user.id);
           
-        if (error) throw error
-        setIsBookmarked(false)
+        if (error) throw error;
+        setIsBookmarked(false);
       } else {
         // Add bookmark
         const { error } = await supabase
@@ -211,51 +211,51 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
           .insert({
             app_id: app.id,
             user_id: user.id
-          })
+          });
           
-        if (error) throw error
-        setIsBookmarked(true)
+        if (error) throw error;
+        setIsBookmarked(true);
       }
     } catch (error) {
-      console.error('Error toggling bookmark:', error)
+      console.error('Error toggling bookmark:', error);
     }
-  }
+  };
 
   const handleShare = () => {
-    if (!app) return
+    if (!app) return;
     
     if (navigator.share) {
       navigator.share({
         title: app.title,
         text: app.description,
         url: window.location.origin + `/apps/${app.slug}`
-      }).catch(err => console.error('Error sharing:', err))
+      }).catch(err => console.error('Error sharing:', err));
     } else {
       // Fallback to clipboard
       navigator.clipboard.writeText(window.location.origin + `/apps/${app.slug}`)
         .then(() => alert('Link copied to clipboard!'))
-        .catch(err => console.error('Error copying to clipboard:', err))
+        .catch(err => console.error('Error copying to clipboard:', err));
     }
-  }
+  };
 
   const handleViewProfile = (userId: string) => {
     // In a real app, this would navigate to the user's profile
-    console.log('View profile:', userId)
-    // window.location.href = `/profile/${userId}`
-  }
+    console.log('View profile:', userId);
+    // window.location.href = `/profile/${userId}`;
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
-    })
-  }
+    });
+  };
 
-  if (!isOpen || !app) return null
+  if (!isOpen || !app) return null;
 
-  const ActionIcon = getActionButtonIcon(app)
+  const ActionIcon = getActionButtonIcon(app);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -581,15 +581,13 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                             <img
                               src={comment.user.avatar_url}
                               alt={comment.user.full_name}
-                              className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                              className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer"
                               onClick={() => handleViewProfile(comment.user.id)}
-                              style={{ cursor: 'pointer' }}
                             />
                           ) : (
                             <div 
-                              className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0"
+                              className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer"
                               onClick={() => handleViewProfile(comment.user.id)}
-                              style={{ cursor: 'pointer' }}
                             >
                               <span className="text-white font-semibold">
                                 {comment.user?.full_name?.charAt(0) || 'U'}
@@ -732,5 +730,5 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
