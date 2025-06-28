@@ -1,7 +1,7 @@
-import React from 'react'
-import { XCircle, ArrowLeft, CreditCard } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { Card, CardContent } from '../ui/Card'
+import React from 'react';
+import { XCircle, ArrowLeft, CreditCard } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Card, CardContent } from '../ui/Card';
 
 export const PaymentCancel: React.FC = () => {
   return (
@@ -47,5 +47,5 @@ export const PaymentCancel: React.FC = () => {
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};

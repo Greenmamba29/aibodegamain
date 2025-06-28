@@ -1,127 +1,108 @@
-import React, { useState, useEffect } from 'react'
-import { Crown, Check, CreditCard, Loader2 } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { stripeProducts, StripeProduct } from '../../stripe-config'
-import { useAuthStore } from '../../store/authStore'
-import { supabase } from '../../lib/supabase'
+import React, { useState, useEffect } from 'react';
+import { Crown, Check, CreditCard, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { stripeProducts } from '../../stripe-config';
+import { useAuthStore } from '../../store/authStore';
+import { createSubscriptionCheckout } from '../../lib/stripe';
+import { supabase } from '../../lib/supabase';
 
 interface UserSubscription {
-  subscription_status: string
-  price_id: string | null
-  current_period_end: number | null
-  cancel_at_period_end: boolean
+  subscription_status: string;
+  price_id: string | null;
+  current_period_end: number | null;
+  cancel_at_period_end: boolean;
 }
 
 export const ProductsPage: React.FC = () => {
-  const { user } = useAuthStore()
-  const [loading, setLoading] = useState(false)
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
-  const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null)
+  const { user, profile } = useAuthStore();
+  const [loading, setLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
 
   useEffect(() => {
     if (user) {
-      fetchUserSubscription()
+      fetchUserSubscription();
     }
-  }, [user])
+  }, [user]);
 
   const fetchUserSubscription = async () => {
     try {
       const { data, error } = await supabase
         .from('stripe_user_subscriptions')
         .select('*')
-        .maybeSingle()
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching subscription:', error)
-        return
+        console.error('Error fetching subscription:', error);
+        return;
       }
 
-      setUserSubscription(data)
+      setUserSubscription(data);
     } catch (error) {
-      console.error('Error fetching subscription:', error)
+      console.error('Error fetching subscription:', error);
     }
-  }
+  };
 
-  const handleCheckout = async (product: StripeProduct) => {
+  const handleCheckout = async (product: any) => {
     if (!user) {
-      alert('Please sign in to purchase')
-      return
+      alert('Please sign in to purchase');
+      return;
     }
 
-    setCheckoutLoading(product.priceId)
+    setCheckoutLoading(product.priceId);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { url } = await createSubscriptionCheckout(product.id);
       
-      if (!session) {
-        throw new Error('No active session')
-      }
-
-      const response = await supabase.functions.invoke('stripe-checkout', {
-        body: {
-          price_id: product.priceId,
-          mode: product.mode,
-          success_url: `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${window.location.origin}/payment/cancel`,
-        },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      })
-
-      if (response.error) {
-        throw new Error(response.error.message || 'Failed to create checkout session')
-      }
-
-      if (response.data?.url) {
-        window.location.href = response.data.url
+      if (url) {
+        window.location.href = url;
       } else {
-        throw new Error('No checkout URL received')
+        throw new Error('Failed to create checkout session');
       }
     } catch (error: any) {
-      console.error('Checkout error:', error)
-      alert(error.message || 'Failed to start checkout process')
+      console.error('Checkout error:', error);
+      alert(error.message || 'Failed to start checkout process');
     } finally {
-      setCheckoutLoading(null)
+      setCheckoutLoading(null);
     }
-  }
+  };
 
   const isCurrentPlan = (priceId: string) => {
     return userSubscription?.price_id === priceId && 
-           ['active', 'trialing'].includes(userSubscription.subscription_status)
-  }
+           ['active', 'trialing'].includes(userSubscription.subscription_status);
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const getSubscriptionStatus = () => {
-    if (!userSubscription) return null
+    if (!userSubscription) return null;
 
-    const status = userSubscription.subscription_status
+    const status = userSubscription.subscription_status;
     const endDate = userSubscription.current_period_end 
       ? new Date(userSubscription.current_period_end * 1000).toLocaleDateString()
-      : null
+      : null;
 
     switch (status) {
       case 'active':
         return userSubscription.cancel_at_period_end 
           ? `Cancels on ${endDate}`
-          : `Renews on ${endDate}`
+          : `Renews on ${endDate}`;
       case 'trialing':
-        return `Trial ends on ${endDate}`
+        return `Trial ends on ${endDate}`;
       case 'past_due':
-        return 'Payment failed - please update payment method'
+        return 'Payment failed - please update payment method';
       case 'canceled':
-        return 'Subscription canceled'
+        return 'Subscription canceled';
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -154,8 +135,8 @@ export const ProductsPage: React.FC = () => {
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {stripeProducts.map((product) => {
-            const isCurrent = isCurrentPlan(product.priceId)
-            const isLoading = checkoutLoading === product.priceId
+            const isCurrent = isCurrentPlan(product.priceId);
+            const isLoading = checkoutLoading === product.priceId;
 
             return (
               <Card 
@@ -210,7 +191,7 @@ export const ProductsPage: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
-            )
+            );
           })}
         </div>
 
@@ -277,5 +258,5 @@ export const ProductsPage: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,54 +1,54 @@
-import React, { useEffect, useState } from 'react'
-import { CheckCircle, Crown, ArrowRight, Loader2 } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { Card, CardContent } from '../ui/Card'
-import { useAuthStore } from '../../store/authStore'
-import { supabase } from '../../lib/supabase'
-import { getProductByPriceId } from '../../stripe-config'
+import React, { useEffect, useState } from 'react';
+import { CheckCircle, Crown, ArrowRight, Loader2 } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Card, CardContent } from '../ui/Card';
+import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../lib/supabase';
+import { getProductByPriceId } from '../../stripe-config';
 
 export const PaymentSuccess: React.FC = () => {
-  const { user } = useAuthStore()
-  const [loading, setLoading] = useState(true)
-  const [subscription, setSubscription] = useState<any>(null)
-  const [product, setProduct] = useState<any>(null)
+  const { user } = useAuthStore();
+  const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [product, setProduct] = useState<any>(null);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const sessionId = urlParams.get('session_id')
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
 
     if (sessionId) {
       // Wait a moment for webhook processing
       setTimeout(() => {
-        fetchSubscriptionData()
-      }, 3000)
+        fetchSubscriptionData();
+      }, 3000);
     } else {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   const fetchSubscriptionData = async () => {
     try {
       const { data, error } = await supabase
         .from('stripe_user_subscriptions')
         .select('*')
-        .maybeSingle()
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching subscription:', error)
-        return
+        console.error('Error fetching subscription:', error);
+        return;
       }
 
       if (data && data.price_id) {
-        setSubscription(data)
-        const productInfo = getProductByPriceId(data.price_id)
-        setProduct(productInfo)
+        setSubscription(data);
+        const productInfo = getProductByPriceId(data.price_id);
+        setProduct(productInfo);
       }
     } catch (error) {
-      console.error('Error fetching subscription data:', error)
+      console.error('Error fetching subscription data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -65,7 +65,7 @@ export const PaymentSuccess: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -141,5 +141,5 @@ export const PaymentSuccess: React.FC = () => {
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};

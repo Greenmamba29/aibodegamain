@@ -1,69 +1,69 @@
-import React, { useState, useEffect } from 'react'
-import { Download, Calendar, DollarSign, ExternalLink, Package, Search, Filter } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
-import { getUserPurchases } from '../../lib/stripe'
+import React, { useState, useEffect } from 'react';
+import { Download, Calendar, DollarSign, ExternalLink, Package, Search, Filter } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { getUserPurchases } from '../../lib/stripe';
 
 interface Purchase {
-  id: string
-  amount: number
-  currency: string
-  status: string
-  created_at: string
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  created_at: string;
   app: {
-    id: string
-    title: string
-    logo_url?: string
-    app_url?: string
+    id: string;
+    title: string;
+    logo_url?: string;
+    app_url?: string;
     developer: {
-      full_name: string
-    }
-  }
+      full_name: string;
+    };
+  };
 }
 
 export const PurchaseHistoryPage: React.FC = () => {
-  const [purchases, setPurchases] = useState<Purchase[]>([])
-  const [filteredPurchases, setFilteredPurchases] = useState<Purchase[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [filteredPurchases, setFilteredPurchases] = useState<Purchase[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
-    loadPurchases()
-  }, [])
+    loadPurchases();
+  }, []);
 
   useEffect(() => {
-    filterPurchases()
-  }, [purchases, searchQuery, statusFilter])
+    filterPurchases();
+  }, [purchases, searchQuery, statusFilter]);
 
   const loadPurchases = async () => {
     try {
-      const data = await getUserPurchases()
-      setPurchases(data)
+      const data = await getUserPurchases();
+      setPurchases(data);
     } catch (error) {
-      console.error('Error loading purchases:', error)
+      console.error('Error loading purchases:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const filterPurchases = () => {
-    let filtered = purchases
+    let filtered = purchases;
 
     if (searchQuery) {
       filtered = filtered.filter(purchase =>
         purchase.app.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         purchase.app.developer.full_name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      );
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(purchase => purchase.status === statusFilter)
+      filtered = filtered.filter(purchase => purchase.status === statusFilter);
     }
 
-    setFilteredPurchases(filtered)
-  }
+    setFilteredPurchases(filtered);
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -72,19 +72,19 @@ export const PurchaseHistoryPage: React.FC = () => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
-    })
-  }
+    });
+  };
 
   const formatAmount = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency.toUpperCase()
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   const getTotalSpent = () => {
-    return purchases.reduce((total, purchase) => total + purchase.amount, 0)
-  }
+    return purchases.reduce((total, purchase) => total + purchase.amount, 0);
+  };
 
   if (loading) {
     return (
@@ -99,7 +99,7 @@ export const PurchaseHistoryPage: React.FC = () => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -148,9 +148,9 @@ export const PurchaseHistoryPage: React.FC = () => {
                   <p className="text-sm font-medium text-gray-600">This Month</p>
                   <p className="text-3xl font-bold text-gray-900">
                     {purchases.filter(p => {
-                      const date = new Date(p.created_at)
-                      const now = new Date()
-                      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+                      const date = new Date(p.created_at);
+                      const now = new Date();
+                      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
                     }).length}
                   </p>
                 </div>
@@ -269,7 +269,7 @@ export const PurchaseHistoryPage: React.FC = () => {
                             icon={Download}
                             onClick={() => {
                               // Handle download logic
-                              console.log('Download app:', purchase.app.id)
+                              console.log('Download app:', purchase.app.id);
                             }}
                           >
                             Download
@@ -293,5 +293,5 @@ export const PurchaseHistoryPage: React.FC = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import { Star, Download, ExternalLink, Github, Globe, ShoppingCart, Filter, X } from 'lucide-react'
-import { Card, CardContent } from '../ui/Card'
-import { Button } from '../ui/Button'
-import { FollowButton } from '../ui/FollowButton'
-import { PricingBadge } from '../ui/PricingBadge'
-import { PaymentModal } from '../payment/PaymentModal'
-import { AllAppsModal } from './AllAppsModal'
-import { ContentCardModal } from './ContentCardModal'
-import { useAppStore } from '../../store/appStore'
-import { useAuthStore } from '../../store/authStore'
-import { usePaymentStore } from '../../store/paymentStore'
+import React, { useEffect, useState } from 'react';
+import { Star, Download, ExternalLink, Github, Globe, ShoppingCart, Filter, X } from 'lucide-react';
+import { Card, CardContent } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { FollowButton } from '../ui/FollowButton';
+import { PricingBadge } from '../ui/PricingBadge';
+import { PaymentModal } from '../payment/PaymentModal';
+import { AllAppsModal } from './AllAppsModal';
+import { ContentCardModal } from './ContentCardModal';
+import { useAppStore } from '../../store/appStore';
+import { useAuthStore } from '../../store/authStore';
+import { usePaymentStore } from '../../store/paymentStore';
 
 interface FeaturedAppsProps {
-  selectedCategoryId?: string | null
-  selectedCategoryName?: string | null
-  onClearFilter?: () => void
+  selectedCategoryId?: string | null;
+  selectedCategoryName?: string | null;
+  onClearFilter?: () => void;
 }
 
 export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
@@ -22,77 +22,77 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
   selectedCategoryName,
   onClearFilter
 }) => {
-  const { featuredApps, apps, loading, fetchFeaturedApps, fetchApps } = useAppStore()
-  const { user } = useAuthStore()
-  const { purchasedApps, fetchPurchases } = usePaymentStore()
-  const [selectedApp, setSelectedApp] = useState<any>(null)
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
-  const [isAllAppsModalOpen, setIsAllAppsModalOpen] = useState(false)
-  const [isContentCardModalOpen, setIsContentCardModalOpen] = useState(false)
+  const { featuredApps, apps, loading, fetchFeaturedApps, fetchApps } = useAppStore();
+  const { user } = useAuthStore();
+  const { purchasedApps, fetchPurchases } = usePaymentStore();
+  const [selectedApp, setSelectedApp] = useState<any>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isAllAppsModalOpen, setIsAllAppsModalOpen] = useState(false);
+  const [isContentCardModalOpen, setIsContentCardModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedCategoryId) {
       // If a category is selected, show filtered apps instead of featured apps
-      fetchApps()
+      fetchApps();
     } else {
-      fetchFeaturedApps()
+      fetchFeaturedApps();
     }
-  }, [selectedCategoryId, fetchFeaturedApps, fetchApps])
+  }, [selectedCategoryId, fetchFeaturedApps, fetchApps]);
 
   useEffect(() => {
     if (user) {
-      fetchPurchases()
+      fetchPurchases();
     }
-  }, [user, fetchPurchases])
+  }, [user, fetchPurchases]);
 
   const handleAppAction = (app: any) => {
     if (app.pricing_type === 'free' || purchasedApps.has(app.id)) {
       // Open app directly
-      window.open(app.app_url, '_blank')
+      window.open(app.app_url, '_blank');
     } else {
       // Show payment modal
-      setSelectedApp(app)
-      setIsPaymentModalOpen(true)
+      setSelectedApp(app);
+      setIsPaymentModalOpen(true);
     }
-  }
+  };
 
   const handleAppClick = (app: any) => {
-    setSelectedApp(app)
-    setIsContentCardModalOpen(true)
-  }
+    setSelectedApp(app);
+    setIsContentCardModalOpen(true);
+  };
 
   const handlePurchaseSuccess = () => {
     if (selectedApp) {
       // Refresh purchases to update the UI
-      fetchPurchases()
+      fetchPurchases();
       // Open app after purchase
       setTimeout(() => {
-        window.open(selectedApp.app_url, '_blank')
-      }, 1000)
+        window.open(selectedApp.app_url, '_blank');
+      }, 1000);
     }
-  }
+  };
 
   const getActionButtonText = (app: any) => {
-    if (app.pricing_type === 'free') return 'Try Free'
-    if (purchasedApps.has(app.id)) return 'Open App'
-    return `Buy $${app.price}`
-  }
+    if (app.pricing_type === 'free') return 'Try Free';
+    if (purchasedApps.has(app.id)) return 'Open App';
+    return `Buy $${app.price}`;
+  };
 
   const getActionButtonIcon = (app: any) => {
     if (app.pricing_type === 'free' || purchasedApps.has(app.id)) {
-      return ExternalLink
+      return ExternalLink;
     }
-    return ShoppingCart
-  }
+    return ShoppingCart;
+  };
 
   // Determine which apps to show
-  const appsToShow = selectedCategoryId ? apps : featuredApps
+  const appsToShow = selectedCategoryId ? apps : featuredApps;
   const sectionTitle = selectedCategoryId 
     ? `${selectedCategoryName} Apps` 
-    : user ? 'Discover AI Apps' : 'Featured Apps'
+    : user ? 'Discover AI Apps' : 'Featured Apps';
   const sectionDescription = selectedCategoryId
     ? `Explore ${selectedCategoryName?.toLowerCase()} applications`
-    : user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves'
+    : user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves';
 
   if (loading) {
     return (
@@ -112,7 +112,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
           </div>
         </div>
       </section>
-    )
+    );
   }
 
   return (
@@ -157,8 +157,8 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {appsToShow.map((app) => {
-              const isPurchased = purchasedApps.has(app.id)
-              const ActionIcon = getActionButtonIcon(app)
+              const isPurchased = purchasedApps.has(app.id);
+              const ActionIcon = getActionButtonIcon(app);
               
               return (
                 <Card 
@@ -312,7 +312,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
           
@@ -357,13 +357,13 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
         <PaymentModal
           isOpen={isPaymentModalOpen}
           onClose={() => {
-            setIsPaymentModalOpen(false)
-            setSelectedApp(null)
+            setIsPaymentModalOpen(false);
+            setSelectedApp(null);
           }}
           app={selectedApp}
           onSuccess={handlePurchaseSuccess}
         />
       )}
     </>
-  )
-}
+  );
+};

@@ -1,76 +1,81 @@
-import React, { useState, useEffect } from 'react'
-import { X, Crown, Check, CreditCard } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { Card, CardContent } from '../ui/Card'
-import { useAuthStore } from '../../store/authStore'
-import { subscriptionPlans, createSubscriptionCheckout, getUserSubscription, cancelSubscription } from '../../lib/stripe'
+import React, { useState, useEffect } from 'react';
+import { X, Crown, Check, CreditCard } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Card, CardContent } from '../ui/Card';
+import { useAuthStore } from '../../store/authStore';
+import { stripeProducts } from '../../stripe-config';
+import { createSubscriptionCheckout, getUserSubscription, cancelSubscription } from '../../lib/stripe';
 
 interface SubscriptionModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const [loading, setLoading] = useState(false)
-  const [currentSubscription, setCurrentSubscription] = useState<any>(null)
-  const [selectedPlan, setSelectedPlan] = useState<string>('pro')
-  const { user, profile, updateProfile } = useAuthStore()
+  const [loading, setLoading] = useState(false);
+  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
+  const [selectedPlan, setSelectedPlan] = useState<string>('pro');
+  const { user, profile, updateProfile } = useAuthStore();
 
   useEffect(() => {
     if (isOpen) {
-      loadCurrentSubscription()
+      loadCurrentSubscription();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const loadCurrentSubscription = async () => {
     try {
-      const subscription = await getUserSubscription()
-      setCurrentSubscription(subscription)
+      const subscription = await getUserSubscription();
+      setCurrentSubscription(subscription);
     } catch (error) {
-      console.error('Error loading subscription:', error)
+      console.error('Error loading subscription:', error);
     }
-  }
+  };
 
   const handleSubscribe = async (planId: string) => {
-    if (!user) return
+    if (!user) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const { url } = await createSubscriptionCheckout(planId)
-      window.location.href = url
+      const { url } = await createSubscriptionCheckout(planId);
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('Failed to create checkout session');
+      }
     } catch (error) {
-      console.error('Error creating checkout:', error)
-      alert('Failed to start checkout. Please try again.')
+      console.error('Error creating checkout:', error);
+      alert('Failed to start checkout. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCancelSubscription = async () => {
-    if (!currentSubscription) return
+    if (!currentSubscription) return;
 
     if (!window.confirm('Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your billing period.')) {
-      return
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      await cancelSubscription(currentSubscription.stripe_subscription_id)
-      await updateProfile({ subscription_tier: 'free' })
-      setCurrentSubscription(null)
-      alert('Subscription canceled successfully.')
+      await cancelSubscription(currentSubscription.stripe_subscription_id);
+      await updateProfile({ subscription_tier: 'free' });
+      setCurrentSubscription(null);
+      alert('Subscription canceled successfully.');
     } catch (error) {
-      console.error('Error canceling subscription:', error)
-      alert('Failed to cancel subscription. Please try again.')
+      console.error('Error canceling subscription:', error);
+      alert('Failed to cancel subscription. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -111,9 +116,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {subscriptionPlans.map((plan) => {
-              const isCurrentPlan = profile?.subscription_tier === plan.id
-              const isPopular = plan.id === 'pro'
+            {stripeProducts.map((plan) => {
+              const isCurrentPlan = profile?.subscription_tier === plan.id;
+              const isPopular = plan.id === 'prod_pro';
 
               return (
                 <Card 
@@ -133,11 +138,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                       <div className="mb-4">
                         <span className="text-3xl font-bold text-gray-900">${plan.price}</span>
-                        {plan.price > 0 && <span className="text-gray-600">/{plan.interval}</span>}
+                        {plan.price && plan.mode === 'subscription' && <span className="text-gray-600">/month</span>}
                       </div>
                       
                       <ul className="space-y-3 mb-6 text-left">
-                        {plan.features.map((feature, index) => (
+                        {plan.description.split('. ').map((feature, index) => (
                           <li key={index} className="flex items-center space-x-2">
                             <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
                             <span className="text-sm text-gray-600">{feature}</span>
@@ -149,7 +154,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                         <Button variant="outline" className="w-full" disabled>
                           Current Plan
                         </Button>
-                      ) : plan.id === 'free' ? (
+                      ) : plan.id === 'prod_basic' ? (
                         <Button 
                           variant="outline" 
                           className="w-full"
@@ -171,7 +176,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
 
@@ -182,5 +187,5 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

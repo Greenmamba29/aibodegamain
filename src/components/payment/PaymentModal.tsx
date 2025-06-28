@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import { X, CreditCard, Lock, Check } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
-import { useAuthStore } from '../../store/authStore'
-import { createAppPaymentIntent, purchaseApp, hasUserPurchasedApp } from '../../lib/stripe'
-import { App } from '../../lib/supabase'
+import React, { useState, useEffect } from 'react';
+import { X, CreditCard, Lock, Check } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { useAuthStore } from '../../store/authStore';
+import { createCheckoutSession, hasUserPurchasedApp } from '../../lib/stripe';
+import { App } from '../../lib/supabase';
 
 interface PaymentModalProps {
-  isOpen: boolean
-  onClose: () => void
-  app: App
-  onSuccess?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  app: App;
+  onSuccess?: () => void;
 }
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({
@@ -19,91 +19,52 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   app,
   onSuccess
 }) => {
-  const [loading, setLoading] = useState(false)
-  const [processing, setProcessing] = useState(false)
-  const [error, setError] = useState('')
-  const [hasPurchased, setHasPurchased] = useState(false)
-  const [cardDetails, setCardDetails] = useState({
-    number: '',
-    expiry: '',
-    cvc: '',
-    name: ''
-  })
-  const { user } = useAuthStore()
+  const [loading, setLoading] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState('');
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     if (isOpen && app.id) {
-      checkPurchaseStatus()
+      checkPurchaseStatus();
     }
-  }, [isOpen, app.id])
+  }, [isOpen, app.id]);
 
   const checkPurchaseStatus = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { hasPurchased } = await hasUserPurchasedApp(app.id)
-      setHasPurchased(hasPurchased)
+      const { hasPurchased } = await hasUserPurchasedApp(app.id);
+      setHasPurchased(hasPurchased);
     } catch (error) {
-      console.error('Error checking purchase status:', error)
+      console.error('Error checking purchase status:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
+  const handlePayment = async () => {
+    if (!user) return;
 
-    setProcessing(true)
-    setError('')
+    setProcessing(true);
+    setError('');
 
     try {
-      // In a real implementation, you would use Stripe Elements
-      // For demo purposes, we'll simulate the payment process
+      // Create checkout session and redirect to Stripe
+      const { url } = await createCheckoutSession(app);
       
-      // Create payment intent
-      const paymentIntent = await createAppPaymentIntent(app.id, app.price)
-      
-      // Process payment (simplified for demo)
-      await purchaseApp(app.id, 'pm_demo_payment_method')
-      
-      // Success
-      setHasPurchased(true)
-      onSuccess?.()
-      
-      setTimeout(() => {
-        onClose()
-      }, 2000)
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('Failed to create checkout session');
+      }
     } catch (err: any) {
-      setError(err.message || 'Payment failed. Please try again.')
-    } finally {
-      setProcessing(false)
+      setError(err.message || 'Payment failed. Please try again.');
+      setProcessing(false);
     }
-  }
+  };
 
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
-    const matches = v.match(/\d{4,16}/g)
-    const match = matches && matches[0] || ''
-    const parts = []
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4))
-    }
-    if (parts.length) {
-      return parts.join(' ')
-    } else {
-      return v
-    }
-  }
-
-  const formatExpiry = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
-    if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4)
-    }
-    return v
-  }
-
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -155,65 +116,27 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
               </div>
 
-              {/* Payment Form */}
-              <form onSubmit={handlePayment} className="space-y-4">
-                <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
-                  <Lock className="w-4 h-4" />
-                  <span>Secured by Stripe</span>
+              <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
+                <Lock className="w-4 h-4" />
+                <span>Secured by Stripe</span>
+              </div>
+
+              {error && (
+                <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200 mb-4">
+                  {error}
                 </div>
+              )}
 
-                <Input
-                  label="Cardholder Name"
-                  value={cardDetails.name}
-                  onChange={(e) => setCardDetails(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="John Doe"
-                  required
-                />
-
-                <Input
-                  label="Card Number"
-                  value={cardDetails.number}
-                  onChange={(e) => setCardDetails(prev => ({ ...prev, number: formatCardNumber(e.target.value) }))}
-                  placeholder="1234 5678 9012 3456"
-                  maxLength={19}
-                  required
-                />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    label="Expiry Date"
-                    value={cardDetails.expiry}
-                    onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: formatExpiry(e.target.value) }))}
-                    placeholder="MM/YY"
-                    maxLength={5}
-                    required
-                  />
-                  <Input
-                    label="CVC"
-                    value={cardDetails.cvc}
-                    onChange={(e) => setCardDetails(prev => ({ ...prev, cvc: e.target.value.replace(/\D/g, '') }))}
-                    placeholder="123"
-                    maxLength={4}
-                    required
-                  />
-                </div>
-
-                {error && (
-                  <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
-                    {error}
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-full"
-                  loading={processing}
-                  icon={CreditCard}
-                >
-                  {processing ? 'Processing...' : `Pay $${app.price}`}
-                </Button>
-              </form>
+              <Button
+                type="button"
+                variant="primary"
+                className="w-full"
+                loading={processing}
+                onClick={handlePayment}
+                icon={CreditCard}
+              >
+                {processing ? 'Processing...' : `Pay $${app.price}`}
+              </Button>
 
               <div className="mt-6 text-xs text-gray-500 text-center">
                 <p>By purchasing, you agree to our Terms of Service and Privacy Policy.</p>
@@ -224,5 +147,5 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
