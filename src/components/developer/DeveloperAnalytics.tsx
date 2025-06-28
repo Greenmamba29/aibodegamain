@@ -1,7 +1,8 @@
 import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 import { Card, CardContent, CardHeader } from '../ui/Card'
-import { TrendingUp, TrendingDown, Users, Download, Star, DollarSign } from 'lucide-react'
+import { Button } from '../ui/Button'
+import { TrendingUp, TrendingDown, Users, Download, Star, DollarSign, FileDown } from 'lucide-react'
 
 const downloadData = [
   { name: 'Jan', downloads: 400 },
@@ -29,7 +30,11 @@ const categoryData = [
   { name: 'Other', value: 5, color: '#EF4444' },
 ]
 
-export const DeveloperAnalytics: React.FC = () => {
+interface DeveloperAnalyticsProps {
+  onExportDownloads: () => void
+}
+
+export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExportDownloads }) => {
   return (
     <div className="space-y-8">
       {/* Key Metrics */}
@@ -64,10 +69,21 @@ export const DeveloperAnalytics: React.FC = () => {
                 <Download className="w-6 h-6 text-blue-600" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm">
-              <TrendingUp className="w-4 h-4 text-green-600 mr-1" />
-              <span className="text-green-600 font-medium">+8%</span>
-              <span className="text-gray-500 ml-1">vs last month</span>
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex items-center text-sm">
+                <TrendingUp className="w-4 h-4 text-green-600 mr-1" />
+                <span className="text-green-600 font-medium">+8%</span>
+                <span className="text-gray-500 ml-1">vs last month</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                icon={FileDown}
+                onClick={onExportDownloads}
+                className="text-xs"
+              >
+                Export CSV
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -116,7 +132,17 @@ export const DeveloperAnalytics: React.FC = () => {
         {/* Downloads Chart */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Downloads Over Time</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Downloads Over Time</h3>
+              <Button
+                variant="outline"
+                size="sm"
+                icon={FileDown}
+                onClick={onExportDownloads}
+              >
+                Export Data
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>

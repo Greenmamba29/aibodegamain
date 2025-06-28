@@ -9,21 +9,45 @@ interface DeveloperStats {
   revenue: number
 }
 
+interface AppDraft {
+  id: string
+  title: string
+  description: string
+  longDescription: string
+  categoryId: string
+  pricingType: 'free' | 'one_time' | 'subscription' | 'freemium'
+  price: number
+  appUrl: string
+  githubUrl: string
+  demoUrl: string
+  repositoryUrl: string
+  documentationUrl: string
+  tags: string[]
+  files: any
+  created_at: string
+  updated_at: string
+}
+
 interface DeveloperState {
   apps: App[]
+  drafts: AppDraft[]
   stats: DeveloperStats
   loading: boolean
   
   // Actions
   fetchDeveloperApps: () => Promise<void>
   fetchDeveloperStats: () => Promise<void>
+  fetchDrafts: () => Promise<void>
   submitApp: (appData: any, files: any[]) => Promise<any>
+  saveDraft: (appData: any, files: any) => Promise<void>
   updateApp: (appId: string, updates: Partial<App>) => Promise<void>
   deleteApp: (appId: string) => Promise<void>
+  deleteDraft: (draftId: string) => Promise<void>
 }
 
 export const useDeveloperStore = create<DeveloperState>((set, get) => ({
   apps: [],
+  drafts: [],
   stats: {
     totalApps: 0,
     totalDownloads: 0,
@@ -110,6 +134,62 @@ export const useDeveloperStore = create<DeveloperState>((set, get) => ({
       })
     } catch (error) {
       console.error('Error fetching developer stats:', error)
+    }
+  },
+
+  fetchDrafts: async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { data, error } = await supabase
+        .from('app_drafts')
+        .select('*')
+        .eq('developer_id', user.id)
+        .order('updated_at', { ascending: false })
+
+      if (error) throw error
+
+      set({ drafts: data || [] })
+    } catch (error) {
+      console.error('Error fetching drafts:', error)
+    }
+  },
+
+  saveDraft: async (appData: any, files: any) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const draftData = {
+        developer_id: user.id,
+        title: appData.title,
+        description: appData.description,
+        long_description: appData.longDescription,
+        category_id: appData.categoryId || null,
+        pricing_type: appData.pricingType,
+        price: appData.price || 0,
+        app_url: appData.appUrl,
+        github_url: appData.githubUrl || null,
+        demo_url: appData.demoUrl || null,
+        repository_url: appData.repositoryUrl || null,
+        documentation_url: appData.documentationUrl || null,
+        tags: appData.tags || [],
+        files: files,
+        updated_at: new Date().toISOString()
+      }
+
+      const { error } = await supabase
+        .from('app_drafts')
+        .upsert(draftData)
+
+      if (error) throw error
+
+      // Refresh drafts
+      get().fetchDrafts()
+    } catch (error) {
+      console.error('Error saving draft:', error)
+      throw error
     }
   },
 
@@ -205,6 +285,23 @@ export const useDeveloperStore = create<DeveloperState>((set, get) => ({
       get().fetchDeveloperApps()
     } catch (error) {
       console.error('Error deleting app:', error)
+      throw error
+    }
+  },
+
+  deleteDraft: async (draftId: string) => {
+    try {
+      const { error } = await supabase
+        .from('app_drafts')
+        .delete()
+        .eq('id', draftId)
+
+      if (error) throw error
+
+      // Refresh drafts
+      get().fetchDrafts()
+    } catch (error) {
+      console.error('Error deleting draft:', error)
       throw error
     }
   },
