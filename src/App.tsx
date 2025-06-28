@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { Toaster } from 'react-hot-toast'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { Header } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
 import { Hero } from './components/home/Hero'
@@ -15,9 +17,11 @@ import { MobilePage } from './components/mobile/MobilePage'
 import { ProfileView } from './components/developer/ProfileView'
 import { DeveloperSettings } from './components/developer/DeveloperSettings'
 import { AuthModal } from './components/auth/AuthModal'
+import { PageLoader } from './components/ui/LoadingSpinner'
 import { useAuthStore } from './store/authStore'
 import { useAppStore } from './store/appStore'
 import { realtimeManager } from './lib/realtime'
+import { updateMetaTags } from './utils/seo'
 
 type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings'
 
@@ -26,11 +30,31 @@ function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null)
+  const [isInitializing, setIsInitializing] = useState(true)
   const { initialize, user, profile } = useAuthStore()
   const { fetchApps } = useAppStore()
 
   useEffect(() => {
-    initialize()
+    const initializeApp = async () => {
+      try {
+        await initialize()
+        
+        // Update SEO meta tags
+        updateMetaTags({
+          title: 'Vibe Store - AI Indie App Marketplace',
+          description: 'Discover, share, and monetize cutting-edge AI applications. The premier marketplace for indie AI developers and enthusiasts.',
+          keywords: ['AI', 'marketplace', 'indie apps', 'artificial intelligence', 'developers'],
+          url: window.location.origin,
+          type: 'website'
+        })
+      } catch (error) {
+        console.error('Failed to initialize app:', error)
+      } finally {
+        setIsInitializing(false)
+      }
+    }
+
+    initializeApp()
   }, [initialize])
 
   // Handle URL routing
@@ -64,20 +88,24 @@ function App() {
   // Initialize real-time subscriptions when user logs in
   useEffect(() => {
     if (user) {
-      // Subscribe to notifications
-      realtimeManager.subscribeToNotifications(user.id)
-      
-      // Subscribe to follows
-      realtimeManager.subscribeToFollows(user.id)
-      
-      // Subscribe to app status changes for developers
-      if (profile?.role === 'developer') {
-        realtimeManager.subscribeToAppStatus(user.id)
-      }
+      try {
+        // Subscribe to notifications
+        realtimeManager.subscribeToNotifications(user.id)
+        
+        // Subscribe to follows
+        realtimeManager.subscribeToFollows(user.id)
+        
+        // Subscribe to app status changes for developers
+        if (profile?.role === 'developer') {
+          realtimeManager.subscribeToAppStatus(user.id)
+        }
 
-      // Request notification permission
-      if (Notification.permission === 'default') {
-        Notification.requestPermission()
+        // Request notification permission
+        if (Notification.permission === 'default') {
+          Notification.requestPermission()
+        }
+      } catch (error) {
+        console.error('Failed to initialize real-time subscriptions:', error)
       }
     } else {
       // Clean up subscriptions when user logs out
@@ -151,127 +179,174 @@ function App() {
     fetchApps() // Reset to show all apps
   }
 
+  // Show loading screen during initialization
+  if (isInitializing) {
+    return <PageLoader text="Initializing Vibe Store..." />
+  }
+
   // Show mobile page
   if (currentPage === 'mobile') {
-    return <MobilePage onNavigate={handleNavigation} />
+    return (
+      <ErrorBoundary>
+        <MobilePage onNavigate={handleNavigation} />
+      </ErrorBoundary>
+    )
   }
 
   // Show payment success page
   if (currentPage === 'payment-success') {
-    return <PaymentSuccess />
+    return (
+      <ErrorBoundary>
+        <PaymentSuccess />
+      </ErrorBoundary>
+    )
   }
 
   // Show payment cancel page
   if (currentPage === 'payment-cancel') {
-    return <PaymentCancel />
+    return (
+      <ErrorBoundary>
+        <PaymentCancel />
+      </ErrorBoundary>
+    )
   }
 
   // Show purchase history page
   if (currentPage === 'purchase-history') {
     return (
-      <div className="min-h-screen bg-white">
-        <Header 
-          onNavigate={handleNavigation}
-          onOpenProfile={handleOpenProfile}
-          onOpenPurchaseHistory={handleOpenPurchaseHistory}
-          onOpenSettings={handleOpenSettings}
-        />
-        <PurchaseHistoryPage />
-        <Footer />
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-        />
-      </div>
+      <ErrorBoundary>
+        <div className="min-h-screen bg-white">
+          <Header 
+            onNavigate={handleNavigation}
+            onOpenProfile={handleOpenProfile}
+            onOpenPurchaseHistory={handleOpenPurchaseHistory}
+            onOpenSettings={handleOpenSettings}
+          />
+          <PurchaseHistoryPage />
+          <Footer />
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
+        </div>
+      </ErrorBoundary>
     )
   }
 
   // Show profile page
   if (currentPage === 'profile') {
     return (
-      <div className="min-h-screen bg-white">
-        <Header 
-          onNavigate={handleNavigation}
-          onOpenProfile={handleOpenProfile}
-          onOpenPurchaseHistory={handleOpenPurchaseHistory}
-          onOpenSettings={handleOpenSettings}
-        />
-        <div className="py-8">
-          <ProfileView />
+      <ErrorBoundary>
+        <div className="min-h-screen bg-white">
+          <Header 
+            onNavigate={handleNavigation}
+            onOpenProfile={handleOpenProfile}
+            onOpenPurchaseHistory={handleOpenPurchaseHistory}
+            onOpenSettings={handleOpenSettings}
+          />
+          <div className="py-8">
+            <ProfileView />
+          </div>
+          <Footer />
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
         </div>
-        <Footer />
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-        />
-      </div>
+      </ErrorBoundary>
     )
   }
 
   // Show settings page
   if (currentPage === 'settings') {
     return (
-      <div className="min-h-screen bg-white">
-        <Header 
-          onNavigate={handleNavigation}
-          onOpenProfile={handleOpenProfile}
-          onOpenPurchaseHistory={handleOpenPurchaseHistory}
-          onOpenSettings={handleOpenSettings}
-        />
-        <div className="py-8">
-          <DeveloperSettings />
+      <ErrorBoundary>
+        <div className="min-h-screen bg-white">
+          <Header 
+            onNavigate={handleNavigation}
+            onOpenProfile={handleOpenProfile}
+            onOpenPurchaseHistory={handleOpenPurchaseHistory}
+            onOpenSettings={handleOpenSettings}
+          />
+          <div className="py-8">
+            <DeveloperSettings />
+          </div>
+          <Footer />
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
         </div>
-        <Footer />
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-        />
-      </div>
+      </ErrorBoundary>
     )
   }
 
   // Show products page
   if (currentPage === 'products') {
     return (
-      <div className="min-h-screen bg-white">
-        <Header 
-          onNavigate={handleNavigation}
-          onOpenProfile={handleOpenProfile}
-          onOpenPurchaseHistory={handleOpenPurchaseHistory}
-          onOpenSettings={handleOpenSettings}
-        />
-        <ProductsPage />
-        <Footer />
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-        />
-      </div>
+      <ErrorBoundary>
+        <div className="min-h-screen bg-white">
+          <Header 
+            onNavigate={handleNavigation}
+            onOpenProfile={handleOpenProfile}
+            onOpenPurchaseHistory={handleOpenPurchaseHistory}
+            onOpenSettings={handleOpenSettings}
+          />
+          <ProductsPage />
+          <Footer />
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
+        </div>
+      </ErrorBoundary>
     )
   }
 
   // Show admin dashboard for admins
   if (currentPage === 'admin' && profile?.role === 'admin') {
     return (
-      <div className="min-h-screen bg-white">
-        <Header 
-          onNavigate={handleNavigation}
-          onOpenProfile={handleOpenProfile}
-          onOpenPurchaseHistory={handleOpenPurchaseHistory}
-          onOpenSettings={handleOpenSettings}
-        />
-        <AdminDashboard />
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-        />
-      </div>
+      <ErrorBoundary>
+        <div className="min-h-screen bg-white">
+          <Header 
+            onNavigate={handleNavigation}
+            onOpenProfile={handleOpenProfile}
+            onOpenPurchaseHistory={handleOpenPurchaseHistory}
+            onOpenSettings={handleOpenSettings}
+          />
+          <AdminDashboard />
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
+        </div>
+      </ErrorBoundary>
     )
   }
 
   // Show developer portal if user is a developer and navigated there
   if (currentPage === 'developer') {
     return (
+      <ErrorBoundary>
+        <div className="min-h-screen bg-white">
+          <Header 
+            onNavigate={handleNavigation}
+            onOpenProfile={handleOpenProfile}
+            onOpenPurchaseHistory={handleOpenPurchaseHistory}
+            onOpenSettings={handleOpenSettings}
+          />
+          <DeveloperPortal />
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
+        </div>
+      </ErrorBoundary>
+    )
+  }
+
+  return (
+    <ErrorBoundary>
       <div className="min-h-screen bg-white">
         <Header 
           onNavigate={handleNavigation}
@@ -279,45 +354,55 @@ function App() {
           onOpenPurchaseHistory={handleOpenPurchaseHistory}
           onOpenSettings={handleOpenSettings}
         />
-        <DeveloperPortal />
+        
+        <main>
+          {/* Show Hero only for non-authenticated users or first-time visitors */}
+          {!user && <Hero />}
+          
+          {/* Always show app browsing sections for authenticated users */}
+          <FeaturedApps 
+            selectedCategoryId={selectedCategoryId}
+            selectedCategoryName={selectedCategoryName}
+            onClearFilter={handleClearCategoryFilter}
+          />
+          <Categories onCategorySelect={handleCategorySelect} />
+          <Collections />
+        </main>
+        
+        <Footer />
+        
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
         />
-      </div>
-    )
-  }
 
-  return (
-    <div className="min-h-screen bg-white">
-      <Header 
-        onNavigate={handleNavigation}
-        onOpenProfile={handleOpenProfile}
-        onOpenPurchaseHistory={handleOpenPurchaseHistory}
-        onOpenSettings={handleOpenSettings}
-      />
-      
-      <main>
-        {/* Show Hero only for non-authenticated users or first-time visitors */}
-        {!user && <Hero />}
-        
-        {/* Always show app browsing sections for authenticated users */}
-        <FeaturedApps 
-          selectedCategoryId={selectedCategoryId}
-          selectedCategoryName={selectedCategoryName}
-          onClearFilter={handleClearCategoryFilter}
+        {/* Toast notifications */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: '#10B981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 5000,
+              iconTheme: {
+                primary: '#EF4444',
+                secondary: '#fff',
+              },
+            },
+          }}
         />
-        <Categories onCategorySelect={handleCategorySelect} />
-        <Collections />
-      </main>
-      
-      <Footer />
-      
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
-    </div>
+      </div>
+    </ErrorBoundary>
   )
 }
 

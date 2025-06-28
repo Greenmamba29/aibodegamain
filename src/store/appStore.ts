@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { supabase, App, Category, Review, Collection } from '../lib/supabase'
+import { useErrorHandler } from '../hooks/useErrorHandler'
 
 interface AppState {
   apps: App[]
@@ -10,6 +11,7 @@ interface AppState {
   loading: boolean
   searchQuery: string
   selectedCategory: string | null
+  error: string | null
   
   // Actions
   fetchApps: () => Promise<void>
@@ -21,6 +23,7 @@ interface AppState {
   filterByCategory: (categoryId: string | null) => Promise<void>
   setSearchQuery: (query: string) => void
   setSelectedCategory: (categoryId: string | null) => void
+  clearError: () => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -32,9 +35,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   loading: false,
   searchQuery: '',
   selectedCategory: null,
+  error: null,
 
   fetchApps: async () => {
-    set({ loading: true })
+    set({ loading: true, error: null })
     
     try {
       const { data, error } = await supabase
@@ -49,12 +53,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (error) throw error
 
-      set({ apps: data || [] })
+      set({ apps: data || [], loading: false })
     } catch (error) {
       console.error('Error fetching apps:', error)
-      set({ apps: [] })
-    } finally {
-      set({ loading: false })
+      set({ 
+        apps: [], 
+        loading: false, 
+        error: error instanceof Error ? error.message : 'Failed to fetch apps'
+      })
     }
   },
 
@@ -70,12 +76,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ categories: data || [] })
     } catch (error) {
       console.error('Error fetching categories:', error)
-      set({ categories: [] })
+      set({ 
+        categories: [],
+        error: error instanceof Error ? error.message : 'Failed to fetch categories'
+      })
     }
   },
 
   fetchFeaturedApps: async () => {
-    set({ loading: true })
+    set({ loading: true, error: null })
     
     try {
       const { data, error } = await supabase
@@ -92,12 +101,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (error) throw error
 
-      set({ featuredApps: data || [] })
+      set({ featuredApps: data || [], loading: false })
     } catch (error) {
       console.error('Error fetching featured apps:', error)
-      set({ featuredApps: [] })
-    } finally {
-      set({ loading: false })
+      set({ 
+        featuredApps: [], 
+        loading: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch featured apps'
+      })
     }
   },
 
@@ -131,12 +142,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ collections })
     } catch (error) {
       console.error('Error fetching collections:', error)
-      set({ collections: [] })
+      set({ 
+        collections: [],
+        error: error instanceof Error ? error.message : 'Failed to fetch collections'
+      })
     }
   },
 
   fetchAppById: async (id: string) => {
-    set({ loading: true })
+    set({ loading: true, error: null })
     
     try {
       const { data, error } = await supabase
@@ -152,17 +166,19 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (error) throw error
 
-      set({ selectedApp: data })
+      set({ selectedApp: data, loading: false })
     } catch (error) {
       console.error('Error fetching app:', error)
-      set({ selectedApp: null })
-    } finally {
-      set({ loading: false })
+      set({ 
+        selectedApp: null, 
+        loading: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch app'
+      })
     }
   },
 
   searchApps: async (query: string) => {
-    set({ loading: true, searchQuery: query })
+    set({ loading: true, searchQuery: query, error: null })
     
     try {
       let queryBuilder = supabase
@@ -174,7 +190,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         `)
         .eq('status', 'approved')
 
-      if (query) {
+      if (query.trim()) {
         queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,tags.cs.{${query}}`)
       }
 
@@ -188,17 +204,19 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (error) throw error
 
-      set({ apps: data || [] })
+      set({ apps: data || [], loading: false })
     } catch (error) {
       console.error('Error searching apps:', error)
-      set({ apps: [] })
-    } finally {
-      set({ loading: false })
+      set({ 
+        apps: [], 
+        loading: false,
+        error: error instanceof Error ? error.message : 'Failed to search apps'
+      })
     }
   },
 
   filterByCategory: async (categoryId: string | null) => {
-    set({ loading: true, selectedCategory: categoryId })
+    set({ loading: true, selectedCategory: categoryId, error: null })
     
     try {
       let queryBuilder = supabase
@@ -214,7 +232,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         queryBuilder = queryBuilder.eq('category_id', categoryId)
       }
 
-      if (get().searchQuery) {
+      if (get().searchQuery.trim()) {
         queryBuilder = queryBuilder.or(`title.ilike.%${get().searchQuery}%,description.ilike.%${get().searchQuery}%,tags.cs.{${get().searchQuery}}`)
       }
 
@@ -224,12 +242,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (error) throw error
 
-      set({ apps: data || [] })
+      set({ apps: data || [], loading: false })
     } catch (error) {
       console.error('Error filtering apps:', error)
-      set({ apps: [] })
-    } finally {
-      set({ loading: false })
+      set({ 
+        apps: [], 
+        loading: false,
+        error: error instanceof Error ? error.message : 'Failed to filter apps'
+      })
     }
   },
 
@@ -239,5 +259,9 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setSelectedCategory: (categoryId: string | null) => {
     set({ selectedCategory: categoryId })
+  },
+
+  clearError: () => {
+    set({ error: null })
   },
 }))
