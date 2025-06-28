@@ -151,7 +151,7 @@ export const uploadUserAvatar = async (file: File, userId: string): Promise<File
   return uploadFile(file, {
     bucket: 'user-avatars',
     folder: userId,
-    maxSize: 2 * 1024 * 1024, // 2MB
+    maxSize: 5 * 1024 * 1024, // 5MB (increased from 2MB)
     allowedTypes: ['image/jpeg', 'image/png', 'image/webp']
   })
 }
