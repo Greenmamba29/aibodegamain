@@ -4,16 +4,20 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+  console.error('Missing Supabase environment variables')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
+export const supabase = createClient(
+  supabaseUrl || '',
+  supabaseAnonKey || '',
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    }
   }
-})
+)
 
 // Types for our database
 export interface Profile {
@@ -160,9 +164,9 @@ export const signInWithProvider = async (provider: 'google' | 'github') => {
       }
     })
     return { data, error }
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error signing in with ${provider}:`, error)
-    return { data: null, error }
+    return { data: null, error: { message: error.message } }
   }
 }
 
@@ -174,9 +178,9 @@ export const followUser = async (userId: string) => {
       .insert({ following_id: userId })
       .select()
     return { data, error }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error following user:', error)
-    return { data: null, error }
+    return { data: null, error: { message: error.message } }
   }
 }
 
@@ -191,9 +195,9 @@ export const unfollowUser = async (userId: string) => {
       .eq('following_id', userId)
       .eq('follower_id', user.id)
     return { data, error }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error unfollowing user:', error)
-    return { data: null, error }
+    return { data: null, error: { message: error.message } }
   }
 }
 
@@ -210,9 +214,9 @@ export const checkIfFollowing = async (userId: string) => {
       .single()
     
     return { isFollowing: !!data, error }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error checking follow status:', error)
-    return { isFollowing: false, error }
+    return { isFollowing: false, error: { message: error.message } }
   }
 }
 
@@ -226,9 +230,9 @@ export const getUserFollowers = async (userId: string) => {
       `)
       .eq('following_id', userId)
     return { data, error }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting followers:', error)
-    return { data: null, error }
+    return { data: null, error: { message: error.message } }
   }
 }
 
@@ -242,8 +246,8 @@ export const getUserFollowing = async (userId: string) => {
       `)
       .eq('follower_id', userId)
     return { data, error }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting following:', error)
-    return { data: null, error }
+    return { data: null, error: { message: error.message } }
   }
 }

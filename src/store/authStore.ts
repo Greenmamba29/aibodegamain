@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signIn: async (email: string, password: string) => {
     try {
-      set({ error: null })
+      set({ error: null, loading: true })
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -32,12 +32,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error: any) {
       set({ error: error.message })
       throw error
+    } finally {
+      set({ loading: false })
     }
   },
 
   signUp: async (email: string, password: string, fullName: string) => {
     try {
-      set({ error: null })
+      set({ error: null, loading: true })
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -51,18 +53,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error: any) {
       set({ error: error.message })
       throw error
+    } finally {
+      set({ loading: false })
     }
   },
 
   signOut: async () => {
     try {
-      set({ error: null })
+      set({ error: null, loading: true })
       const { error } = await supabase.auth.signOut()
       if (error) throw error
       set({ user: null, profile: null })
     } catch (error: any) {
       set({ error: error.message })
       throw error
+    } finally {
+      set({ loading: false })
     }
   },
 
@@ -71,7 +77,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { user } = get()
       if (!user) throw new Error('No user logged in')
 
-      set({ error: null })
+      set({ error: null, loading: true })
       const { error } = await supabase
         .from('profiles')
         .update(updates)
@@ -94,6 +100,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error: any) {
       set({ error: error.message })
       throw error
+    } finally {
+      set({ loading: false })
     }
   },
 
@@ -120,6 +128,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         if (profileError && profileError.code !== 'PGRST116') {
           console.error('Profile fetch error:', profileError)
+          
+          // If profile doesn't exist, try to create it
+          if (profileError.code === 'PGRST116') {
+            try {
+              const { data: newProfile, error: createError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: session.user.id,
+                  email: session.user.email || '',
+                  full_name: session.user.user_metadata.full_name || '',
+                  avatar_url: session.user.user_metadata.avatar_url || '',
+                  role: 'consumer',
+                  subscription_tier: 'free',
+                  followers_count: 0,
+                  following_count: 0
+                })
+                .select()
+                .single()
+                
+              if (createError) {
+                console.error('Error creating profile:', createError)
+              } else if (newProfile) {
+                set({ profile: newProfile })
+              }
+            } catch (createError: any) {
+              console.error('Error creating profile:', createError)
+            }
+          }
         }
 
         set({ 
@@ -132,7 +168,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       // Listen for auth changes
-      supabase.auth.onAuthStateChange(async (event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
         try {
           if (event === 'SIGNED_IN' && session?.user) {
             // Wait a bit for profile creation trigger to complete
@@ -146,6 +182,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
             if (profileError && profileError.code !== 'PGRST116') {
               console.error('Profile fetch error after sign in:', profileError)
+              
+              // If profile doesn't exist, try to create it
+              if (profileError.code === 'PGRST116') {
+                try {
+                  const { data: newProfile, error: createError } = await supabase
+                    .from('profiles')
+                    .insert({
+                      id: session.user.id,
+                      email: session.user.email || '',
+                      full_name: session.user.user_metadata.full_name || '',
+                      avatar_url: session.user.user_metadata.avatar_url || '',
+                      role: 'consumer',
+                      subscription_tier: 'free',
+                      followers_count: 0,
+                      following_count: 0
+                    })
+                    .select()
+                    .single()
+                    
+                  if (createError) {
+                    console.error('Error creating profile:', createError)
+                  } else if (newProfile) {
+                    set({ profile: newProfile })
+                  }
+                } catch (createError: any) {
+                  console.error('Error creating profile:', createError)
+                }
+              }
             }
 
             set({ 
@@ -161,6 +225,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           set({ error: error.message })
         }
       })
+
+      // Return unsubscribe function
+      return () => {
+        subscription.unsubscribe()
+      }
     } catch (error: any) {
       console.error('Initialize error:', error)
       set({ loading: false, error: error.message })
