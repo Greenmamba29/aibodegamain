@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package } from 'lucide-react'
+import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { NotificationBell } from '../ui/NotificationBell'
@@ -8,7 +8,7 @@ import { useAuthStore } from '../../store/authStore'
 import { useAppStore } from '../../store/appStore'
 
 interface HeaderProps {
-  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel') => void
+  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile') => void
 }
 
 export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
@@ -54,6 +54,11 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
     setIsProfileOpen(false)
   }
 
+  const handleMobileView = () => {
+    if (onNavigate) onNavigate('mobile')
+    setIsProfileOpen(false)
+  }
+
   const handleBecomeDeveloper = async () => {
     try {
       await updateProfile({ role: 'developer' })
@@ -88,20 +93,23 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
 
   return (
     <>
-      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white/95 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <button 
               onClick={() => onNavigate?.('home')}
-              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">V</span>
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Vibe Store
-              </h1>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 bg-clip-text text-transparent">
+                  VIBE STORE
+                </h1>
+                <p className="text-xs text-gray-500 -mt-1">AI Indie App Marketplace</p>
+              </div>
             </button>
 
             {/* Search Bar */}
@@ -113,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   icon={Search}
-                  className="w-full"
+                  className="w-full bg-gray-50 border-gray-200 focus:bg-white"
                 />
               </form>
             </div>
@@ -122,6 +130,17 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
             <div className="flex items-center space-x-4">
               {user ? (
                 <>
+                  {/* Mobile View Button */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    icon={Smartphone}
+                    onClick={handleMobileView}
+                    className="hidden sm:flex"
+                  >
+                    Mobile View
+                  </Button>
+
                   {/* Subscription Badge */}
                   {profile?.subscription_tier !== 'free' && (
                     <div className="hidden sm:block">
@@ -138,6 +157,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                       size="sm" 
                       icon={Plus}
                       onClick={handleDeveloperPortal}
+                      className="hidden sm:flex"
                     >
                       Developer Portal
                     </Button>
@@ -149,6 +169,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                       size="sm" 
                       icon={Settings}
                       onClick={handleAdminDashboard}
+                      className="hidden sm:flex"
                     >
                       Admin
                     </Button>
@@ -158,17 +179,17 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                   <div className="relative">
                     <button
                       onClick={() => setIsProfileOpen(!isProfileOpen)}
-                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 transition-colors"
                     >
                       {profile?.avatar_url ? (
                         <img
                           src={profile.avatar_url}
                           alt="Profile"
-                          className="w-8 h-8 rounded-full object-cover"
+                          className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-200"
                         />
                       ) : (
-                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                          <User className="w-4 h-4 text-white" />
+                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center ring-2 ring-purple-200">
+                          <User className="w-5 h-5 text-white" />
                         </div>
                       )}
                       <div className="hidden sm:block text-left">
@@ -189,7 +210,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                     </button>
 
                     {isProfileOpen && (
-                      <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                      <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
                         <div className="px-4 py-3 border-b border-gray-100">
                           <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
                           <p className="text-xs text-gray-500">{profile?.email}</p>
@@ -281,6 +302,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                     variant="primary" 
                     size="sm"
                     onClick={() => openAuthModal('signup')}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
                     Sign Up
                   </Button>
@@ -320,7 +342,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                   </Button>
                   <Button 
                     variant="primary" 
-                    className="w-full justify-start"
+                    className="w-full justify-start bg-gradient-to-r from-purple-600 to-blue-600"
                     onClick={() => openAuthModal('signup')}
                   >
                     Sign Up
