@@ -5,6 +5,7 @@ import { Button } from '../ui/Button'
 import { FollowButton } from '../ui/FollowButton'
 import { PricingBadge } from '../ui/PricingBadge'
 import { PaymentModal } from '../payment/PaymentModal'
+import { AllAppsModal } from './AllAppsModal'
 import { useAppStore } from '../../store/appStore'
 import { useAuthStore } from '../../store/authStore'
 import { usePaymentStore } from '../../store/paymentStore'
@@ -15,6 +16,7 @@ export const FeaturedApps: React.FC = () => {
   const { purchasedApps, fetchPurchases } = usePaymentStore()
   const [selectedApp, setSelectedApp] = useState<any>(null)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const [isAllAppsModalOpen, setIsAllAppsModalOpen] = useState(false)
 
   useEffect(() => {
     fetchFeaturedApps()
@@ -244,12 +246,27 @@ export const FeaturedApps: React.FC = () => {
           </div>
           
           <div className="text-center mt-12">
-            <Button variant="outline" size="lg">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => setIsAllAppsModalOpen(true)}
+              className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 text-white border-none hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
+            >
               View All Apps
             </Button>
           </div>
         </div>
       </section>
+
+      {/* All Apps Modal */}
+      <AllAppsModal
+        isOpen={isAllAppsModalOpen}
+        onClose={() => setIsAllAppsModalOpen(false)}
+        onAppAction={handleAppAction}
+        purchasedApps={purchasedApps}
+        getActionButtonText={getActionButtonText}
+        getActionButtonIcon={getActionButtonIcon}
+      />
 
       {/* Payment Modal */}
       {selectedApp && (

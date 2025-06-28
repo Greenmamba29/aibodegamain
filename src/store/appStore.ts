@@ -36,79 +36,92 @@ export const useAppStore = create<AppState>((set, get) => ({
   fetchApps: async () => {
     set({ loading: true })
     
-    const { data, error } = await supabase
-      .from('apps')
-      .select(`
-        *,
-        developer:profiles(*),
-        category:categories(*)
-      `)
-      .eq('status', 'approved')
-      .order('created_at', { ascending: false })
+    try {
+      const { data, error } = await supabase
+        .from('apps')
+        .select(`
+          *,
+          developer:profiles(*),
+          category:categories(*)
+        `)
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching apps:', error)
-    } else {
+      if (error) throw error
+
       set({ apps: data || [] })
+    } catch (error) {
+      console.error('Error fetching apps:', error)
+      set({ apps: [] })
+    } finally {
+      set({ loading: false })
     }
-    
-    set({ loading: false })
   },
 
   fetchCategories: async () => {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .order('name')
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name')
 
-    if (error) {
-      console.error('Error fetching categories:', error)
-    } else {
+      if (error) throw error
+
       set({ categories: data || [] })
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      set({ categories: [] })
     }
   },
 
   fetchFeaturedApps: async () => {
-    const { data, error } = await supabase
-      .from('apps')
-      .select(`
-        *,
-        developer:profiles(*),
-        category:categories(*)
-      `)
-      .eq('status', 'approved')
-      .eq('featured', true)
-      .order('rating_average', { ascending: false })
-      .limit(6)
+    set({ loading: true })
+    
+    try {
+      const { data, error } = await supabase
+        .from('apps')
+        .select(`
+          *,
+          developer:profiles(*),
+          category:categories(*)
+        `)
+        .eq('status', 'approved')
+        .eq('featured', true)
+        .order('rating_average', { ascending: false })
+        .limit(6)
 
-    if (error) {
-      console.error('Error fetching featured apps:', error)
-    } else {
+      if (error) throw error
+
       set({ featuredApps: data || [] })
+    } catch (error) {
+      console.error('Error fetching featured apps:', error)
+      set({ featuredApps: [] })
+    } finally {
+      set({ loading: false })
     }
   },
 
   fetchCollections: async () => {
-    const { data, error } = await supabase
-      .from('collections')
-      .select(`
-        *,
-        curator:profiles(*),
-        collection_apps(
-          app:apps(
-            *,
-            developer:profiles(*),
-            category:categories(*)
+    try {
+      const { data, error } = await supabase
+        .from('collections')
+        .select(`
+          *,
+          curator:profiles(*),
+          collection_apps(
+            app:apps(
+              *,
+              developer:profiles(*),
+              category:categories(*)
+            )
           )
-        )
-      `)
-      .eq('is_public', true)
-      .eq('featured', true)
-      .order('created_at', { ascending: false })
+        `)
+        .eq('is_public', true)
+        .eq('featured', true)
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching collections:', error)
-    } else {
+      if (error) throw error
+
       // Transform the data to include apps array
       const collections = data?.map(collection => ({
         ...collection,
@@ -116,97 +129,108 @@ export const useAppStore = create<AppState>((set, get) => ({
       })) || []
       
       set({ collections })
+    } catch (error) {
+      console.error('Error fetching collections:', error)
+      set({ collections: [] })
     }
   },
 
   fetchAppById: async (id: string) => {
     set({ loading: true })
     
-    const { data, error } = await supabase
-      .from('apps')
-      .select(`
-        *,
-        developer:profiles(*),
-        category:categories(*)
-      `)
-      .eq('id', id)
-      .eq('status', 'approved')
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('apps')
+        .select(`
+          *,
+          developer:profiles(*),
+          category:categories(*)
+        `)
+        .eq('id', id)
+        .eq('status', 'approved')
+        .single()
 
-    if (error) {
+      if (error) throw error
+
+      set({ selectedApp: data })
+    } catch (error) {
       console.error('Error fetching app:', error)
       set({ selectedApp: null })
-    } else {
-      set({ selectedApp: data })
+    } finally {
+      set({ loading: false })
     }
-    
-    set({ loading: false })
   },
 
   searchApps: async (query: string) => {
     set({ loading: true, searchQuery: query })
     
-    let queryBuilder = supabase
-      .from('apps')
-      .select(`
-        *,
-        developer:profiles(*),
-        category:categories(*)
-      `)
-      .eq('status', 'approved')
+    try {
+      let queryBuilder = supabase
+        .from('apps')
+        .select(`
+          *,
+          developer:profiles(*),
+          category:categories(*)
+        `)
+        .eq('status', 'approved')
 
-    if (query) {
-      queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,tags.cs.{${query}}`)
-    }
+      if (query) {
+        queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,tags.cs.{${query}}`)
+      }
 
-    if (get().selectedCategory) {
-      queryBuilder = queryBuilder.eq('category_id', get().selectedCategory)
-    }
+      if (get().selectedCategory) {
+        queryBuilder = queryBuilder.eq('category_id', get().selectedCategory)
+      }
 
-    const { data, error } = await queryBuilder
-      .order('rating_average', { ascending: false })
-      .order('created_at', { ascending: false })
+      const { data, error } = await queryBuilder
+        .order('rating_average', { ascending: false })
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error searching apps:', error)
-    } else {
+      if (error) throw error
+
       set({ apps: data || [] })
+    } catch (error) {
+      console.error('Error searching apps:', error)
+      set({ apps: [] })
+    } finally {
+      set({ loading: false })
     }
-    
-    set({ loading: false })
   },
 
   filterByCategory: async (categoryId: string | null) => {
     set({ loading: true, selectedCategory: categoryId })
     
-    let queryBuilder = supabase
-      .from('apps')
-      .select(`
-        *,
-        developer:profiles(*),
-        category:categories(*)
-      `)
-      .eq('status', 'approved')
+    try {
+      let queryBuilder = supabase
+        .from('apps')
+        .select(`
+          *,
+          developer:profiles(*),
+          category:categories(*)
+        `)
+        .eq('status', 'approved')
 
-    if (categoryId) {
-      queryBuilder = queryBuilder.eq('category_id', categoryId)
-    }
+      if (categoryId) {
+        queryBuilder = queryBuilder.eq('category_id', categoryId)
+      }
 
-    if (get().searchQuery) {
-      queryBuilder = queryBuilder.or(`title.ilike.%${get().searchQuery}%,description.ilike.%${get().searchQuery}%,tags.cs.{${get().searchQuery}}`)
-    }
+      if (get().searchQuery) {
+        queryBuilder = queryBuilder.or(`title.ilike.%${get().searchQuery}%,description.ilike.%${get().searchQuery}%,tags.cs.{${get().searchQuery}}`)
+      }
 
-    const { data, error } = await queryBuilder
-      .order('rating_average', { ascending: false })
-      .order('created_at', { ascending: false })
+      const { data, error } = await queryBuilder
+        .order('rating_average', { ascending: false })
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error filtering apps:', error)
-    } else {
+      if (error) throw error
+
       set({ apps: data || [] })
+    } catch (error) {
+      console.error('Error filtering apps:', error)
+      set({ apps: [] })
+    } finally {
+      set({ loading: false })
     }
-    
-    set({ loading: false })
   },
 
   setSearchQuery: (query: string) => {
