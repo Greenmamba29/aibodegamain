@@ -4,6 +4,7 @@ import { Card, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { FollowButton } from '../ui/FollowButton';
+import { useTranslation } from '../../hooks/useTranslation';
 import { PricingBadge } from '../ui/PricingBadge';
 import { useAppStore } from '../../store/appStore';
 import { toast } from 'react-hot-toast';
@@ -30,6 +31,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
   initialCategoryName
 }) => {
   const { apps, categories, loading, fetchApps, fetchCategories, searchApps, filterByCategory } = useAppStore();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter || 'all');
   const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'rating'>('popular');
@@ -96,7 +98,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
       return initialCategoryName;
     }
     const category = categories.find(c => c.id === selectedCategory);
-    return category?.name || 'Unknown Category';
+    return category?.name || t('unknown_category');
   };
 
   const handleAppClick = (app: any) => {
@@ -118,11 +120,11 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">
-                {selectedCategory === 'all' ? 'All AI Apps' : `${getSelectedCategoryName()} Apps`}
+                {selectedCategory === 'all' ? t('all_ai_apps') : `${getSelectedCategoryName()} ${t('apps')}`}
               </h2>
               {selectedCategory !== 'all' && (
                 <p className="text-gray-600 mt-1">
-                  Explore {getSelectedCategoryName().toLowerCase()} applications
+                  {t('explore')} {getSelectedCategoryName().toLowerCase()} {t('applications')}
                 </p>
               )}
             </div>
@@ -138,7 +140,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <Input
-                placeholder="Search apps, developers, or categories..."
+                placeholder={t('search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 icon={Search}
@@ -151,7 +153,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                 onChange={(e) => handleCategoryChange(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                <option value="all">All Categories</option>
+                <option value="all">{t('all_categories')}</option>
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -164,9 +166,9 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                <option value="popular">Most Popular</option>
-                <option value="newest">Newest</option>
-                <option value="rating">Highest Rated</option>
+                <option value="popular">{t('most_popular')}</option>
+                <option value="newest">{t('newest')}</option>
+                <option value="rating">{t('highest_rated')}</option>
               </select>
             </div>
           </div>
@@ -203,11 +205,11 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
               <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
                 <Search className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Apps Found</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('no_apps_found')}</h3>
               <p className="text-gray-600">
                 {selectedCategory !== 'all' 
-                  ? `No apps found in ${getSelectedCategoryName()}. Try browsing other categories.`
-                  : 'Try adjusting your search or filter criteria'
+                  ? `${t('no_apps_in_category')} ${getSelectedCategoryName()}. ${t('try_other_categories')}`
+                  : t('adjust_search_criteria')
                 }
               </p>
               {selectedCategory !== 'all' && (
@@ -216,7 +218,7 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
                   onClick={() => handleCategoryChange('all')}
                   className="mt-4"
                 >
-                  Browse All Categories
+                  {t('browse_all_categories')}
                 </Button>
               )}
             </div>
@@ -371,11 +373,11 @@ export const AllAppsModal: React.FC<AllAppsModalProps> = ({
         <div className="p-6 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Showing {filteredApps.length} of {apps.length} apps
-              {selectedCategory !== 'all' && ` in ${getSelectedCategoryName()}`}
+              {t('showing')} {filteredApps.length} {t('of')} {apps.length} {t('apps')}
+              {selectedCategory !== 'all' && ` ${t('in')} ${getSelectedCategoryName()}`}
             </p>
             <Button variant="outline" onClick={onClose}>
-              Close
+              {t('close')}
             </Button>
           </div>
         </div>

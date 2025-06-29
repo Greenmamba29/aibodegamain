@@ -1,5 +1,6 @@
 import React from 'react'
 import { Star, Download, ExternalLink, Github, Globe, ShoppingCart, Heart, Share2 } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 import { Card, CardContent } from './Card'
 import { Button } from './Button'
 import { FollowButton } from './FollowButton'
@@ -27,10 +28,12 @@ export const AppCard: React.FC<AppCardProps> = ({
   variant = 'default',
   className = ''
 }) => {
+  const { t } = useTranslation();
+  
   const getActionButtonText = () => {
-    if (app.pricing_type === 'free') return 'Try Free'
-    if (isPurchased) return 'Open App'
-    return `Buy $${app.price}`
+    if (app.pricing_type === 'free') return t('try_free')
+    if (isPurchased) return t('open_app')
+    return `${t('buy')} $${app.price}`
   }
 
   const getActionButtonIcon = () => {
@@ -135,7 +138,7 @@ export const AppCard: React.FC<AppCardProps> = ({
                 </div>
               )}
               <span className="text-sm text-gray-600">
-                {app.developer?.full_name || 'Developer'}
+                {app.developer?.full_name || t('developer')}
               </span>
             </div>
             
@@ -211,7 +214,7 @@ export const AppCard: React.FC<AppCardProps> = ({
             )}
             <div>
               <p className="text-sm font-medium text-gray-900">
-                {app.developer?.full_name || 'Developer'}
+                {app.developer?.full_name || t('developer')}
               </p>
               <p className="text-xs text-gray-500">
                 {app.developer?.followers_count || 0} followers

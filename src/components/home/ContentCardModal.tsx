@@ -4,6 +4,7 @@ import { Card, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { FollowButton } from '../ui/FollowButton';
+import { useTranslation } from '../../hooks/useTranslation';
 import { PricingBadge } from '../ui/PricingBadge';
 import { useAuthStore } from '../../store/authStore';
 import { useAppStore } from '../../store/appStore';
@@ -38,6 +39,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
   const [commentLoading, setCommentLoading] = useState(false);
   const { user, profile } = useAuthStore();
   const modalRef = useRef<HTMLDivElement>(null);
@@ -275,7 +277,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
 
   const handleSubmitComment = async () => {
     if (!app || !user || !comment.trim()) {
-      toast.error('Please enter a comment');
+      toast.error(t('enter_comment'));
       return;
     }
     
@@ -306,11 +308,11 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
       if (data) {
         setComments([data, ...comments]);
         setComment('');
-        toast.success('Comment posted successfully!');
+        toast.success(t('comment_posted'));
       }
     } catch (error) {
       console.error('Error submitting comment:', error);
-      toast.error('Failed to post comment. Please try again.');
+      toast.error(t('comment_failed'));
       
       // For demo purposes, add a fake comment anyway
       if (profile) {
@@ -333,7 +335,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
         };
         setComments([fakeComment, ...comments]);
         setComment('');
-        toast.success('Comment posted successfully!');
+        toast.success(t('comment_posted'));
       }
     } finally {
       setCommentLoading(false);
@@ -342,7 +344,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
 
   const handleLike = async () => {
     if (!app || !user) {
-      toast.error('Please sign in to like apps');
+      toast.error(t('sign_in_to_like'));
       return;
     }
     
@@ -380,7 +382,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
               ...likes
             ]);
           }
-          toast.success('App liked!');
+          toast.success(t('app_liked'));
         }
       } else {
         // Remove like
@@ -394,19 +396,19 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
         
         // Remove from likes list for UI
         setLikes(likes.filter(like => like.user.id !== user.id));
-        toast.success('Like removed');
+        toast.success(t('like_removed'));
       }
     } catch (error) {
       console.error('Error toggling like:', error);
       // Revert optimistic update
       setIsLiked(!isLiked);
-      toast.error('Failed to update like status');
+      toast.error(t('like_failed'));
     }
   };
 
   const handleBookmark = async () => {
     if (!app || !user) {
-      toast.error('Please sign in to bookmark apps');
+      toast.error(t('sign_in_to_bookmark'));
       return;
     }
     
@@ -423,7 +425,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
           .eq('user_id', user.id);
           
         if (error) throw error;
-        toast.success('Bookmark removed');
+        toast.success(t('bookmark_removed'));
       } else {
         // Add bookmark
         const { error } = await supabase
@@ -440,14 +442,14 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
             throw error;
           }
         } else {
-          toast.success('App bookmarked!');
+          toast.success(t('app_bookmarked'));
         }
       }
     } catch (error) {
       console.error('Error toggling bookmark:', error);
       // Revert optimistic update
       setIsBookmarked(!isBookmarked);
-      toast.error('Failed to update bookmark');
+      toast.error(t('bookmark_failed'));
     }
   };
 
@@ -463,10 +465,10 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
     } else {
       // Fallback to clipboard
       navigator.clipboard.writeText(window.location.origin + `/apps/${app.slug}`)
-        .then(() => toast.success('Link copied to clipboard!'))
+        .then(() => toast.success(t('link_copied')))
         .catch(err => {
           console.error('Error copying to clipboard:', err);
-          toast.error('Failed to copy link');
+          toast.error(t('copy_failed'));
         });
     }
   };
@@ -474,7 +476,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
   const handleViewProfile = (userId: string) => {
     // In a real app, this would navigate to the user's profile
     console.log('View profile:', userId);
-    toast.success('Profile view coming soon!');
+    toast.success(t('profile_view_coming'));
     // window.location.href = `/profile/${userId}`;
   };
 
@@ -595,7 +597,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   onClick={handleLike}
                 >
                   <span>
-                    {isLiked ? 'Liked' : 'Like'}
+                    {isLiked ? t('liked') : t('like')}
                   </span>
                 </Button>
                 
@@ -607,7 +609,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   onClick={handleBookmark}
                 >
                   <span>
-                    {isBookmarked ? 'Saved' : 'Save'}
+                    {isBookmarked ? t('saved') : t('save')}
                   </span>
                 </Button>
                 
@@ -618,7 +620,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   icon={Share2}
                   onClick={handleShare}
                 >
-                  Share
+                  {t('share')}
                 </Button>
               </div>
             </div>
@@ -633,7 +635,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   onClick={() => window.open(app.app_url, '_blank')}
                   className="w-full justify-start"
                 >
-                  Visit App
+                  {t('visit_app')}
                 </Button>
               )}
               
@@ -645,7 +647,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   onClick={() => window.open(app.demo_url, '_blank')}
                   className="w-full justify-start"
                 >
-                  Try Demo
+                  {t('try_demo')}
                 </Button>
               )}
               
@@ -657,7 +659,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   onClick={() => window.open(app.github_url, '_blank')}
                   className="w-full justify-start"
                 >
-                  GitHub Repository
+                  {t('github_repo')}
                 </Button>
               )}
               
@@ -669,7 +671,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   onClick={() => window.open(app.repository_url, '_blank')}
                   className="w-full justify-start"
                 >
-                  Repository
+                  {t('repository')}
                 </Button>
               )}
             </div>
@@ -677,16 +679,16 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
             {/* App details */}
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Category</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('category')}</h3>
                 <div className="flex items-center space-x-2">
                   <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                    {app.category?.name || 'Uncategorized'}
+                    {app.category?.name || t('uncategorized')}
                   </span>
                 </div>
               </div>
               
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Tags</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('tags')}</h3>
                 <div className="flex flex-wrap gap-2">
                   {app.tags.map((tag, index) => (
                     <span key={index} className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
@@ -697,18 +699,18 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
               </div>
               
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Stats</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('stats')}</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500">Downloads</p>
+                    <p className="text-sm text-gray-500">{t('downloads')}</p>
                     <p className="font-semibold text-gray-900">{app.downloads_count.toLocaleString()}</p>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500">Rating</p>
+                    <p className="text-sm text-gray-500">{t('rating')}</p>
                     <p className="font-semibold text-gray-900">{app.rating_average.toFixed(1)}</p>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500">Reviews</p>
+                    <p className="text-sm text-gray-500">{t('reviews')}</p>
                     <p className="font-semibold text-gray-900">{app.rating_count}</p>
                   </div>
                 </div>
@@ -728,7 +730,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Comments ({comments.length})
+                {t('comments')} ({comments.length})
               </button>
               <button
                 onClick={() => setActiveTab('likes')}
@@ -738,7 +740,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Likes ({likes.length})
+                {t('likes')} ({likes.length})
               </button>
               <button
                 onClick={() => setActiveTab('followers')}
@@ -748,7 +750,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Followers ({followers.length})
+                {t('followers')} ({followers.length})
               </button>
             </div>
 
@@ -775,7 +777,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                           <textarea
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
-                            placeholder="Add a comment..."
+                            placeholder={t('add_comment')}
                             className="w-full p-3 focus:outline-none resize-none"
                             rows={2}
                           />
@@ -787,7 +789,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                               disabled={!comment.trim() || commentLoading}
                               loading={commentLoading}
                             >
-                              Post
+                              {t('post')}
                             </Button>
                           </div>
                         </div>
@@ -799,13 +801,13 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
                   {loading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-                      <p className="text-gray-600">Loading comments...</p>
+                      <p className="text-gray-600">{t('loading_comments')}</p>
                     </div>
                   ) : comments.length === 0 ? (
                     <div className="text-center py-8">
                       <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-1">No comments yet</h3>
-                      <p className="text-gray-600">Be the first to share your thoughts!</p>
+                      <h3 className="text-lg font-medium text-gray-900 mb-1">{t('no_comments')}</h3>
+                      <p className="text-gray-600">{t('be_first_comment')}</p>
                     </div>
                   ) : (
                     <div className="space-y-6">

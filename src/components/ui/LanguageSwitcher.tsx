@@ -83,7 +83,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
       onLanguageChange(language.code);
     }
     
-    toast.success(`Language changed to ${language.name}`);
+    toast.success(t('language_changed_to') + ' ' + language.name);
   };
 
   const sizeClasses = {

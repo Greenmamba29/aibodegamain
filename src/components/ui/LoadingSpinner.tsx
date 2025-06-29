@@ -1,5 +1,7 @@
 import React from 'react'
 import { Loader2 } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg'
@@ -12,6 +14,8 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text,
   className = ''
 }) => {
+  const { t } = useTranslation();
+  const { t } = useTranslation();
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
@@ -22,17 +26,19 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     <div className={`flex flex-col items-center justify-center ${className}`}>
       <Loader2 className={`animate-spin text-purple-600 ${sizeClasses[size]}`} />
       {text && (
-        <p className="mt-2 text-sm text-gray-600">{text}</p>
+        <p className="mt-2 text-sm text-gray-600">{t(text) || text}</p>
       )}
     </div>
   )
 }
 
 // Full page loading component
-export const PageLoader: React.FC<{ text?: string }> = ({ text = 'Loading...' }) => {
+export const PageLoader: React.FC<{ text?: string }> = ({ text = 'loading' }) => {
+  const { t } = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <LoadingSpinner size="lg" text={text} />
+      <LoadingSpinner size="lg" text={text || t('loading')} />
     </div>
   )
 }

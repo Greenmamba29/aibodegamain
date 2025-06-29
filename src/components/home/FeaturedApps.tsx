@@ -100,7 +100,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
   // Determine which apps to show
   const appsToShow = selectedCategoryId ? apps : featuredApps;
   const sectionTitle = selectedCategoryId 
-    ? `${selectedCategoryName} Apps`
+    ? `${selectedCategoryName} ${t('apps')}`
     : user ? t('discover') : t('featured_apps');
   const sectionDescription = selectedCategoryId
     ? `${t('explore')} ${selectedCategoryName?.toLowerCase()} ${t('applications')}`
@@ -335,7 +335,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
               onClick={() => setIsAllAppsModalOpen(true)}
               className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 text-white border-none hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
             >
-              {selectedCategoryId ? `${t('view_all')} ${selectedCategoryName}` : t('view_all')}
+              {selectedCategoryId ? `${t('view_all')} ${selectedCategoryName} ${t('apps')}` : t('view_all')}
             </Button>
           </div>
         </div>
