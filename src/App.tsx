@@ -23,6 +23,7 @@ import { useAppStore } from './store/appStore'
 import { realtimeManager } from './lib/realtime'
 import { updateMetaTags } from './utils/seo'
 import { AIToolsPage } from './components/ai/AIToolsPage'
+import { TranslationProvider } from './hooks/useTranslation'
 
 type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings' | 'ai-tools'
 
@@ -394,6 +395,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <TranslationProvider>
       <div className="min-h-screen bg-white">
         <Header 
           onNavigate={handleNavigation}
@@ -449,6 +451,7 @@ function App() {
           }}
         />
       </div>
+      </TranslationProvider>
     </ErrorBoundary>
   )
 }

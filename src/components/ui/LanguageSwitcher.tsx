@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, Check, ChevronDown } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface Language {
   code: string;
@@ -32,6 +33,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState<Language>(languages[0]);
+  const { setLanguage } = useTranslation();
 
   useEffect(() => {
     // Check if there's a language preference in localStorage
@@ -58,6 +60,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   const handleLanguageChange = (language: Language) => {
     setCurrentLanguage(language);
     setIsOpen(false);
+    setLanguage(language.code);
     localStorage.setItem('preferredLanguage', language.code);
     
     // Update URL with language parameter
