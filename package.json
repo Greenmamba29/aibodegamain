@@ -10,11 +10,9 @@
     "preview": "npx vite preview",
     "type-check": "tsc --noEmit",
     "analyze": "npx vite-bundle-analyzer",
-    "clean": "rm -rf node_modules package-lock.json && npm install",
-    "lingo": "lingo"
+    "clean": "rm -rf node_modules package-lock.json && npm install"
   },
   "dependencies": {
-    "lingo.dev": "^1.0.0",
     "@stripe/stripe-js": "^4.8.0",
     "@supabase/supabase-js": "^2.39.8",
     "lucide-react": "^0.344.0",
