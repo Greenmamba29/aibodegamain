@@ -9,7 +9,6 @@ import { DeveloperAnalytics } from './DeveloperAnalytics';
 import { RevenueAnalytics } from './RevenueAnalytics';
 import { DeveloperSettings } from './DeveloperSettings';
 import { ProfileView } from './ProfileView';
-import { useTranslation } from '../../hooks/useTranslation';
 import { useAuthStore } from '../../store/authStore';
 import { useDeveloperStore } from '../../store/developerStore';
 import { toast } from 'react-hot-toast';
@@ -19,7 +18,6 @@ type TabType = 'overview' | 'apps' | 'submit' | 'analytics' | 'revenue' | 'setti
 export const DeveloperPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const { profile, updateProfile } = useAuthStore();
-  const { t } = useTranslation();
   const { t } = useTranslation();
   const { stats, fetchDeveloperStats } = useDeveloperStore();
 
