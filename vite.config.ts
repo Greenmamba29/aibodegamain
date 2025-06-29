@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import lingoCompiler from 'lingo.dev/compiler';
+import lingoCompiler from '@lingo-dev/compiler';
 
 const viteConfig = {
   plugins: [react()],
