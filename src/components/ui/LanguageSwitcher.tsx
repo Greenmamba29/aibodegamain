@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Globe, Check, ChevronDown } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { toast } from 'react-hot-toast';
-import { useTranslation } from '../../hooks/useTranslation';
 
 interface Language {
   code: string;
