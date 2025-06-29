@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Upload, Github, Globe, Twitter, MapPin, Building, User, Info, Camera } from 'lucide-react';
+import { Save, Upload, Github, Globe, Twitter, MapPin, Building, User, Info, Camera, Globe as GlobeIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { useAuthStore } from '../../store/authStore';
 import { uploadUserAvatar } from '../../lib/storage';
 import { supabase } from '../../lib/supabase';
@@ -324,6 +325,41 @@ export const DeveloperSettings: React.FC = () => {
               onChange={(e) => handleInputChange('twitter_handle', e.target.value)}
               placeholder="@username"
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Language Settings */}
+      <Card>
+        <CardHeader>
+          <h3 className="text-lg font-semibold text-gray-900">Language Settings</h3>
+          <p className="text-gray-600">Choose your preferred language</p>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium text-gray-900">Display Language</h4>
+              <p className="text-sm text-gray-600">
+                Select the language you want to use across the platform
+              </p>
+            </div>
+            <LanguageSwitcher 
+              variant="dropdown" 
+              onLanguageChange={(lang) => toast.success(`Language set to ${lang}`)}
+            />
+          </div>
+          
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <div className="flex items-start">
+              <GlobeIcon className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+              <div>
+                <h5 className="font-medium text-blue-900">Translation Settings</h5>
+                <p className="text-sm text-blue-700 mt-1">
+                  The platform will automatically translate content based on your language preference.
+                  You can change your language at any time using the language selector in the header or footer.
+                </p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

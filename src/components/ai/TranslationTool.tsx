@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Globe, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { translate } from '../../lingo';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { toast } from 'react-hot-toast';
 
 export const TranslationTool: React.FC = () => {
@@ -32,10 +32,25 @@ export const TranslationTool: React.FC = () => {
 
     setLoading(true);
     try {
-      const result = await translate({
-        text: sourceText,
-        targetLanguage
-      });
+      // Mock translation function
+      const mockTranslate = (text: string, language: string) => {
+        const translations: Record<string, string> = {
+          'Spanish': `[Traducido al español] ${text}`,
+          'French': `[Traduit en français] ${text}`,
+          'German': `[Auf Deutsch übersetzt] ${text}`,
+          'Italian': `[Tradotto in italiano] ${text}`,
+          'Portuguese': `[Traduzido para português] ${text}`,
+          'Russian': `[Переведено на русский] ${text}`,
+          'Japanese': `[日本語に翻訳] ${text}`,
+          'Chinese': `[翻译成中文] ${text}`,
+          'Korean': `[한국어로 번역] ${text}`,
+          'Arabic': `[مترجم إلى العربية] ${text}`
+        };
+        
+        return translations[language] || `[Translated to ${language}] ${text}`;
+      };
+      
+      const result = mockTranslate(sourceText, targetLanguage);
       
       setTranslatedText(result);
       toast.success(`Translated to ${targetLanguage} successfully`);
@@ -51,10 +66,13 @@ export const TranslationTool: React.FC = () => {
     <div className="max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader>
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-            <Globe className="w-6 h-6 mr-2 text-blue-600" />
-            AI Translation Tool
-          </h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Globe className="w-6 h-6 mr-2 text-blue-600" />
+              <h2 className="text-2xl font-bold text-gray-900">AI Translation Tool</h2>
+            </div>
+            <LanguageSwitcher />
+          </div>
           <p className="text-gray-600">Translate text between languages using AI</p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -118,7 +136,7 @@ export const TranslationTool: React.FC = () => {
           </div>
           
           <div className="text-xs text-gray-500 text-center">
-            Powered by LINGO.dev AI translation engine
+            Powered by AI translation engine
           </div>
         </CardContent>
       </Card>

@@ -3,6 +3,7 @@ import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard,
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { NotificationBell } from '../ui/NotificationBell';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { AuthModal } from '../auth/AuthModal';
 import { useAuthStore } from '../../store/authStore';
 import { useAppStore } from '../../store/appStore';
@@ -189,6 +190,13 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Navigation */}
             <div className="flex items-center space-x-3">
+              {/* Language Switcher */}
+              <LanguageSwitcher 
+                variant="dropdown" 
+                size="sm" 
+                className="hidden sm:block"
+              />
+
               {user ? (
                 <>
                   {/* AI Tools Button */}
@@ -474,6 +482,11 @@ export const Header: React.FC<HeaderProps> = ({
                   />
                 </div>
               </form>
+
+              {/* Language Switcher - Mobile */}
+              <div className="mb-4 px-2">
+                <LanguageSwitcher variant="buttons" size="sm" />
+              </div>
 
               {/* Mobile Navigation */}
               {!user ? (

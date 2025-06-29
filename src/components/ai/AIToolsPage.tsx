@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextAnalyzer } from './TextAnalyzer';
 import { TranslationTool } from './TranslationTool';
 import { Button } from '../ui/Button';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { MessageSquare, Globe, Zap, ArrowLeft } from 'lucide-react';
 
 export const AIToolsPage: React.FC = () => {
@@ -52,13 +53,16 @@ export const AIToolsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            AI Tools Powered by LINGO.dev
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Experience the power of AI with our suite of tools built using the LINGO.dev compiler
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              AI Tools
+            </h1>
+            <p className="text-xl text-gray-600">
+              Experience the power of AI with our suite of tools
+            </p>
+          </div>
+          <LanguageSwitcher />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -107,10 +111,10 @@ export const AIToolsPage: React.FC = () => {
 
         <div className="mt-16 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            How It Works
+            Multilingual Support
           </h2>
           <p className="text-gray-600 max-w-3xl mx-auto mb-8">
-            These tools are powered by LINGO.dev, a TypeScript-first AI compiler that enables seamless integration of AI capabilities into web applications. The compiler optimizes AI function calls and provides type safety for AI operations.
+            Our platform supports multiple languages. You can switch between languages using the language selector in the header or footer.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -118,9 +122,9 @@ export const AIToolsPage: React.FC = () => {
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-green-600 font-bold">1</span>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Define AI Functions</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Choose Your Language</h3>
               <p className="text-sm text-gray-600">
-                AI functions are defined with TypeScript types for inputs and outputs
+                Select your preferred language from the language dropdown
               </p>
             </div>
             
@@ -128,9 +132,9 @@ export const AIToolsPage: React.FC = () => {
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-green-600 font-bold">2</span>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Compile with LINGO</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Instant Translation</h3>
               <p className="text-sm text-gray-600">
-                LINGO.dev compiles the functions for optimal performance
+                Content is automatically translated throughout the site
               </p>
             </div>
             
@@ -138,9 +142,9 @@ export const AIToolsPage: React.FC = () => {
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-green-600 font-bold">3</span>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Use in React Components</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Seamless Experience</h3>
               <p className="text-sm text-gray-600">
-                Call AI functions directly from React components with type safety
+                Enjoy a fully localized experience in your preferred language
               </p>
             </div>
           </div>

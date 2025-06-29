@@ -1,5 +1,6 @@
 import React from 'react'
 import { Github, Twitter, Mail, Heart } from 'lucide-react'
+import { LanguageSwitcher } from '../ui/LanguageSwitcher'
 import { toast } from 'react-hot-toast'
 
 export const Footer: React.FC = () => {
@@ -139,10 +140,13 @@ export const Footer: React.FC = () => {
           <p className="text-gray-400 text-sm">
             © 2024 Vibe Store. All rights reserved.
           </p>
-          <div className="flex items-center space-x-1 text-gray-400 text-sm mt-4 md:mt-0">
-            <span>Made with</span>
-            <Heart className="w-4 h-4 text-red-500" />
-            <span>by indie developers</span>
+          <div className="flex items-center space-x-4 mt-4 md:mt-0">
+            <LanguageSwitcher variant="dropdown" size="sm" />
+            <div className="flex items-center space-x-1 text-gray-400 text-sm">
+              <span>Made with</span>
+              <Heart className="w-4 h-4 text-red-500" />
+              <span>by indie developers</span>
+            </div>
           </div>
         </div>
       </div>
