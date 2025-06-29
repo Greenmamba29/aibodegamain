@@ -20,7 +20,7 @@ export const Collections: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('collections')}</h2>
-            <p className="text-gray-600">Handpicked app collections for specific use cases</p>
+            <p className="text-gray-600">{t('collection_description')}</p>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -130,7 +130,7 @@ export const Collections: React.FC = () => {
                 </div>
                 
                 <Button variant="outline" className="w-full" icon={ArrowRight}>
-                  View Collection
+                  {t('view_collection')}
                 </Button>
               </CardContent>
             </Card>
@@ -139,7 +139,7 @@ export const Collections: React.FC = () => {
         
         <div className="text-center mt-12">
           <Button variant="outline" size="lg">
-            Browse All Collections
+            {t('browse_all')}
           </Button>
         </div>
       </div>

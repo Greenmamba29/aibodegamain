@@ -85,9 +85,9 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
   };
 
   const getActionButtonText = (app: any) => {
-    if (app.pricing_type === 'free') return 'Try Free';
-    if (purchasedApps.has(app.id)) return 'Open App';
-    return `Buy $${app.price}`;
+    if (app.pricing_type === 'free') return t('try_free');
+    if (purchasedApps.has(app.id)) return t('open_app');
+    return `${t('buy')} $${app.price}`;
   };
 
   const getActionButtonIcon = (app: any) => {
@@ -335,7 +335,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
               onClick={() => setIsAllAppsModalOpen(true)}
               className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 text-white border-none hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
             >
-              {selectedCategoryId ? `View All ${selectedCategoryName} Apps` : 'View All Apps'}
+              {selectedCategoryId ? `${t('view_all')} ${selectedCategoryName}` : t('view_all')}
             </Button>
           </div>
         </div>

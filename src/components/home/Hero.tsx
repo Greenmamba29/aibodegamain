@@ -62,7 +62,7 @@ export const Hero: React.FC = () => {
           </h1>
 
           <p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-            Discover, share, and monetize cutting-edge AI applications. Join thousands of developers and users in the world's most vibrant AI marketplace.
+            {t('app_store_description')}
           </p>
 
           {/* Search Bar */}
@@ -70,7 +70,7 @@ export const Hero: React.FC = () => {
             <form onSubmit={handleSearch} className="relative">
               <Input
                 type="text"
-                placeholder="Search for AI apps, tools, or categories..."
+                placeholder={t('search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 icon={Search}
@@ -93,21 +93,21 @@ export const Hero: React.FC = () => {
                 <Zap className="w-8 h-8 text-white" />
               </div>
               <div className="text-4xl font-bold text-gray-900 mb-2">500+</div>
-              <div className="text-gray-600 font-medium">AI Apps</div>
+              <div className="text-gray-600 font-medium">{t('ai_apps')}</div>
             </div>
             <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl mb-4 shadow-lg">
                 <Users className="w-8 h-8 text-white" />
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">10K+</div>
-              <div className="text-gray-600 font-medium">Active Users</div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">10K+</div> 
+              <div className="text-gray-600 font-medium">{t('active_users')}</div>
             </div>
             <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-teal-500 to-purple-500 rounded-2xl mb-4 shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">50+</div>
-              <div className="text-gray-600 font-medium">Categories</div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">50+</div> 
+              <div className="text-gray-600 font-medium">{t('categories_count')}</div>
             </div>
           </div>
 
@@ -119,7 +119,7 @@ export const Hero: React.FC = () => {
               onClick={handleExploreApps}
               icon={ArrowRight}
             >
-              {t('discover')}
+              {t('explore_apps')}
             </Button>
             <Button 
               variant="outline" 
@@ -127,13 +127,13 @@ export const Hero: React.FC = () => {
               className="text-lg px-8 py-4 bg-white/80 backdrop-blur-sm border-gray-200 hover:bg-white shadow-lg"
               icon={Play}
             >
-              Watch Demo
+              {t('watch_demo')}
             </Button>
           </div>
 
           {/* Trust indicators */}
           <div className="mt-16 text-center">
-            <p className="text-sm text-gray-500 mb-4">Trusted by developers worldwide</p>
+            <p className="text-sm text-gray-500 mb-4">{t('trusted_by')}</p>
             <div className="flex items-center justify-center space-x-8 opacity-60">
               <div className="text-2xl font-bold text-gray-400">GitHub</div>
               <div className="text-2xl font-bold text-gray-400">OpenAI</div>
