@@ -14,7 +14,7 @@ serve(async (req) => {
 
   try {
     // Get request body
-    const { priceId, successUrl, cancelUrl } = await req.json();
+    const { priceId, successUrl, cancelUrl, mode = 'payment' } = await req.json();
 
     // Validate required parameters
     if (!priceId || !successUrl || !cancelUrl) {
@@ -86,7 +86,7 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: "payment",
+      mode: mode,
       success_url: successUrl,
       cancel_url: cancelUrl,
       customer_email: profile.email,

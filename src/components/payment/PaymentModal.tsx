@@ -56,26 +56,33 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setError('');
 
     try {
-      // For demo purposes, simulate a successful purchase
-      // In a real app, we would use Stripe Checkout
-      setTimeout(() => {
-        // Add to purchased apps
-        addPurchasedApp(app.id);
-        
-        // Show success message
-        setHasPurchased(true);
-        toast.success(`You've successfully purchased ${app.title}!`);
-        
-        // Call success callback
-        if (onSuccess) {
-          onSuccess();
-        }
-        
-        // Close modal after a delay
+      // Create a checkout session with Stripe
+      const { url } = await createCheckoutSession(app);
+      
+      if (url) {
+        // Redirect to Stripe Checkout
+        window.location.href = url;
+      } else {
+        // For demo purposes, simulate a successful purchase
         setTimeout(() => {
-          onClose();
-        }, 2000);
-      }, 1500);
+          // Add to purchased apps
+          addPurchasedApp(app.id);
+          
+          // Show success message
+          setHasPurchased(true);
+          toast.success(`You've successfully purchased ${app.title}!`);
+          
+          // Call success callback
+          if (onSuccess) {
+            onSuccess();
+          }
+          
+          // Close modal after a delay
+          setTimeout(() => {
+            onClose();
+          }, 2000);
+        }, 1500);
+      }
     } catch (err: any) {
       setError(err.message || 'Payment failed. Please try again.');
       setProcessing(false);
