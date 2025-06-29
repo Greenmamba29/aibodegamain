@@ -75,28 +75,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   updateProfile: async (updates: Partial<Profile>) => {
     try {
       const { user } = get()
+      const { profile } = get()
       if (!user) throw new Error('No user logged in')
 
       set({ error: null, loading: true })
+      
+      // Create optimistic profile update
+      if (profile) {
+        const optimisticProfile = { ...profile, ...updates }
+        set({ profile: optimisticProfile })
+      }
+      
       const { error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', user.id)
 
-      if (error) throw error
-
-      // Fetch updated profile
-      const { data: profile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
-
-      if (fetchError) throw fetchError
-
-      if (profile) {
-        set({ profile })
+      if (error) {
+        // Revert to original profile on error
+        if (profile) {
+          set({ profile })
+        }
+        throw error
       }
+      
+      // No need to fetch the profile again since we've already updated it optimistically
+      // and the database update was successful
     } catch (error: any) {
       set({ error: error.message })
       throw error

@@ -105,31 +105,53 @@ export const Header: React.FC<HeaderProps> = ({
   const handleToggleRole = async () => {
     try {
       const newRole = profile?.role === 'developer' ? 'consumer' : 'developer';
-      await updateProfile({ role: newRole });
       
-      toast.success(`Switched to ${newRole} mode`);
+      // Optimistically update UI first
+      const optimisticProfile = { ...profile, role: newRole };
+      set({ profile: optimisticProfile });
       
+      // Close dropdowns immediately
       setIsProfileOpen(false);
       setIsRoleToggleOpen(false);
       
-      // Navigate appropriately based on new role
+      // Navigate immediately based on new role
       if (newRole === 'developer' && onNavigate) {
         onNavigate('developer');
       } else if (onNavigate) {
         onNavigate('home');
       }
+      
+      // Then update the database in the background
+      await updateProfile({ role: newRole });
+      
+      toast.success(`Switched to ${newRole} mode`);
     } catch (error) {
       console.error('Error toggling role:', error);
       toast.error('Error changing role. Please try again.');
+      
+      // Revert optimistic update on error
+      if (profile) {
+        const revertedRole = profile.role === 'consumer' ? 'consumer' : 'developer';
+        const revertedProfile = { ...profile, role: revertedRole };
+        set({ profile: revertedProfile });
+      }
     }
   };
 
   const handleRoleToggleClick = () => {
     if (profile?.role === 'developer') {
       setIsRoleToggleOpen(!isRoleToggleOpen);
-    } else {
+    } else if (profile) {
       // Direct toggle for consumers
-      handleToggleRole();
+      // Optimistically update UI immediately
+      const newRole = 'developer';
+      const optimisticProfile = { ...profile, role: newRole };
+      updateProfile({ role: newRole });
+      
+      // Navigate immediately
+      if (onNavigate) {
+        onNavigate('developer');
+      }
     }
   };
 
