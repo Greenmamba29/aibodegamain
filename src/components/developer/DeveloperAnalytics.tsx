@@ -2,6 +2,7 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { useTranslation } from '../../hooks/useTranslation';
 import { TrendingUp, TrendingDown, Users, Download, Star, DollarSign, FileDown } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -36,6 +37,8 @@ interface DeveloperAnalyticsProps {
 }
 
 export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExportDownloads }) => {
+  const { t } = useTranslation();
+  
   const handleExportCSV = () => {
     // Generate CSV data
     const csvData = [
@@ -63,7 +66,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
     link.click();
     document.body.removeChild(link);
     
-    toast.success('CSV file downloaded successfully');
+    toast.success(t('csv_download_success'));
   };
 
   return (
@@ -74,7 +77,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-sm font-medium text-gray-600">{t('total_revenue')}</p>
                 <p className="text-3xl font-bold text-gray-900">$2,847</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -93,7 +96,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Monthly Downloads</p>
+                <p className="text-sm font-medium text-gray-600">{t('monthly_downloads')}</p>
                 <p className="text-3xl font-bold text-gray-900">1,247</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -121,7 +124,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">New Followers</p>
+                <p className="text-sm font-medium text-gray-600">{t('new_followers')}</p>
                 <p className="text-3xl font-bold text-gray-900">89</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -140,7 +143,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Avg. Rating</p>
+                <p className="text-sm font-medium text-gray-600">{t('avg_rating')}</p>
                 <p className="text-3xl font-bold text-gray-900">4.6</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -162,7 +165,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Downloads Over Time</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('downloads_over_time')}</h3>
               <button
                 onClick={handleExportCSV}
                 className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -188,7 +191,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
         {/* Rating Trend */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Rating Trend</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('rating_trend')}</h3>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -207,7 +210,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
       {/* Category Distribution */}
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-900">Downloads by Category</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('downloads_by_category')}</h3>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center">
@@ -236,7 +239,7 @@ export const DeveloperAnalytics: React.FC<DeveloperAnalyticsProps> = ({ onExport
       {/* Top Performing Apps */}
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-900">Top Performing Apps</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('top_performing_apps')}</h3>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

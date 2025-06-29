@@ -3,6 +3,7 @@ import { Upload, X, Plus, Link, Github, Globe, FileText, Image, Video, Package, 
 import { Card, CardContent, CardHeader } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
+import { useTranslation } from '../../hooks/useTranslation'
 import { FileUpload, UploadedFile } from '../ui/FileUpload'
 import { useAppStore } from '../../store/appStore'
 import { useDeveloperStore } from '../../store/developerStore'
@@ -13,6 +14,7 @@ interface AppSubmissionFormProps {
 }
 
 export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -226,7 +228,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
         packages: []
       })
       
-      alert('App submitted successfully! It will be reviewed within 24-48 hours.')
+      alert(t('app_submission_success_message'))
       
       // Navigate to My Apps page
       if (onSuccess) {
@@ -234,7 +236,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
       }
     } catch (error: any) {
       console.error('Error submitting app:', error)
-      alert(error.message || 'Error submitting app. Please try again.')
+      alert(error.message || t('app_submission_error'))
     } finally {
       setLoading(false)
     }
@@ -256,15 +258,15 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Submit New App</h2>
-        <p className="text-gray-600">Share your AI application with the Vibe Store community</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('submit_new_app')}</h2>
+        <p className="text-gray-600">{t('share_innovation')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('basic_information')}</h3>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -278,7 +280,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category *
+                  {t('category')} *
                 </label>
                 <select
                   value={formData.categoryId}
@@ -286,7 +288,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   required
                 >
-                  <option value="">Select a category</option>
+                  <option value="">{t('select_category')}</option>
                   {categories.map(category => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -297,24 +299,24 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             </div>
 
             <Input
-              label="Short Description *"
+              label={`${t('short_description')} *`}
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Brief description of your app (max 160 characters)"
+              placeholder={t('short_description_placeholder')}
               maxLength={160}
               required
             />
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Detailed Description *
+                {`${t('detailed_description')} *`}
               </label>
               <textarea
                 value={formData.longDescription}
                 onChange={(e) => handleInputChange('longDescription', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 rows={6}
-                placeholder="Provide a detailed description of your app, its features, and benefits..."
+                placeholder={t('detailed_description_placeholder')}
                 required
               />
             </div>
@@ -322,7 +324,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             {/* Tags */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tags
+                {t('tags')}
               </label>
               <div className="flex flex-wrap gap-2 mb-3">
                 {formData.tags.map(tag => (
@@ -348,10 +350,10 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Add tags (e.g., AI, NLP, Computer Vision)"
+                  placeholder={t('tags_placeholder')}
                 />
                 <Button type="button" onClick={addTag} variant="outline">
-                  Add
+                  {t('add')}
                 </Button>
               </div>
             </div>
@@ -361,15 +363,15 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
         {/* Pricing */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Pricing</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('pricing')}</h3>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { value: 'free', label: 'Free' },
-                { value: 'freemium', label: 'Freemium' },
-                { value: 'one_time', label: 'One-time' },
-                { value: 'subscription', label: 'Subscription' },
+                { value: 'free', label: t('free') },
+                { value: 'freemium', label: t('freemium') },
+                { value: 'one_time', label: t('one_time') },
+                { value: 'subscription', label: t('subscription') },
               ].map(option => (
                 <label
                   key={option.value}
@@ -394,7 +396,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
 
             {formData.pricingType !== 'free' && (
               <Input
-                label="Price (USD)"
+                label={t('price_usd')}
                 type="number"
                 value={formData.price}
                 onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
@@ -409,11 +411,11 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
         {/* Links */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Links & Resources</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('links_resources')}</h3>
           </CardHeader>
           <CardContent className="space-y-6">
             <Input
-              label="App URL *"
+              label={`${t('app_url')} *`}
               icon={Link}
               value={formData.appUrl}
               onChange={(e) => handleInputChange('appUrl', e.target.value)}
@@ -423,7 +425,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
-                label="Demo URL (Optional)"
+                label={`${t('demo_url')} (${t('optional')})`}
                 icon={Globe}
                 value={formData.demoUrl}
                 onChange={(e) => handleInputChange('demoUrl', e.target.value)}
@@ -431,7 +433,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
               />
 
               <Input
-                label="GitHub Repository (Optional)"
+                label={`${t('github_repo')} (${t('optional')})`}
                 icon={Github}
                 value={formData.githubUrl}
                 onChange={(e) => handleInputChange('githubUrl', e.target.value)}
@@ -441,7 +443,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
-                label="Repository URL (Optional)"
+                label={`${t('repository_url')} (${t('optional')})`}
                 icon={Link}
                 value={formData.repositoryUrl}
                 onChange={(e) => handleInputChange('repositoryUrl', e.target.value)}
@@ -449,7 +451,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
               />
 
               <Input
-                label="Documentation URL (Optional)"
+                label={`${t('documentation_url')} (${t('optional')})`}
                 icon={FileText}
                 value={formData.documentationUrl}
                 onChange={(e) => handleInputChange('documentationUrl', e.target.value)}
@@ -462,13 +464,13 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
         {/* File Uploads */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Media & Assets</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('media_assets')}</h3>
           </CardHeader>
           <CardContent className="space-y-8">
             {/* Logo Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                App Logo *
+                {`${t('app_logo')} *`}
               </label>
               <FileUpload
                 accept="image/*"
@@ -484,7 +486,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             {/* Screenshots Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Screenshots *
+                {`${t('screenshots')} *`}
               </label>
               <FileUpload
                 accept="image/*"
@@ -500,7 +502,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             {/* Video Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Demo Videos (Optional)
+                {`${t('demo_videos')} (${t('optional')})`}
               </label>
               <FileUpload
                 accept="video/*"
@@ -516,7 +518,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             {/* Documentation Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Documentation (Optional)
+                {`${t('documentation')} (${t('optional')})`}
               </label>
               <FileUpload
                 accept=".pdf,.md,.txt"
@@ -532,7 +534,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             {/* Package Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                App Packages (Optional)
+                {`${t('app_packages')} (${t('optional')})`}
               </label>
               <FileUpload
                 accept=".zip,.tar,.gz"
@@ -556,7 +558,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             loading={saving}
             icon={Save}
           >
-            Save Draft
+            {t('save_draft')}
           </Button>
           <Button 
             type="submit" 
@@ -564,7 +566,7 @@ export const AppSubmissionForm: React.FC<AppSubmissionFormProps> = ({ onSuccess 
             icon={Send}
             className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
           >
-            Submit for Review
+            {t('submit_for_review')}
           </Button>
         </div>
       </form>

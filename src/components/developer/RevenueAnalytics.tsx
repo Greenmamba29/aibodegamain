@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 import { Card, CardContent, CardHeader } from '../ui/Card'
+import { useTranslation } from '../../hooks/useTranslation'
 import { DollarSign, TrendingUp, Users, Download, Calendar } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
@@ -22,6 +23,7 @@ const appRevenueData = [
 ]
 
 export const RevenueAnalytics: React.FC = () => {
+  const { t } = useTranslation();
   const [revenueStats, setRevenueStats] = useState({
     totalRevenue: 0,
     monthlyRevenue: 0,
@@ -93,7 +95,7 @@ export const RevenueAnalytics: React.FC = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-sm font-medium text-gray-600">{t('total_revenue')}</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {formatCurrency(revenueStats.totalRevenue)}
                 </p>
@@ -114,7 +116,7 @@ export const RevenueAnalytics: React.FC = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-sm font-medium text-gray-600">{t('monthly_revenue')}</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {formatCurrency(revenueStats.monthlyRevenue)}
                 </p>
@@ -135,7 +137,7 @@ export const RevenueAnalytics: React.FC = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Sales</p>
+                <p className="text-sm font-medium text-gray-600">{t('total_sales')}</p>
                 <p className="text-3xl font-bold text-gray-900">{revenueStats.totalTransactions}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -154,7 +156,7 @@ export const RevenueAnalytics: React.FC = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Avg. Order Value</p>
+                <p className="text-sm font-medium text-gray-600">{t('avg_order_value')}</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {formatCurrency(revenueStats.averageOrderValue)}
                 </p>
@@ -177,7 +179,7 @@ export const RevenueAnalytics: React.FC = () => {
         {/* Monthly Revenue Trend */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Revenue Trend</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('revenue_trend')}</h3>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -195,7 +197,7 @@ export const RevenueAnalytics: React.FC = () => {
         {/* Transaction Volume */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900">Transaction Volume</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('transaction_volume')}</h3>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -214,7 +216,7 @@ export const RevenueAnalytics: React.FC = () => {
       {/* Revenue by App */}
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-900">Revenue by App</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('revenue_by_app')}</h3>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -260,41 +262,38 @@ export const RevenueAnalytics: React.FC = () => {
       {/* Payout Information */}
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-900">Payout Information</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('payout_information')}</h3>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <h4 className="font-semibold text-green-900 mb-2">Available Balance</h4>
+              <h4 className="font-semibold text-green-900 mb-2">{t('available_balance')}</h4>
               <p className="text-2xl font-bold text-green-600">
                 {formatCurrency(revenueStats.totalRevenue * 0.7)}
               </p>
-              <p className="text-sm text-green-700 mt-1">Ready for payout</p>
+              <p className="text-sm text-green-700 mt-1">{t('ready_for_payout')}</p>
             </div>
             
             <div className="text-center p-4 bg-yellow-50 rounded-lg">
-              <h4 className="font-semibold text-yellow-900 mb-2">Pending</h4>
+              <h4 className="font-semibold text-yellow-900 mb-2">{t('pending')}</h4>
               <p className="text-2xl font-bold text-yellow-600">
                 {formatCurrency(revenueStats.monthlyRevenue * 0.7)}
               </p>
-              <p className="text-sm text-yellow-700 mt-1">Processing (7 days)</p>
+              <p className="text-sm text-yellow-700 mt-1">{t('processing_days', { days: 7 })}</p>
             </div>
             
             <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-semibold text-blue-900 mb-2">Total Paid Out</h4>
+              <h4 className="font-semibold text-blue-900 mb-2">{t('total_paid_out')}</h4>
               <p className="text-2xl font-bold text-blue-600">
                 {formatCurrency((revenueStats.totalRevenue - revenueStats.monthlyRevenue) * 0.7)}
               </p>
-              <p className="text-sm text-blue-700 mt-1">Lifetime earnings</p>
+              <p className="text-sm text-blue-700 mt-1">{t('lifetime_earnings')}</p>
             </div>
           </div>
           
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-semibold text-gray-900 mb-2">Revenue Share</h4>
-            <p className="text-sm text-gray-600">
-              You keep 70% of all sales revenue. Platform fee is 30% which covers payment processing, 
-              hosting, marketing, and platform maintenance.
-            </p>
+            <h4 className="font-semibold text-gray-900 mb-2">{t('revenue_share')}</h4>
+            <p className="text-sm text-gray-600">{t('revenue_share_description')}</p>
           </div>
         </CardContent>
       </Card>

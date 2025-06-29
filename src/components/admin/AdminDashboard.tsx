@@ -16,11 +16,13 @@ import {
 import { Card, CardContent, CardHeader } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
+import { useTranslation } from '../../hooks/useTranslation'
 import { useAdminStore } from '../../store/adminStore'
 import { realtimeManager } from '../../lib/realtime'
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'apps' | 'users' | 'analytics'>('overview')
+  const { t } = useTranslation()
   const { 
     stats, 
     pendingApps, 
@@ -54,10 +56,10 @@ export const AdminDashboard: React.FC = () => {
   }, [])
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: TrendingUp },
-    { id: 'apps', label: 'App Moderation', icon: Zap },
-    { id: 'users', label: 'User Management', icon: Users },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+    { id: 'overview', label: t('overview'), icon: TrendingUp },
+    { id: 'apps', label: t('app_moderation'), icon: Zap },
+    { id: 'users', label: t('user_management'), icon: Users },
+    { id: 'analytics', label: t('analytics'), icon: TrendingUp },
   ]
 
   return (
@@ -66,8 +68,8 @@ export const AdminDashboard: React.FC = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-1">Manage platform content and monitor performance</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('admin_dashboard')}</h1>
+            <p className="text-gray-600 mt-1">{t('admin_dashboard_description')}</p>
           </div>
         </div>
       </div>
@@ -118,7 +120,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Users</p>
+                <p className="text-sm font-medium text-gray-600">{t('total_users')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.totalUsers?.toLocaleString() || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -127,7 +129,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
             </div>
             <div className="mt-4 flex items-center text-sm">
               <span className="text-green-600 font-medium">+{stats?.newUsersThisWeek || 0}</span>
-              <span className="text-gray-500 ml-1">this week</span>
+              <span className="text-gray-500 ml-1">{t('this_week')}</span>
             </div>
           </CardContent>
         </Card>
@@ -136,7 +138,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Apps</p>
+                <p className="text-sm font-medium text-gray-600">{t('total_apps')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.totalApps || 0}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -145,7 +147,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
             </div>
             <div className="mt-4 flex items-center text-sm">
               <span className="text-green-600 font-medium">+{stats?.newAppsThisWeek || 0}</span>
-              <span className="text-gray-500 ml-1">this week</span>
+              <span className="text-gray-500 ml-1">{t('this_week')}</span>
             </div>
           </CardContent>
         </Card>
@@ -154,7 +156,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Pending Reviews</p>
+                <p className="text-sm font-medium text-gray-600">{t('pending_reviews')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.pendingApps || 0}</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -162,7 +164,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-yellow-600 font-medium">Needs attention</span>
+              <span className="text-yellow-600 font-medium">{t('needs_attention')}</span>
             </div>
           </CardContent>
         </Card>
@@ -171,7 +173,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Platform Revenue</p>
+                <p className="text-sm font-medium text-gray-600">{t('platform_revenue')}</p>
                 <p className="text-3xl font-bold text-gray-900">${stats?.totalRevenue?.toLocaleString() || 0}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -180,7 +182,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
             </div>
             <div className="mt-4 flex items-center text-sm">
               <span className="text-green-600 font-medium">+12%</span>
-              <span className="text-gray-500 ml-1">vs last month</span>
+              <span className="text-gray-500 ml-1">{t('vs_last_month')}</span>
             </div>
           </CardContent>
         </Card>
@@ -189,7 +191,7 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
       {/* Recent Activity */}
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-900">Recent Platform Activity</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('recent_platform_activity')}</h3>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -198,8 +200,8 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
                 <Users className="w-4 h-4 text-blue-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">15 new users registered today</p>
-                <p className="text-xs text-gray-500">2 hours ago</p>
+                <p className="text-sm font-medium text-gray-900">{t('new_users_registered_today', { count: 15 })}</p>
+                <p className="text-xs text-gray-500">{t('hours_ago', { hours: 2 })}</p>
               </div>
             </div>
             
@@ -208,8 +210,8 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
                 <Zap className="w-4 h-4 text-purple-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">3 new apps submitted for review</p>
-                <p className="text-xs text-gray-500">4 hours ago</p>
+                <p className="text-sm font-medium text-gray-900">{t('new_apps_submitted', { count: 3 })}</p>
+                <p className="text-xs text-gray-500">{t('hours_ago', { hours: 4 })}</p>
               </div>
             </div>
             
@@ -218,8 +220,8 @@ const AdminOverview: React.FC<{ stats: any }> = ({ stats }) => {
                 <AlertTriangle className="w-4 h-4 text-yellow-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">2 apps require content review</p>
-                <p className="text-xs text-gray-500">6 hours ago</p>
+                <p className="text-sm font-medium text-gray-900">{t('apps_require_review', { count: 2 })}</p>
+                <p className="text-xs text-gray-500">{t('hours_ago', { hours: 6 })}</p>
               </div>
             </div>
           </div>

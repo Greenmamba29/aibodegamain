@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, BarChart3, Settings, Upload, Eye, Edit, Trash2, Star, Download, Users, TrendingUp, DollarSign, FileDown, User } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '../ui/Card';
-import { Button } from '../ui/Button';
 import { useTranslation } from '../../hooks/useTranslation';
+import { DeveloperSettings } from './DeveloperSettings';
+import { ProfileView } from './ProfileView';
 import { AppSubmissionForm } from './AppSubmissionForm';
 import { AppManagement } from './AppManagement';
 import { DeveloperAnalytics } from './DeveloperAnalytics';

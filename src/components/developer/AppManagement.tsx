@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Edit, Trash2, Eye, BarChart3, Star, Download, Clock, CheckCircle, XCircle, AlertCircle, Upload, ExternalLink, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { useTranslation } from '../../hooks/useTranslation';
 import { useDeveloperStore } from '../../store/developerStore';
 import { EditContentCardModal } from './EditContentCardModal';
 import { App } from '../../lib/supabase';
@@ -9,6 +10,7 @@ import { toast } from 'react-hot-toast';
 
 export const AppManagement: React.FC = () => {
   const { apps, drafts, loading, fetchDeveloperApps, fetchDrafts, deleteDraft, deleteApp } = useDeveloperStore();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'published' | 'drafts'>('published');
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -48,7 +50,7 @@ export const AppManagement: React.FC = () => {
     if (app.app_url) {
       window.open(app.app_url, '_blank');
     } else {
-      toast.error('App URL not available');
+      toast.error(t('app_url_not_available'));
     }
   };
 
@@ -63,42 +65,42 @@ export const AppManagement: React.FC = () => {
   };
 
   const handleDeleteApp = async (appId: string, appTitle: string) => {
-    if (window.confirm(`Are you sure you want to delete "${appTitle}"? This action cannot be undone.`)) {
+    if (window.confirm(t('confirm_delete_app').replace('{appTitle}', appTitle))) {
       try {
         await deleteApp(appId);
-        toast.success('App deleted successfully');
+        toast.success(t('app_deleted'));
       } catch (error) {
         console.error('Error deleting app:', error);
-        toast.error('Error deleting app. Please try again.');
+        toast.error(t('app_delete_error'));
       }
     }
   };
 
   const handleDeleteDraft = async (draftId: string, draftTitle: string) => {
-    if (window.confirm(`Are you sure you want to delete the draft "${draftTitle}"?`)) {
+    if (window.confirm(t('confirm_delete_draft').replace('{draftTitle}', draftTitle))) {
       try {
         await deleteDraft(draftId);
-        toast.success('Draft deleted successfully');
+        toast.success(t('draft_deleted'));
       } catch (error) {
         console.error('Error deleting draft:', error);
-        toast.error('Error deleting draft. Please try again.');
+        toast.error(t('draft_delete_error'));
       }
     }
   };
 
   const handleContinueDraft = (draft: any) => {
     // Load draft data into submission form
-    toast.info('Draft editing coming soon');
+    toast.info(t('draft_editing_coming_soon'));
   };
 
   const handleEditSuccess = () => {
     fetchDeveloperApps();
-    toast.success('App updated successfully');
+    toast.success(t('app_updated'));
   };
 
   const handleSubmitNewApp = () => {
     // Navigate to app submission form
-    toast.info('App submission form coming soon');
+    toast.info(t('app_submission_coming_soon'));
   };
 
   if (loading) {
@@ -126,7 +128,7 @@ export const AppManagement: React.FC = () => {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Published Apps ({apps.length})
+            {t('published_apps')} ({apps.length})
           </button>
           <button
             onClick={() => setActiveTab('drafts')}
@@ -136,11 +138,11 @@ export const AppManagement: React.FC = () => {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Drafts ({drafts.length})
+            {t('drafts')} ({drafts.length})
           </button>
         </div>
         
-        <Button icon={Upload} onClick={handleSubmitNewApp}>Submit New App</Button>
+        <Button icon={Upload} onClick={handleSubmitNewApp}>{t('submit_new_app')}</Button>
       </div>
 
       {/* Published Apps Tab */}
@@ -151,9 +153,9 @@ export const AppManagement: React.FC = () => {
               <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
                 <Upload className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Apps Yet</h3>
-              <p className="text-gray-600 mb-6">You haven't submitted any apps yet. Start by submitting your first app!</p>
-              <Button icon={Upload} onClick={handleSubmitNewApp}>Submit Your First App</Button>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('no_apps_yet')}</h3>
+              <p className="text-gray-600 mb-6">{t('no_apps_description')}</p>
+              <Button icon={Upload} onClick={handleSubmitNewApp}>{t('submit_first_app')}</Button>
             </div>
           ) : (
             <div className="grid gap-6">
@@ -186,7 +188,7 @@ export const AppManagement: React.FC = () => {
                               <h3 className="text-xl font-semibold text-gray-900">{app.title}</h3>
                               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
                                 {getStatusIcon(app.status)}
-                                <span className="ml-1 capitalize">{app.status}</span>
+                                <span className="ml-1 capitalize">{t(app.status)}</span>
                               </span>
                             </div>
                             <p className="text-gray-600 mb-3 line-clamp-2">{app.description}</p>
@@ -195,7 +197,7 @@ export const AppManagement: React.FC = () => {
                             <div className="flex items-center space-x-6 text-sm text-gray-500">
                               <div className="flex items-center space-x-1">
                                 <Download className="w-4 h-4" />
-                                <span>{app.downloads_count.toLocaleString()} downloads</span>
+                                <span>{app.downloads_count.toLocaleString()} {t('downloads')}</span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -227,7 +229,7 @@ export const AppManagement: React.FC = () => {
                               onClick={() => handleViewApp(app)}
                               disabled={!app.app_url}
                             >
-                              View
+                              {t('view')}
                             </Button>
                             <Button 
                               variant="outline" 
@@ -235,7 +237,7 @@ export const AppManagement: React.FC = () => {
                               icon={BarChart3}
                               onClick={() => handleViewAnalytics(app.id)}
                             >
-                              Analytics
+                              {t('analytics')}
                             </Button>
                             <Button 
                               variant="outline" 
@@ -243,7 +245,7 @@ export const AppManagement: React.FC = () => {
                               icon={Edit}
                               onClick={() => handleEditApp(app)}
                             >
-                              Edit
+                              {t('edit')}
                             </Button>
                             <Button 
                               variant="outline" 
@@ -252,23 +254,23 @@ export const AppManagement: React.FC = () => {
                               className="text-red-600 hover:text-red-700 hover:border-red-300"
                               onClick={() => handleDeleteApp(app.id, app.title)}
                             >
-                              Delete
+                              {t('delete')}
                             </Button>
                           </div>
                         </div>
 
                         {/* Additional Info */}
                         <div className="flex items-center justify-between text-xs text-gray-500">
-                          <span>Created {new Date(app.created_at).toLocaleDateString()}</span>
-                          <span>Last updated {new Date(app.updated_at).toLocaleDateString()}</span>
+                          <span>{t('created')} {new Date(app.created_at).toLocaleDateString()}</span>
+                          <span>{t('last_updated')} {new Date(app.updated_at).toLocaleDateString()}</span>
                         </div>
 
                         {/* File Count Info */}
                         {app.files && app.files.length > 0 && (
                           <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
-                            <span>{app.files.filter((f: any) => f.file_type === 'screenshot').length} screenshots</span>
-                            <span>{app.files.filter((f: any) => f.file_type === 'video').length} videos</span>
-                            <span>{app.files.filter((f: any) => f.file_type === 'documentation').length} docs</span>
+                            <span>{app.files.filter((f: any) => f.file_type === 'screenshot').length} {t('screenshots')}</span>
+                            <span>{app.files.filter((f: any) => f.file_type === 'video').length} {t('videos')}</span>
+                            <span>{app.files.filter((f: any) => f.file_type === 'documentation').length} {t('docs')}</span>
                           </div>
                         )}
                       </div>
@@ -289,9 +291,9 @@ export const AppManagement: React.FC = () => {
               <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
                 <FileText className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Drafts</h3>
-              <p className="text-gray-600 mb-6">You don't have any saved drafts. Start creating an app to save drafts!</p>
-              <Button icon={Upload} onClick={handleSubmitNewApp}>Submit New App</Button>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('no_drafts')}</h3>
+              <p className="text-gray-600 mb-6">{t('no_drafts_description')}</p>
+              <Button icon={Upload} onClick={handleSubmitNewApp}>{t('submit_new_app')}</Button>
             </div>
           ) : (
             <div className="grid gap-6">
@@ -304,15 +306,15 @@ export const AppManagement: React.FC = () => {
                           <h3 className="text-xl font-semibold text-gray-900">{draft.title || 'Untitled Draft'}</h3>
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                             <FileText className="w-3 h-3 mr-1" />
-                            Draft
+                            {t('draft')}
                           </span>
                         </div>
                         <p className="text-gray-600 mb-3">{draft.description || 'No description provided'}</p>
                         
                         <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>Last saved {new Date(draft.updated_at).toLocaleDateString()}</span>
+                          <span>{t('last_saved')} {new Date(draft.updated_at).toLocaleDateString()}</span>
                           <span>•</span>
-                          <span>{draft.pricing_type === 'free' ? 'Free' : `$${draft.price}`}</span>
+                          <span>{draft.pricing_type === 'free' ? t('free') : `$${draft.price}`}</span>
                         </div>
                       </div>
 
@@ -322,7 +324,7 @@ export const AppManagement: React.FC = () => {
                           size="sm" 
                           onClick={() => handleContinueDraft(draft)}
                         >
-                          Continue
+                          {t('continue')}
                         </Button>
                         <Button 
                           variant="outline" 
@@ -331,7 +333,7 @@ export const AppManagement: React.FC = () => {
                           className="text-red-600 hover:text-red-700 hover:border-red-300"
                           onClick={() => handleDeleteDraft(draft.id, draft.title)}
                         >
-                          Delete
+                          {t('delete')}
                         </Button>
                       </div>
                     </div>
