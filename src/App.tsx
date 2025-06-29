@@ -22,8 +22,9 @@ import { useAuthStore } from './store/authStore'
 import { useAppStore } from './store/appStore'
 import { realtimeManager } from './lib/realtime'
 import { updateMetaTags } from './utils/seo'
+import { AIToolsPage } from './components/ai/AIToolsPage'
 
-type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings'
+type PageType = 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings' | 'ai-tools'
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home')
@@ -81,6 +82,8 @@ function App() {
         setCurrentPage('purchase-history')
       } else if (path === '/settings') {
         setCurrentPage('settings')
+      } else if (path === '/ai-tools') {
+        setCurrentPage('ai-tools')
       } else {
         setCurrentPage('home')
       }
@@ -160,7 +163,8 @@ function App() {
       mobile: '/mobile',
       profile: '/profile',
       'purchase-history': '/purchase-history',
-      settings: '/settings'
+      settings: '/settings',
+      'ai-tools': '/ai-tools'
     }
     
     window.history.pushState({}, '', urls[page])
@@ -292,6 +296,28 @@ function App() {
           <div className="py-8">
             <DeveloperSettings />
           </div>
+          <Footer />
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
+        </div>
+      </ErrorBoundary>
+    )
+  }
+
+  // Show AI tools page
+  if (currentPage === 'ai-tools') {
+    return (
+      <ErrorBoundary>
+        <div className="min-h-screen bg-white">
+          <Header 
+            onNavigate={handleNavigation}
+            onOpenProfile={handleOpenProfile}
+            onOpenPurchaseHistory={handleOpenPurchaseHistory}
+            onOpenSettings={handleOpenSettings}
+          />
+          <AIToolsPage />
           <Footer />
           <AuthModal
             isOpen={isAuthModalOpen}

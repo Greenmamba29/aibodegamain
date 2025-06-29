@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone, Bell, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Search, Menu, X, User, LogOut, Settings, Plus, Code, Crown, CreditCard, Package, Smartphone, Bell, ToggleLeft, ToggleRight, Globe, Zap } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { NotificationBell } from '../ui/NotificationBell';
@@ -9,7 +9,7 @@ import { useAppStore } from '../../store/appStore';
 import { toast } from 'react-hot-toast';
 
 interface HeaderProps {
-  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings') => void;
+  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings' | 'ai-tools') => void;
   onOpenProfile?: () => void;
   onOpenPurchaseHistory?: () => void;
   onOpenSettings?: () => void;
@@ -87,6 +87,11 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleSettings = () => {
     if (onOpenSettings) onOpenSettings();
+    setIsProfileOpen(false);
+  };
+
+  const handleAITools = () => {
+    if (onNavigate) onNavigate('ai-tools');
     setIsProfileOpen(false);
   };
 
@@ -186,6 +191,17 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center space-x-3">
               {user ? (
                 <>
+                  {/* AI Tools Button */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleAITools}
+                    className="hidden sm:flex items-center space-x-2"
+                  >
+                    <Zap className="w-4 h-4 text-purple-600" />
+                    <span>AI Tools</span>
+                  </Button>
+
                   {/* Mobile View Button - Only for consumers - Icon Only */}
                   {profile?.role !== 'developer' && (
                     <Button 
@@ -372,6 +388,14 @@ export const Header: React.FC<HeaderProps> = ({
                           </button>
                           
                           <button 
+                            onClick={handleAITools}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                          >
+                            <Zap className="w-4 h-4" />
+                            <span>AI Tools</span>
+                          </button>
+                          
+                          <button 
                             onClick={handleContactSupport}
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                           >
@@ -509,6 +533,14 @@ export const Header: React.FC<HeaderProps> = ({
                       Mobile View
                     </Button>
                   )}
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={handleAITools}
+                    icon={Zap}
+                  >
+                    AI Tools
+                  </Button>
                   <Button 
                     variant="ghost" 
                     className="w-full justify-start"

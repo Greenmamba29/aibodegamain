@@ -1,0 +1,22 @@
+{
+  "libs": [
+    {
+      "name": "react",
+      "version": "18.3.1"
+    }
+  ],
+  "entrypoints": ["src/**/*.tsx", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "build", "public"],
+  "rootDir": ".",
+  "outDir": ".lingo",
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node"
+  }
+}
