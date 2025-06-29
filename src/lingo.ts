@@ -1,4 +1,4 @@
-import { createClient } from 'lingo.dev';
+import { createClient } from '@lingo-dev/client';
 
 // Initialize the Lingo client
 export const lingo = createClient({
