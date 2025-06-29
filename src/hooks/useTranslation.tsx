@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 
 // Create a context for the translation
 const TranslationContext = createContext<{
@@ -154,7 +154,7 @@ const translations: Record<string, Record<string, string>> = {
 };
 
 // Provider component
-export const TranslationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TranslationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState(() => {
     // Get language from localStorage or URL params or default to 'en'
     const savedLanguage = localStorage.getItem('preferredLanguage');
