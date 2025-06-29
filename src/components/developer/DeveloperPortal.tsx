@@ -172,8 +172,8 @@ export const DeveloperPortal: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-4">
-                {t('become_developer')}
-                  variant="primary" 
+                <Button
+                  variant="primary"
                   icon={Upload}
                   onClick={handleSubmitApp}
                   className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"

@@ -156,11 +156,7 @@ const translations: Record<string, Record<string, string>> = {
     'reviews': 'Reviews',
     'enter_comment': 'Please enter a comment',
     'comment_posted': 'Comment posted successfully!',
-    'comment_failed': 'Failed to post comment. Please try again.'
-  },
-  // Add new translation keys for developer portal
-  'en': {
-    // ... existing translations
+    'comment_failed': 'Failed to post comment. Please try again.',
     'developer_upgrade_success': 'Successfully upgraded to developer mode!',
     'developer_upgrade_failed': 'Failed to upgrade to developer mode',
     'app_submission_success': 'App submitted successfully!',
@@ -318,11 +314,7 @@ const translations: Record<string, Record<string, string>> = {
     'reviews': 'Reseñas',
     'enter_comment': 'Por favor ingresa un comentario',
     'comment_posted': '¡Comentario publicado exitosamente!',
-    'comment_failed': 'Error al publicar el comentario. Por favor intenta de nuevo.'
-  },
-  // Add Spanish translations for developer portal
-  'es': {
-    // ... existing translations
+    'comment_failed': 'Error al publicar el comentario. Por favor intenta de nuevo.',
     'developer_upgrade_success': '¡Actualizado exitosamente al modo desarrollador!',
     'developer_upgrade_failed': 'Error al actualizar al modo desarrollador',
     'app_submission_success': '¡Aplicación enviada exitosamente!',
@@ -480,11 +472,7 @@ const translations: Record<string, Record<string, string>> = {
     'reviews': 'Avis',
     'enter_comment': 'Veuillez entrer un commentaire',
     'comment_posted': 'Commentaire publié avec succès!',
-    'comment_failed': 'Échec de la publication du commentaire. Veuillez réessayer.'
-  },
-  // Add French translations for developer portal
-  'fr': {
-    // ... existing translations
+    'comment_failed': 'Échec de la publication du commentaire. Veuillez réessayer.',
     'developer_upgrade_success': 'Passage au mode développeur réussi !',
     'developer_upgrade_failed': 'Échec du passage au mode développeur',
     'app_submission_success': 'Application soumise avec succès !',
@@ -642,11 +630,7 @@ const translations: Record<string, Record<string, string>> = {
     'reviews': 'Rezensionen',
     'enter_comment': 'Bitte geben Sie einen Kommentar ein',
     'comment_posted': 'Kommentar erfolgreich gepostet!',
-    'comment_failed': 'Fehler beim Posten des Kommentars. Bitte versuchen Sie es erneut.'
-  },
-  // Add German translations for developer portal
-  'de': {
-    // ... existing translations
+    'comment_failed': 'Fehler beim Posten des Kommentars. Bitte versuchen Sie es erneut.',
     'developer_upgrade_success': 'Erfolgreich zum Entwicklermodus gewechselt!',
     'developer_upgrade_failed': 'Fehler beim Wechsel zum Entwicklermodus',
     'app_submission_success': 'App erfolgreich eingereicht!',
@@ -804,11 +788,7 @@ const translations: Record<string, Record<string, string>> = {
     'reviews': 'レビュー',
     'enter_comment': 'コメントを入力してください',
     'comment_posted': 'コメントが正常に投稿されました！',
-    'comment_failed': 'コメントの投稿に失敗しました。もう一度お試しください。'
-  },
-  // Add Japanese translations for developer portal
-  'ja': {
-    // ... existing translations
+    'comment_failed': 'コメントの投稿に失敗しました。もう一度お試しください。',
     'developer_upgrade_success': '開発者モードに正常にアップグレードされました！',
     'developer_upgrade_failed': '開発者モードへのアップグレードに失敗しました',
     'app_submission_success': 'アプリが正常に提出されました！',
@@ -966,11 +946,7 @@ const translations: Record<string, Record<string, string>> = {
     'reviews': '评论',
     'enter_comment': '请输入评论',
     'comment_posted': '评论发布成功！',
-    'comment_failed': '评论发布失败。请重试。'
-  }
-  // Add Chinese translations for developer portal
-  'zh': {
-    // ... existing translations
+    'comment_failed': '评论发布失败。请重试。',
     'developer_upgrade_success': '成功升级到开发者模式！',
     'developer_upgrade_failed': '升级到开发者模式失败',
     'app_submission_success': '应用提交成功！',
