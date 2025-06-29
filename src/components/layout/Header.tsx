@@ -9,7 +9,7 @@ import { useAppStore } from '../../store/appStore';
 import { toast } from 'react-hot-toast';
 
 interface HeaderProps {
-  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'purchase-history' | 'settings') => void;
+  onNavigate?: (page: 'home' | 'developer' | 'admin' | 'products' | 'payment-success' | 'payment-cancel' | 'mobile' | 'profile' | 'purchase-history' | 'settings') => void;
   onOpenProfile?: () => void;
   onOpenPurchaseHistory?: () => void;
   onOpenSettings?: () => void;
@@ -37,6 +37,10 @@ export const Header: React.FC<HeaderProps> = ({
     if (appsSection) {
       appsSection.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleLogoClick = () => {
+    if (onNavigate) onNavigate('home');
   };
 
   const handleSignOut = async () => {
@@ -84,6 +88,10 @@ export const Header: React.FC<HeaderProps> = ({
   const handleSettings = () => {
     if (onOpenSettings) onOpenSettings();
     setIsProfileOpen(false);
+  };
+
+  const handleContactSupport = () => {
+    toast.success('Support request sent! Our team will contact you shortly.');
   };
 
   const handleToggleRole = async () => {
@@ -135,14 +143,6 @@ export const Header: React.FC<HeaderProps> = ({
         {profile.subscription_tier.toUpperCase()}
       </span>
     );
-  };
-
-  const handleLogoClick = () => {
-    if (onNavigate) onNavigate('home');
-  };
-
-  const handleContactSupport = () => {
-    toast.success('Support request sent! Our team will contact you shortly.');
   };
 
   return (
