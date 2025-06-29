@@ -229,19 +229,10 @@ export const DeveloperPortal: React.FC = () => {
 const DeveloperOverview: React.FC<{ 
   stats: any;
   onSubmitApp: () => void;
-  onManageApps: () => void;
-  onViewProfile: () => void;
-  onExportDownloads: () => void;
-}> = ({ stats, onSubmitApp, onManageApps, onViewProfile, onExportDownloads }) => {
-  return (
-    <div className="space-y-8">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Apps</p>
+                <p className="text-sm font-medium text-gray-600">{t('my_apps')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.totalApps || 0}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -254,12 +245,12 @@ const DeveloperOverview: React.FC<{
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Downloads</p>
+                <p className="text-sm font-medium text-gray-600">{t('downloads')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.totalDownloads?.toLocaleString() || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -272,12 +263,12 @@ const DeveloperOverview: React.FC<{
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-sm font-medium text-gray-600">{t('revenue')}</p>
                 <p className="text-3xl font-bold text-gray-900">${stats?.revenue?.toLocaleString() || 0}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -290,12 +281,12 @@ const DeveloperOverview: React.FC<{
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Followers</p>
+                <p className="text-sm font-medium text-gray-600">{t('followers')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.followers || 0}</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -319,7 +310,7 @@ const DeveloperOverview: React.FC<{
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to Submit?</h3>
                 <p className="text-gray-600 mb-4">Share your latest AI innovation with the community</p>
                 <Button onClick={onSubmitApp} icon={Upload}>
-                  Submit New App
+                  {t('submit_app')}
                 </Button>
               </div>
               <Upload className="w-16 h-16 text-purple-200" />
@@ -334,7 +325,7 @@ const DeveloperOverview: React.FC<{
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Your Apps</h3>
                 <p className="text-gray-600 mb-4">Update, edit, and track your published applications</p>
                 <Button variant="outline" onClick={onManageApps} icon={Eye}>
-                  View All Apps
+                  {t('view_all')}
                 </Button>
               </div>
               <Eye className="w-16 h-16 text-blue-200" />
@@ -349,7 +340,7 @@ const DeveloperOverview: React.FC<{
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Profile</h3>
                 <p className="text-gray-600 mb-4">Manage your developer profile and settings</p>
                 <Button variant="outline" onClick={onViewProfile} icon={User}>
-                  View Profile
+                  {t('view_profile')}
                 </Button>
               </div>
               <User className="w-16 h-16 text-green-200" />
@@ -361,7 +352,7 @@ const DeveloperOverview: React.FC<{
       {/* Recent Activity */}
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('recent_activity')}</h3>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -370,7 +361,7 @@ const DeveloperOverview: React.FC<{
                 <DollarSign className="w-4 h-4 text-green-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">$45 earned from "AI Image Generator"</p>
+                <p className="text-sm font-medium text-gray-900">$45 {t('earned_from')} "AI Image Generator"</p>
                 <p className="text-xs text-gray-500">2 hours ago</p>
               </div>
             </div>
@@ -380,7 +371,7 @@ const DeveloperOverview: React.FC<{
                 <Download className="w-4 h-4 text-blue-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">50 new downloads this week</p>
+                <p className="text-sm font-medium text-gray-900">50 {t('new_downloads_this_week')}</p>
                 <p className="text-xs text-gray-500">1 day ago</p>
               </div>
             </div>
@@ -390,7 +381,7 @@ const DeveloperOverview: React.FC<{
                 <Users className="w-4 h-4 text-purple-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">3 new followers</p>
+                <p className="text-sm font-medium text-gray-900">3 {t('new_followers')}</p>
                 <p className="text-xs text-gray-500">3 days ago</p>
               </div>
             </div>
