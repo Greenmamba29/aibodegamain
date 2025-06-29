@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, BarChart3, Settings, Upload, Eye, Edit, Trash2, Star, Download, Users, TrendingUp, DollarSign, FileDown, User } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { useTranslation } from '../../hooks/useTranslation';
 import { AppSubmissionForm } from './AppSubmissionForm';
 import { AppManagement } from './AppManagement';
 import { DeveloperAnalytics } from './DeveloperAnalytics';
@@ -18,6 +19,7 @@ type TabType = 'overview' | 'apps' | 'submit' | 'analytics' | 'revenue' | 'setti
 export const DeveloperPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const { profile, updateProfile } = useAuthStore();
+  const { t } = useTranslation();
   const { t } = useTranslation();
   const { stats, fetchDeveloperStats } = useDeveloperStore();
 
@@ -98,48 +100,47 @@ export const DeveloperPortal: React.FC = () => {
             <div className="w-24 h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-full mx-auto mb-8 flex items-center justify-center shadow-lg">
               <Plus className="w-12 h-12 text-white" />
             </div>
-            
+
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Become a Developer
+              {t('become_developer')}
             </h1>
-            
+
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of developers sharing their AI innovations on Vibe Store. 
-              Submit your apps, track analytics, and monetize your creations.
+              {t('become_developer_description')}
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               <Card>
                 <CardContent className="p-6 text-center">
                   <Upload className="w-8 h-8 text-blue-600 mx-auto mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Easy Submission</h3>
-                  <p className="text-sm text-gray-600">Upload your apps with drag & drop interface</p>
+                  <h3 className="font-semibold text-gray-900 mb-2">{t('easy_submission')}</h3>
+                  <p className="text-sm text-gray-600">{t('easy_submission_description')}</p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6 text-center">
                   <BarChart3 className="w-8 h-8 text-purple-600 mx-auto mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Real-time Analytics</h3>
-                  <p className="text-sm text-gray-600">Track downloads, ratings, and revenue</p>
+                  <h3 className="font-semibold text-gray-900 mb-2">{t('realtime_analytics')}</h3>
+                  <p className="text-sm text-gray-600">{t('analytics_description')}</p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6 text-center">
                   <DollarSign className="w-8 h-8 text-yellow-600 mx-auto mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Monetization</h3>
-                  <p className="text-sm text-gray-600">70% revenue share with Stripe integration</p>
+                  <h3 className="font-semibold text-gray-900 mb-2">{t('monetization')}</h3>
+                  <p className="text-sm text-gray-600">{t('monetization_description')}</p>
                 </CardContent>
               </Card>
             </div>
-            
+
             <Button 
               size="lg" 
               onClick={handleUpgradeToDeveloper}
               className="text-lg px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
             >
-              Start Developing
+              {t('start_developing')}
             </Button>
           </div>
         </div>
@@ -148,7 +149,7 @@ export const DeveloperPortal: React.FC = () => {
   }
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'overview', label: t('overview'), icon: BarChart3 },
     { id: 'apps', label: t('my_apps'), icon: Eye },
     { id: 'submit', label: t('submit_app'), icon: Plus },
     { id: 'analytics', label: t('analytics'), icon: TrendingUp },
@@ -166,9 +167,9 @@ export const DeveloperPortal: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-yellow-600 bg-clip-text text-transparent">
-                  Developer Portal
+                  {t('developer_portal')}
                 </h1>
-                <p className="text-gray-600 mt-1">Manage your AI applications and track performance</p>
+                <p className="text-gray-600 mt-1">{t('manage_apps_description')}</p>
               </div>
               
               <div className="flex items-center space-x-4">
@@ -178,7 +179,7 @@ export const DeveloperPortal: React.FC = () => {
                   onClick={handleSubmitApp}
                   className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600"
                 >
-                  Submit New App
+                  {t('submit_app')}
                 </Button>
               </div>
             </div>
@@ -318,8 +319,8 @@ const DeveloperOverview: React.FC<{
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to Submit?</h3>
-                <p className="text-gray-600 mb-4">Share your latest AI innovation with the community</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('ready_to_submit')}</h3>
+                <p className="text-gray-600 mb-4">{t('share_innovation')}</p>
                 <Button onClick={onSubmitApp} icon={Upload}>
                   {t('submit_app')}
                 </Button>
@@ -333,8 +334,8 @@ const DeveloperOverview: React.FC<{
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Your Apps</h3>
-                <p className="text-gray-600 mb-4">Update, edit, and track your published applications</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('manage_your_apps')}</h3>
+                <p className="text-gray-600 mb-4">{t('update_edit_track')}</p>
                 <Button variant="outline" onClick={onManageApps} icon={Eye}>
                   {t('view_all')}
                 </Button>
@@ -348,8 +349,8 @@ const DeveloperOverview: React.FC<{
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Profile</h3>
-                <p className="text-gray-600 mb-4">Manage your developer profile and settings</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('your_profile')}</h3>
+                <p className="text-gray-600 mb-4">{t('manage_profile_settings')}</p>
                 <Button variant="outline" onClick={onViewProfile} icon={User}>
                   {t('view_profile')}
                 </Button>
