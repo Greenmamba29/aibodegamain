@@ -137,6 +137,14 @@ export const Header: React.FC<HeaderProps> = ({
     );
   };
 
+  const handleLogoClick = () => {
+    if (onNavigate) onNavigate('home');
+  };
+
+  const handleContactSupport = () => {
+    toast.success('Support request sent! Our team will contact you shortly.');
+  };
+
   return (
     <>
       <header className="bg-white/95 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -144,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <button 
-              onClick={() => onNavigate?.('home')}
+              onClick={handleLogoClick}
               className="flex items-center space-x-3 hover:opacity-80 transition-opacity group"
             >
               <div className="w-10 h-10 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">

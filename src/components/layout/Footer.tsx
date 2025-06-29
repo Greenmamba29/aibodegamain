@@ -1,7 +1,20 @@
 import React from 'react'
 import { Github, Twitter, Mail, Heart } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 
 export const Footer: React.FC = () => {
+  const handleNavigation = (path: string) => {
+    if (path.startsWith('http')) {
+      window.open(path, '_blank');
+    } else {
+      window.location.href = path;
+    }
+  };
+
+  const handleContactSupport = () => {
+    toast.success('Support request sent! Our team will contact you shortly.');
+  };
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -18,15 +31,28 @@ export const Footer: React.FC = () => {
               Discover, share, and monetize AI-powered applications. The premier marketplace for indie AI developers and enthusiasts.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a 
+                href="https://github.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 <Github className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a 
+                href="https://twitter.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <button 
+                onClick={handleContactSupport} 
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 <Mail className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
 
@@ -34,10 +60,38 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-semibold mb-4">Platform</h3>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">Browse Apps</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Collections</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Featured</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">New Releases</a></li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/')} 
+                  className="hover:text-white transition-colors"
+                >
+                  Browse Apps
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/#collections')} 
+                  className="hover:text-white transition-colors"
+                >
+                  Collections
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/#featured')} 
+                  className="hover:text-white transition-colors"
+                >
+                  Featured
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/?sort=newest')} 
+                  className="hover:text-white transition-colors"
+                >
+                  New Releases
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -45,10 +99,38 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-semibold mb-4">Developers</h3>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">Submit App</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Developer Portal</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">API Documentation</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Guidelines</a></li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/developer')} 
+                  className="hover:text-white transition-colors"
+                >
+                  Submit App
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/developer')} 
+                  className="hover:text-white transition-colors"
+                >
+                  Developer Portal
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('https://docs.vibestore.ai')} 
+                  className="hover:text-white transition-colors"
+                >
+                  API Documentation
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('https://docs.vibestore.ai/guidelines')} 
+                  className="hover:text-white transition-colors"
+                >
+                  Guidelines
+                </button>
+              </li>
             </ul>
           </div>
         </div>

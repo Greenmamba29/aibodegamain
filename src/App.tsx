@@ -59,29 +59,40 @@ function App() {
 
   // Handle URL routing
   useEffect(() => {
-    const path = window.location.pathname
-    const search = window.location.search
+    const handleRouting = () => {
+      const path = window.location.pathname
+      const search = window.location.search
 
-    if (path === '/products') {
-      setCurrentPage('products')
-    } else if (path === '/payment/success' || search.includes('session_id')) {
-      setCurrentPage('payment-success')
-    } else if (path === '/payment/cancel') {
-      setCurrentPage('payment-cancel')
-    } else if (path === '/developer') {
-      setCurrentPage('developer')
-    } else if (path === '/admin') {
-      setCurrentPage('admin')
-    } else if (path === '/mobile') {
-      setCurrentPage('mobile')
-    } else if (path === '/profile') {
-      setCurrentPage('profile')
-    } else if (path === '/purchase-history') {
-      setCurrentPage('purchase-history')
-    } else if (path === '/settings') {
-      setCurrentPage('settings')
-    } else {
-      setCurrentPage('home')
+      if (path === '/products') {
+        setCurrentPage('products')
+      } else if (path === '/payment/success' || search.includes('session_id')) {
+        setCurrentPage('payment-success')
+      } else if (path === '/payment/cancel') {
+        setCurrentPage('payment-cancel')
+      } else if (path === '/developer') {
+        setCurrentPage('developer')
+      } else if (path === '/admin') {
+        setCurrentPage('admin')
+      } else if (path === '/mobile') {
+        setCurrentPage('mobile')
+      } else if (path === '/profile') {
+        setCurrentPage('profile')
+      } else if (path === '/purchase-history') {
+        setCurrentPage('purchase-history')
+      } else if (path === '/settings') {
+        setCurrentPage('settings')
+      } else {
+        setCurrentPage('home')
+      }
+    }
+
+    handleRouting()
+    
+    // Listen for popstate events (browser back/forward)
+    window.addEventListener('popstate', handleRouting)
+    
+    return () => {
+      window.removeEventListener('popstate', handleRouting)
     }
   }, [])
 

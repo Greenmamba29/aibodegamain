@@ -50,6 +50,24 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
     }
   }, [isOpen, app]);
 
+  // Close modal when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const modal = document.querySelector('.content-card-modal-content');
+      if (modal && !modal.contains(event.target as Node) && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   const fetchComments = async () => {
     if (!app) return;
     
@@ -77,30 +95,24 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
     if (!app) return;
     
     try {
-      // In a real implementation, we would fetch from a likes table
-      // For now, we'll use a mock implementation
       const { data, error } = await supabase
         .from('app_likes')
         .select(`
           *,
           user:profiles(id, full_name, avatar_url, role)
         `)
-        .eq('app_id', app.id)
-        .maybeSingle();
+        .eq('app_id', app.id);
       
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching likes:', error);
-      }
-      
-      // Fallback to mock data if no likes table exists
-      if (!data) {
+        // Fallback to mock data
         setLikes([
           { id: '1', user: { id: '1', full_name: 'John Doe', avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
           { id: '2', user: { id: '2', full_name: 'Jane Smith', avatar_url: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
           { id: '3', user: { id: '3', full_name: 'Mike Johnson', avatar_url: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2' } },
         ]);
       } else {
-        setLikes(Array.isArray(data) ? data : [data]);
+        setLikes(data || []);
       }
     } catch (error) {
       console.error('Error fetching likes:', error);
@@ -360,7 +372,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="content-card-modal-content bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         <div className="flex flex-col md:flex-row h-full">
           {/* Left side - App content */}
           <div className="md:w-1/2 bg-gradient-to-br from-purple-50 to-blue-50 p-6 overflow-y-auto max-h-[90vh] md:max-h-none">
