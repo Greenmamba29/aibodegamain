@@ -1,5 +1,6 @@
 import React from 'react'
 import { Crown, Check } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface PricingBadgeProps {
   pricingType: 'free' | 'one_time' | 'subscription' | 'freemium'
@@ -16,10 +17,12 @@ export const PricingBadge: React.FC<PricingBadgeProps> = ({
   size = 'md',
   className = ''
 }) => {
+  const { t } = useTranslation();
+  
   const getBadgeContent = () => {
     if (isPurchased) {
       return {
-        text: 'Owned',
+        text: t('owned'),
         className: 'bg-blue-100 text-blue-800',
         icon: <Check className="w-3 h-3" />
       }
@@ -28,13 +31,13 @@ export const PricingBadge: React.FC<PricingBadgeProps> = ({
     switch (pricingType) {
       case 'free':
         return {
-          text: 'Free',
+          text: t('free'),
           className: 'bg-green-100 text-green-800',
           icon: null
         }
       case 'freemium':
         return {
-          text: 'Freemium',
+          text: t('freemium'),
           className: 'bg-purple-100 text-purple-800',
           icon: <Crown className="w-3 h-3" />
         }

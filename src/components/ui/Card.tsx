@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface CardProps {
   children: React.ReactNode
@@ -13,6 +14,7 @@ export const Card: React.FC<CardProps> = ({
   hover = false,
   onClick 
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={`

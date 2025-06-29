@@ -103,8 +103,8 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
     ? `${selectedCategoryName} Apps`
     : user ? t('discover') : t('featured_apps');
   const sectionDescription = selectedCategoryId
-    ? `Explore ${selectedCategoryName?.toLowerCase()} applications`
-    : user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves';
+    ? `${t('explore')} ${selectedCategoryName?.toLowerCase()} ${t('applications')}`
+    : user ? t('discover_description') : t('featured_description');
 
   if (loading) {
     return (
@@ -142,7 +142,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
                   onClick={onClearFilter}
                   className="ml-4"
                 >
-                  Clear Filter
+                  {t('clear_filter')}
                 </Button>
               )}
             </div>
@@ -153,7 +153,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
               <div className="flex justify-center mt-4">
                 <div className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
                   <Filter className="w-4 h-4 mr-2" />
-                  Filtered by: {selectedCategoryName}
+                  {t('filtered_by')}: {selectedCategoryName}
                   {onClearFilter && (
                     <button
                       onClick={onClearFilter}

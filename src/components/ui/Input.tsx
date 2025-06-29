@@ -1,5 +1,6 @@
 import React from 'react'
 import { DivideIcon as LucideIcon } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -14,6 +15,7 @@ export const Input: React.FC<InputProps> = ({
   className = '',
   ...props
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="space-y-1">
       {label && (

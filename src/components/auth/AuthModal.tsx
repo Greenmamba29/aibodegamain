@@ -3,6 +3,7 @@ import { X, Mail, Lock, User, Github } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { useAuthStore } from '../../store/authStore'
+import { useTranslation } from '../../hooks/useTranslation'
 import { signInWithProvider } from '../../lib/supabase'
 
 interface AuthModalProps {
@@ -24,6 +25,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [socialLoading, setSocialLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
 
+  const { t } = useTranslation()
   const { signIn, signUp } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,7 +70,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
-              {mode === 'signin' ? 'Welcome Back' : 'Join Vibe Store'}
+              {mode === 'signin' ? t('welcome_back') : t('join_vibe_store')}
             </h2>
             <button
               onClick={onClose}
@@ -88,7 +90,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               loading={socialLoading === 'github'}
               disabled={socialLoading !== null}
             >
-              Continue with GitHub
+              {t('continue_with')} GitHub
             </Button>
             <Button
               variant="outline"
@@ -103,7 +105,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              Continue with Google
+              {t('continue_with')} Google
             </Button>
           </div>
 
@@ -112,41 +114,41 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+              <span className="px-2 bg-white text-gray-500">{t('or_continue_with_email')}</span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && (
               <Input
-                label="Full Name"
+                label={t('full_name')}
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 icon={User}
                 required
-                placeholder="Enter your full name"
+                placeholder={t('enter_full_name')}
               />
             )}
             
             <Input
-              label="Email"
+              label={t('email')}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               icon={Mail}
               required
-              placeholder="Enter your email"
+              placeholder={t('enter_email')}
             />
             
             <Input
-              label="Password"
+              label={t('password')}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               icon={Lock}
               required
-              placeholder="Enter your password"
+              placeholder={t('enter_password')}
             />
 
             {error && (
@@ -162,25 +164,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               loading={loading}
               disabled={socialLoading !== null}
             >
-              {mode === 'signin' ? 'Sign In' : 'Create Account'}
+              {mode === 'signin' ? t('sign_in') : t('create_account')}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              {mode === 'signin' ? "Don't have an account?" : "Already have an account?"}
+              {mode === 'signin' ? t('no_account') : t('have_account')}
               <button
                 onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
                 className="ml-1 text-purple-600 hover:text-purple-700 font-medium"
               >
-                {mode === 'signin' ? 'Sign up' : 'Sign in'}
+                {mode === 'signin' ? t('sign_up') : t('sign_in')}
               </button>
             </p>
           </div>
 
           {mode === 'signup' && (
             <p className="text-xs text-gray-500 text-center mt-4">
-              By creating an account, you agree to our Terms of Service and Privacy Policy.
+              {t('terms_agreement')}
             </p>
           )}
         </div>
