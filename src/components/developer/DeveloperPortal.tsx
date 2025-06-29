@@ -229,6 +229,17 @@ export const DeveloperPortal: React.FC = () => {
 const DeveloperOverview: React.FC<{ 
   stats: any;
   onSubmitApp: () => void;
+  onManageApps: () => void;
+  onViewProfile: () => void;
+  onExportDownloads: () => void;
+}> = ({ stats, onSubmitApp, onManageApps, onViewProfile, onExportDownloads }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
