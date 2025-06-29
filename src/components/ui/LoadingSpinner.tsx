@@ -1,7 +1,6 @@
 import React from 'react'
 import { Loader2 } from 'lucide-react'
 import { useTranslation } from '../../hooks/useTranslation'
-import { useTranslation } from '../../hooks/useTranslation'
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg'
@@ -14,7 +13,6 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text,
   className = ''
 }) => {
-  const { t } = useTranslation();
   const { t } = useTranslation();
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -34,7 +32,6 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
 // Full page loading component
 export const PageLoader: React.FC<{ text?: string }> = ({ text = 'loading' }) => {
-  const { t } = useTranslation();
   const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
