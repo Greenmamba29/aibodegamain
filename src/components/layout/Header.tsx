@@ -106,10 +106,6 @@ export const Header: React.FC<HeaderProps> = ({
     try {
       const newRole = profile?.role === 'developer' ? 'consumer' : 'developer';
       
-      // Optimistically update UI first
-      const optimisticProfile = { ...profile, role: newRole };
-      set({ profile: optimisticProfile });
-      
       // Close dropdowns immediately
       setIsProfileOpen(false);
       setIsRoleToggleOpen(false);
@@ -121,20 +117,13 @@ export const Header: React.FC<HeaderProps> = ({
         onNavigate('home');
       }
       
-      // Then update the database in the background
+      // Update the profile (this handles optimistic updates internally)
       await updateProfile({ role: newRole });
       
       toast.success(`Switched to ${newRole} mode`);
     } catch (error) {
       console.error('Error toggling role:', error);
       toast.error('Error changing role. Please try again.');
-      
-      // Revert optimistic update on error
-      if (profile) {
-        const revertedRole = profile.role === 'consumer' ? 'consumer' : 'developer';
-        const revertedProfile = { ...profile, role: revertedRole };
-        set({ profile: revertedProfile });
-      }
     }
   };
 
