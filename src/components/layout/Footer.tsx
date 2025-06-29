@@ -1,9 +1,12 @@
 import React from 'react'
 import { Github, Twitter, Mail, Heart } from 'lucide-react'
 import { LanguageSwitcher } from '../ui/LanguageSwitcher'
+import { useTranslation } from '../../hooks/useTranslation'
 import { toast } from 'react-hot-toast'
 
 export const Footer: React.FC = () => {
+  const { t } = useTranslation();
+  
   const handleNavigation = (path: string) => {
     if (path.startsWith('http')) {
       window.open(path, '_blank');
@@ -29,7 +32,7 @@ export const Footer: React.FC = () => {
               <h2 className="text-xl font-bold">Vibe Store</h2>
             </div>
             <p className="text-gray-400 mb-4 max-w-md">
-              Discover, share, and monetize AI-powered applications. The premier marketplace for indie AI developers and enthusiasts.
+              {t('app_store_description')}
             </p>
             <div className="flex space-x-4">
               <a 
@@ -59,14 +62,14 @@ export const Footer: React.FC = () => {
 
           {/* Platform */}
           <div>
-            <h3 className="font-semibold mb-4">Platform</h3>
+            <h3 className="font-semibold mb-4">{t('platform')}</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
                 <button 
                   onClick={() => handleNavigation('/')} 
                   className="hover:text-white transition-colors"
                 >
-                  Browse Apps
+                  {t('browse_apps')}
                 </button>
               </li>
               <li>
@@ -74,7 +77,7 @@ export const Footer: React.FC = () => {
                   onClick={() => handleNavigation('/#collections')} 
                   className="hover:text-white transition-colors"
                 >
-                  Collections
+                  {t('collections')}
                 </button>
               </li>
               <li>
@@ -82,7 +85,7 @@ export const Footer: React.FC = () => {
                   onClick={() => handleNavigation('/#featured')} 
                   className="hover:text-white transition-colors"
                 >
-                  Featured
+                  {t('featured')}
                 </button>
               </li>
               <li>
@@ -90,7 +93,7 @@ export const Footer: React.FC = () => {
                   onClick={() => handleNavigation('/?sort=newest')} 
                   className="hover:text-white transition-colors"
                 >
-                  New Releases
+                  {t('new_releases')}
                 </button>
               </li>
             </ul>
@@ -98,14 +101,14 @@ export const Footer: React.FC = () => {
 
           {/* Developers */}
           <div>
-            <h3 className="font-semibold mb-4">Developers</h3>
+            <h3 className="font-semibold mb-4">{t('developers')}</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
                 <button 
                   onClick={() => handleNavigation('/developer')} 
                   className="hover:text-white transition-colors"
                 >
-                  Submit App
+                  {t('submit_app')}
                 </button>
               </li>
               <li>
@@ -113,7 +116,7 @@ export const Footer: React.FC = () => {
                   onClick={() => handleNavigation('/developer')} 
                   className="hover:text-white transition-colors"
                 >
-                  Developer Portal
+                  {t('developer_portal')}
                 </button>
               </li>
               <li>
@@ -121,7 +124,7 @@ export const Footer: React.FC = () => {
                   onClick={() => handleNavigation('https://docs.vibestore.ai')} 
                   className="hover:text-white transition-colors"
                 >
-                  API Documentation
+                  {t('api_docs')}
                 </button>
               </li>
               <li>
@@ -129,7 +132,7 @@ export const Footer: React.FC = () => {
                   onClick={() => handleNavigation('https://docs.vibestore.ai/guidelines')} 
                   className="hover:text-white transition-colors"
                 >
-                  Guidelines
+                  {t('guidelines')}
                 </button>
               </li>
             </ul>
@@ -138,14 +141,14 @@ export const Footer: React.FC = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 Vibe Store. All rights reserved.
+            © 2024 Vibe Store. {t('all_rights_reserved')}
           </p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <LanguageSwitcher variant="dropdown" size="sm" />
             <div className="flex items-center space-x-1 text-gray-400 text-sm">
-              <span>Made with</span>
+              <span>{t('made_with')}</span>
               <Heart className="w-4 h-4 text-red-500" />
-              <span>by indie developers</span>
+              <span>{t('by_indie_devs')}</span>
             </div>
           </div>
         </div>

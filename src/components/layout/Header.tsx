@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Search AI apps, developers, or categories..."
+                    placeholder={t('search_placeholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white transition-all duration-200"
@@ -357,7 +357,7 @@ export const Header: React.FC<HeaderProps> = ({
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                           >
                             <User className="w-4 h-4" />
-                            <span>View Profile</span>
+                            <span>{t('view_profile')}</span>
                           </button>
                           
                           <button 
@@ -373,8 +373,8 @@ export const Header: React.FC<HeaderProps> = ({
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                           >
                             <Crown className="w-4 h-4" />
-                            <span>
-                              {profile?.subscription_tier === 'free' ? 'Upgrade Plan' : 'Manage Subscription'}
+                            <span> 
+                              {profile?.subscription_tier === 'free' ? t('upgrade_plan') : t('manage_subscription')}
                             </span>
                           </button>
                           
@@ -383,7 +383,7 @@ export const Header: React.FC<HeaderProps> = ({
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                           >
                             <Package className="w-4 h-4" />
-                            <span>Purchase History</span>
+                            <span>{t('purchase_history')}</span>
                           </button>
                           
                           {profile?.role === 'admin' && (
@@ -527,7 +527,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={handleToggleRole}
                     icon={profile?.role === 'developer' ? ToggleRight : ToggleLeft}
                   >
-                    Switch to {profile?.role === 'developer' ? t('consumer') : t('developer')}
+                    {t('switch_to')} {profile?.role === 'developer' ? t('consumer') : t('developer')}
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -535,7 +535,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={handleContactSupport}
                     icon={CreditCard}
                   >
-                    Support
+                    {t('contact_support')}
                   </Button>
                 </div>
               )}
