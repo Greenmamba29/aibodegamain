@@ -287,12 +287,14 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
       // For now, we'll use reviews as comments
       const { data, error } = await supabase
         .from('reviews')
-        .insert({
+        .upsert({
           app_id: app.id,
           user_id: user.id,
           rating: 5, // Default rating
           title: 'Comment',
           content: comment.trim()
+        }, {
+          onConflict: 'app_id,user_id'
         })
         .select(`
           *,
@@ -306,9 +308,20 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
       }
       
       if (data) {
-        setComments([data, ...comments]);
+        // Check if this is an update (existing comment) or new comment
+        const existingCommentIndex = comments.findIndex(c => c.user_id === user.id);
+        if (existingCommentIndex >= 0) {
+          // Update existing comment
+          const updatedComments = [...comments];
+          updatedComments[existingCommentIndex] = data;
+          setComments(updatedComments);
+          toast.success(t('comment_updated'));
+        } else {
+          // Add new comment
+          setComments([data, ...comments]);
+          toast.success(t('comment_posted'));
+        }
         setComment('');
-        toast.success(t('comment_posted'));
       }
     } catch (error) {
       console.error('Error submitting comment:', error);
@@ -333,9 +346,21 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
             role: profile.role
           }
         };
-        setComments([fakeComment, ...comments]);
+        
+        // Check if user already has a comment
+        const existingCommentIndex = comments.findIndex(c => c.user_id === user.id);
+        if (existingCommentIndex >= 0) {
+          // Update existing comment
+          const updatedComments = [...comments];
+          updatedComments[existingCommentIndex] = fakeComment;
+          setComments(updatedComments);
+          toast.success(t('comment_updated'));
+        } else {
+          // Add new comment
+          setComments([fakeComment, ...comments]);
+          toast.success(t('comment_posted'));
+        }
         setComment('');
-        toast.success(t('comment_posted'));
       }
     } finally {
       setCommentLoading(false);
