@@ -158,6 +158,23 @@ const translations: Record<string, Record<string, string>> = {
     'comment_posted': 'Comment posted successfully!',
     'comment_failed': 'Failed to post comment. Please try again.'
   },
+  // Add new translation keys for developer portal
+  'en': {
+    // ... existing translations
+    'developer_upgrade_success': 'Successfully upgraded to developer mode!',
+    'developer_upgrade_failed': 'Failed to upgrade to developer mode',
+    'app_submission_success': 'App submitted successfully!',
+    'csv_download_success': 'CSV file downloaded successfully',
+    'become_developer_description': 'Join thousands of developers sharing their AI innovations on Vibe Store. Submit your apps, track analytics, and monetize your creations.',
+    'easy_submission': 'Easy Submission',
+    'easy_submission_description': 'Upload your apps with drag & drop interface',
+    'realtime_analytics': 'Real-time Analytics',
+    'analytics_description': 'Track downloads, ratings, and revenue',
+    'monetization': 'Monetization',
+    'monetization_description': '70% revenue share with Stripe integration',
+    'start_developing': 'Start Developing',
+    'my_apps': 'My Apps',
+  },
   es: {
     'welcome': 'Tienda de Aplicaciones IA',
     'featured_apps': 'Aplicaciones Destacadas',
@@ -302,6 +319,23 @@ const translations: Record<string, Record<string, string>> = {
     'enter_comment': 'Por favor ingresa un comentario',
     'comment_posted': '¡Comentario publicado exitosamente!',
     'comment_failed': 'Error al publicar el comentario. Por favor intenta de nuevo.'
+  },
+  // Add Spanish translations for developer portal
+  'es': {
+    // ... existing translations
+    'developer_upgrade_success': '¡Actualizado exitosamente al modo desarrollador!',
+    'developer_upgrade_failed': 'Error al actualizar al modo desarrollador',
+    'app_submission_success': '¡Aplicación enviada exitosamente!',
+    'csv_download_success': 'Archivo CSV descargado exitosamente',
+    'become_developer_description': 'Únete a miles de desarrolladores compartiendo sus innovaciones de IA en Vibe Store. Envía tus aplicaciones, rastrea analíticas y monetiza tus creaciones.',
+    'easy_submission': 'Envío Fácil',
+    'easy_submission_description': 'Sube tus aplicaciones con interfaz de arrastrar y soltar',
+    'realtime_analytics': 'Analíticas en Tiempo Real',
+    'analytics_description': 'Rastrea descargas, calificaciones e ingresos',
+    'monetization': 'Monetización',
+    'monetization_description': '70% de participación en ingresos con integración de Stripe',
+    'start_developing': 'Comenzar a Desarrollar',
+    'my_apps': 'Mis Aplicaciones',
   },
   fr: {
     'welcome': 'Magasin d\'Applications IA',
@@ -448,6 +482,23 @@ const translations: Record<string, Record<string, string>> = {
     'comment_posted': 'Commentaire publié avec succès!',
     'comment_failed': 'Échec de la publication du commentaire. Veuillez réessayer.'
   },
+  // Add French translations for developer portal
+  'fr': {
+    // ... existing translations
+    'developer_upgrade_success': 'Passage au mode développeur réussi !',
+    'developer_upgrade_failed': 'Échec du passage au mode développeur',
+    'app_submission_success': 'Application soumise avec succès !',
+    'csv_download_success': 'Fichier CSV téléchargé avec succès',
+    'become_developer_description': 'Rejoignez des milliers de développeurs partageant leurs innovations IA sur Vibe Store. Soumettez vos applications, suivez les analyses et monétisez vos créations.',
+    'easy_submission': 'Soumission Facile',
+    'easy_submission_description': 'Téléchargez vos applications avec une interface glisser-déposer',
+    'realtime_analytics': 'Analyses en Temps Réel',
+    'analytics_description': 'Suivez les téléchargements, les évaluations et les revenus',
+    'monetization': 'Monétisation',
+    'monetization_description': '70% de part de revenus avec l\'intégration Stripe',
+    'start_developing': 'Commencer à Développer',
+    'my_apps': 'Mes Applications',
+  },
   de: {
     'welcome': 'KI-App-Store',
     'featured_apps': 'Ausgewählte Anwendungen',
@@ -592,6 +643,23 @@ const translations: Record<string, Record<string, string>> = {
     'enter_comment': 'Bitte geben Sie einen Kommentar ein',
     'comment_posted': 'Kommentar erfolgreich gepostet!',
     'comment_failed': 'Fehler beim Posten des Kommentars. Bitte versuchen Sie es erneut.'
+  },
+  // Add German translations for developer portal
+  'de': {
+    // ... existing translations
+    'developer_upgrade_success': 'Erfolgreich zum Entwicklermodus gewechselt!',
+    'developer_upgrade_failed': 'Fehler beim Wechsel zum Entwicklermodus',
+    'app_submission_success': 'App erfolgreich eingereicht!',
+    'csv_download_success': 'CSV-Datei erfolgreich heruntergeladen',
+    'become_developer_description': 'Schließen Sie sich Tausenden von Entwicklern an, die ihre KI-Innovationen auf Vibe Store teilen. Reichen Sie Ihre Apps ein, verfolgen Sie Analysen und monetarisieren Sie Ihre Kreationen.',
+    'easy_submission': 'Einfache Einreichung',
+    'easy_submission_description': 'Laden Sie Ihre Apps mit Drag & Drop-Oberfläche hoch',
+    'realtime_analytics': 'Echtzeit-Analysen',
+    'analytics_description': 'Verfolgen Sie Downloads, Bewertungen und Einnahmen',
+    'monetization': 'Monetarisierung',
+    'monetization_description': '70% Umsatzbeteiligung mit Stripe-Integration',
+    'start_developing': 'Mit der Entwicklung beginnen',
+    'my_apps': 'Meine Apps',
   },
   ja: {
     'welcome': 'AIアプリストア',
@@ -738,6 +806,23 @@ const translations: Record<string, Record<string, string>> = {
     'comment_posted': 'コメントが正常に投稿されました！',
     'comment_failed': 'コメントの投稿に失敗しました。もう一度お試しください。'
   },
+  // Add Japanese translations for developer portal
+  'ja': {
+    // ... existing translations
+    'developer_upgrade_success': '開発者モードに正常にアップグレードされました！',
+    'developer_upgrade_failed': '開発者モードへのアップグレードに失敗しました',
+    'app_submission_success': 'アプリが正常に提出されました！',
+    'csv_download_success': 'CSVファイルが正常にダウンロードされました',
+    'become_developer_description': 'Vibe Storeで彼らのAIイノベーションを共有する何千もの開発者に参加しましょう。あなたのアプリを提出し、分析を追跡し、あなたの創作物を収益化しましょう。',
+    'easy_submission': '簡単な提出',
+    'easy_submission_description': 'ドラッグ＆ドロップインターフェイスであなたのアプリをアップロード',
+    'realtime_analytics': 'リアルタイム分析',
+    'analytics_description': 'ダウンロード数、評価、収益を追跡',
+    'monetization': '収益化',
+    'monetization_description': 'Stripe統合による70%の収益シェア',
+    'start_developing': '開発を始める',
+    'my_apps': 'マイアプリ',
+  },
   zh: {
     'welcome': 'AI应用商店',
     'featured_apps': '精选应用',
@@ -883,6 +968,23 @@ const translations: Record<string, Record<string, string>> = {
     'comment_posted': '评论发布成功！',
     'comment_failed': '评论发布失败。请重试。'
   }
+  // Add Chinese translations for developer portal
+  'zh': {
+    // ... existing translations
+    'developer_upgrade_success': '成功升级到开发者模式！',
+    'developer_upgrade_failed': '升级到开发者模式失败',
+    'app_submission_success': '应用提交成功！',
+    'csv_download_success': 'CSV文件下载成功',
+    'become_developer_description': '加入数千名在Vibe Store分享他们的AI创新的开发者。提交您的应用，跟踪分析，并将您的创作货币化。',
+    'easy_submission': '轻松提交',
+    'easy_submission_description': '使用拖放界面上传您的应用',
+    'realtime_analytics': '实时分析',
+    'analytics_description': '跟踪下载量、评分和收入',
+    'monetization': '变现',
+    'monetization_description': '通过Stripe集成获得70%的收入分成',
+    'start_developing': '开始开发',
+    'my_apps': '我的应用',
+  }
 };
 
 // Provider component
@@ -890,10 +992,51 @@ export const TranslationProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [language, setLanguage] = useState(() => {
     // Get language from localStorage or URL params or default to 'en'
     const savedLanguage = localStorage.getItem('preferredLanguage');
-    const urlParams = new URLSearchParams(window.location.search);
-    const langParam = urlParams.get('lang');
-    return langParam || savedLanguage || 'en';
+    return savedLanguage || 'en';
   });
+
+  // Update URL when language changes
+  useEffect(() => {
+    // Only update URL if language is not default
+    if (language !== 'en') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', language);
+      window.history.replaceState({}, '', url);
+    } else {
+      // Remove lang parameter if language is default
+      const url = new URL(window.location.href);
+      url.searchParams.delete('lang');
+      window.history.replaceState({}, '', url);
+    }
+  }, [language]);
+
+  // Check URL for language parameter on navigation
+  useEffect(() => {
+    const handleNavigation = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const langParam = urlParams.get('lang');
+      
+      if (langParam && langParam !== language && Object.keys(translations).includes(langParam)) {
+        setLanguage(langParam);
+        localStorage.setItem('preferredLanguage', langParam);
+      } else if (language && language !== 'en') {
+        // Ensure language parameter is in URL when navigating
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', language);
+        window.history.replaceState({}, '', url);
+      }
+    };
+
+    // Listen for navigation events
+    window.addEventListener('popstate', handleNavigation);
+    
+    // Initial check
+    handleNavigation();
+    
+    return () => {
+      window.removeEventListener('popstate', handleNavigation);
+    };
+  }, [language]);
 
   // Function to translate a key
   const t = (key: string): string => {

@@ -8,6 +8,7 @@ import { DeveloperAnalytics } from './DeveloperAnalytics';
 import { RevenueAnalytics } from './RevenueAnalytics';
 import { DeveloperSettings } from './DeveloperSettings';
 import { ProfileView } from './ProfileView';
+import { useTranslation } from '../../hooks/useTranslation';
 import { useAuthStore } from '../../store/authStore';
 import { useDeveloperStore } from '../../store/developerStore';
 import { toast } from 'react-hot-toast';
@@ -17,6 +18,7 @@ type TabType = 'overview' | 'apps' | 'submit' | 'analytics' | 'revenue' | 'setti
 export const DeveloperPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const { profile, updateProfile } = useAuthStore();
+  const { t } = useTranslation();
   const { stats, fetchDeveloperStats } = useDeveloperStore();
 
   useEffect(() => {
@@ -29,10 +31,10 @@ export const DeveloperPortal: React.FC = () => {
   const handleUpgradeToDeveloper = async () => {
     try {
       await updateProfile({ role: 'developer' });
-      toast.success('Successfully upgraded to developer mode!');
+      toast.success(t('developer_upgrade_success'));
     } catch (error) {
       console.error('Error upgrading to developer:', error);
-      toast.error('Failed to upgrade to developer mode');
+      toast.error(t('developer_upgrade_failed'));
     }
   };
 
@@ -49,7 +51,7 @@ export const DeveloperPortal: React.FC = () => {
   // Handle successful app submission
   const handleAppSubmissionSuccess = () => {
     setActiveTab('apps');
-    toast.success('App submitted successfully!');
+    toast.success(t('app_submission_success'));
   };
 
   // Handle view profile
@@ -85,7 +87,7 @@ export const DeveloperPortal: React.FC = () => {
     link.click();
     document.body.removeChild(link);
     
-    toast.success('CSV file downloaded successfully');
+    toast.success(t('csv_download_success'));
   };
 
   if (profile?.role !== 'developer') {
@@ -147,12 +149,12 @@ export const DeveloperPortal: React.FC = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'apps', label: 'My Apps', icon: Eye },
-    { id: 'submit', label: 'Submit App', icon: Plus },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-    { id: 'revenue', label: 'Revenue', icon: DollarSign },
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'apps', label: t('my_apps'), icon: Eye },
+    { id: 'submit', label: t('submit_app'), icon: Plus },
+    { id: 'analytics', label: t('analytics'), icon: TrendingUp },
+    { id: 'revenue', label: t('revenue'), icon: DollarSign },
+    { id: 'profile', label: t('profile'), icon: User },
+    { id: 'settings', label: t('settings'), icon: Settings },
   ];
 
   return (
@@ -170,7 +172,7 @@ export const DeveloperPortal: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-4">
-                <Button 
+                {t('become_developer')}
                   variant="primary" 
                   icon={Upload}
                   onClick={handleSubmitApp}
@@ -239,32 +241,31 @@ const DeveloperOverview: React.FC<{
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Apps</p>
-                <p className="text-3xl font-bold text-gray-900">{stats?.totalApps || 0}</p>
+                {t('become_developer_description')}
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Eye className="w-6 h-6 text-purple-600" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-green-600 font-medium">+2</span>
-              <span className="text-gray-500 ml-1">this month</span>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('easy_submission')}</h3>
+                    <p className="text-sm text-gray-600">{t('easy_submission_description')}</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('realtime_analytics')}</h3>
+                    <p className="text-sm text-gray-600">{t('analytics_description')}</p>
                 <p className="text-sm font-medium text-gray-600">Total Downloads</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.totalDownloads?.toLocaleString() || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Download className="w-6 h-6 text-blue-600" />
               </div>
-            </div>
-            <div className="mt-4 flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900 mb-2">{t('monetization')}</h3>
+                    <p className="text-sm text-gray-600">{t('monetization_description')}</p>
               <div className="flex items-center text-sm">
                 <span className="text-green-600 font-medium">+12%</span>
                 <span className="text-gray-500 ml-1">vs last month</span>
@@ -398,7 +399,7 @@ const DeveloperOverview: React.FC<{
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">3 new followers</p>
-                <p className="text-xs text-gray-500">3 days ago</p>
+                {t('start_developing')}
               </div>
             </div>
           </div>
