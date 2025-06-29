@@ -4,7 +4,6 @@ import { Button } from './Button';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from '../../hooks/useTranslation';
 import { realtimeManager, NotificationData, getUnreadNotifications, markNotificationAsRead } from '../../lib/realtime';
-import { useTranslation } from '../../hooks/useTranslation';
 import { toast } from 'react-hot-toast';
 
 export const NotificationBell: React.FC = () => {
@@ -12,7 +11,6 @@ export const NotificationBell: React.FC = () => {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuthStore();
-  const { t } = useTranslation();
   const { t } = useTranslation();
 
   useEffect(() => {
