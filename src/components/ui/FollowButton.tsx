@@ -50,9 +50,9 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
     try {
       if (isFollowing) {
         await unfollowUser(userId)
-        setIsFollowing(false)
         setCurrentFollowersCount(prev => Math.max(0, prev - 1))
       } else {
+        await followUser(userId)
             <span>{currentFollowersCount} {t('followers')}</span>
         setIsFollowing(true)
         setCurrentFollowersCount(prev => prev + 1)

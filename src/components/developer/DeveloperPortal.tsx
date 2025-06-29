@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, BarChart3, Settings, Upload, Eye, Edit, Trash2, Star, Download, Users, TrendingUp, DollarSign, FileDown, User } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation';
-import { DeveloperSettings } from './DeveloperSettings';
-import { ProfileView } from './ProfileView';
 import { AppSubmissionForm } from './AppSubmissionForm';
 import { AppManagement } from './AppManagement';
 import { DeveloperAnalytics } from './DeveloperAnalytics';
 import { RevenueAnalytics } from './RevenueAnalytics';
+import { DeveloperSettings } from './DeveloperSettings';
+import { ProfileView } from './ProfileView';
 import { useAuthStore } from '../../store/authStore';
 import { useDeveloperStore } from '../../store/developerStore';
 import { toast } from 'react-hot-toast';
