@@ -33,7 +33,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState<Language>(languages[0]);
-  const { language: currentLang, setLanguage } = useTranslation();
+  const { language: currentLang, setLanguage, t } = useTranslation();
 
   useEffect(() => {
     // Check if there's a language preference in localStorage
