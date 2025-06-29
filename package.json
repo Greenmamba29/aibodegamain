@@ -14,7 +14,7 @@
     "lingo": "lingo"
   },
   "dependencies": {
-    "@lingo.dev/client": "^1.0.5",
+    "lingo.dev": "^1.0.0",
     "@stripe/stripe-js": "^4.8.0",
     "@supabase/supabase-js": "^2.39.8",
     "lucide-react": "^0.344.0",
@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
-    "@lingo.dev/node": "^1.0.5",
     "@types/dom-mediacapture-record": "^1.0.22",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
