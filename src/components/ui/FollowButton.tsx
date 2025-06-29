@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { UserPlus, UserMinus, Users } from 'lucide-react'
 import { Button } from './Button'
 import { useAuthStore } from '../../store/authStore'
+import { useTranslation } from '../../hooks/useTranslation'
 import { followUser, unfollowUser, checkIfFollowing } from '../../lib/supabase'
 
 interface FollowButtonProps {
@@ -25,6 +26,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
   const [loading, setLoading] = useState(false)
   const [currentFollowersCount, setCurrentFollowersCount] = useState(followersCount)
   const { user } = useAuthStore()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (user && userId !== user.id) {
@@ -51,7 +53,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
         setIsFollowing(false)
         setCurrentFollowersCount(prev => Math.max(0, prev - 1))
       } else {
-        await followUser(userId)
+            <span>{currentFollowersCount} {t('followers')}</span>
         setIsFollowing(true)
         setCurrentFollowersCount(prev => prev + 1)
       }
@@ -85,14 +87,14 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
         icon={isFollowing ? UserMinus : UserPlus}
         className={isFollowing ? 'hover:bg-red-50 hover:border-red-300 hover:text-red-600' : ''}
       >
-        {isFollowing ? 'Unfollow' : 'Follow'}
+        {isFollowing ? t('unfollow') : t('follow')}
         {userName && ` ${userName}`}
       </Button>
       
       {showFollowersCount && (
         <div className="flex items-center space-x-1 text-sm text-gray-500">
           <Users className="w-4 h-4" />
-          <span>{currentFollowersCount}</span>
+          <span>{currentFollowersCount} {t('followers')}</span>
         </div>
       )}
     </div>
