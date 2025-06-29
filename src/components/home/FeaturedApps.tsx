@@ -9,6 +9,7 @@ import { AllAppsModal } from './AllAppsModal';
 import { ContentCardModal } from './ContentCardModal';
 import { useAppStore } from '../../store/appStore';
 import { useAuthStore } from '../../store/authStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import { usePaymentStore } from '../../store/paymentStore';
 import { toast } from 'react-hot-toast';
 
@@ -26,6 +27,7 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
   const { featuredApps, apps, loading, fetchFeaturedApps, fetchApps } = useAppStore();
   const { user } = useAuthStore();
   const { purchasedApps, fetchPurchases, addPurchasedApp } = usePaymentStore();
+  const { t } = useTranslation();
   const [selectedApp, setSelectedApp] = useState<any>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isAllAppsModalOpen, setIsAllAppsModalOpen] = useState(false);
@@ -98,8 +100,8 @@ export const FeaturedApps: React.FC<FeaturedAppsProps> = ({
   // Determine which apps to show
   const appsToShow = selectedCategoryId ? apps : featuredApps;
   const sectionTitle = selectedCategoryId 
-    ? `${selectedCategoryName} Apps` 
-    : user ? 'Discover AI Apps' : 'Featured Apps';
+    ? `${selectedCategoryName} Apps`
+    : user ? t('discover') : t('featured_apps');
   const sectionDescription = selectedCategoryId
     ? `Explore ${selectedCategoryName?.toLowerCase()} applications`
     : user ? 'Explore the latest AI applications tailored for you' : 'Handpicked AI applications that are making waves';

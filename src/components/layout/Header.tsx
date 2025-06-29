@@ -5,6 +5,7 @@ import { Input } from '../ui/Input';
 import { NotificationBell } from '../ui/NotificationBell';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { AuthModal } from '../auth/AuthModal';
+import { useTranslation } from '../../hooks/useTranslation';
 import { useAuthStore } from '../../store/authStore';
 import { useAppStore } from '../../store/appStore';
 import { toast } from 'react-hot-toast';
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [isRoleToggleOpen, setIsRoleToggleOpen] = useState(false);
   const { user, profile, signOut, updateProfile } = useAuthStore();
   const { searchQuery, setSearchQuery, searchApps } = useAppStore();
+  const { t } = useTranslation();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,17 +201,6 @@ export const Header: React.FC<HeaderProps> = ({
 
               {user ? (
                 <>
-                  {/* AI Tools Button */}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleAITools}
-                    className="hidden sm:flex items-center space-x-2"
-                  >
-                    <Zap className="w-4 h-4 text-purple-600" />
-                    <span>AI Tools</span>
-                  </Button>
-
                   {/* Mobile View Button - Only for consumers - Icon Only */}
                   {profile?.role !== 'developer' && (
                     <Button 
@@ -370,6 +361,14 @@ export const Header: React.FC<HeaderProps> = ({
                           </button>
                           
                           <button 
+                            onClick={handleSettings}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                          >
+                            <Settings className="w-4 h-4" />
+                            <span>{t('settings')}</span>
+                          </button>
+                          
+                          <button 
                             onClick={handleProductsPage}
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                           >
@@ -385,30 +384,6 @@ export const Header: React.FC<HeaderProps> = ({
                           >
                             <Package className="w-4 h-4" />
                             <span>Purchase History</span>
-                          </button>
-                          
-                          <button 
-                            onClick={handleSettings}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
-                          >
-                            <Settings className="w-4 h-4" />
-                            <span>Settings</span>
-                          </button>
-                          
-                          <button 
-                            onClick={handleAITools}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
-                          >
-                            <Zap className="w-4 h-4" />
-                            <span>AI Tools</span>
-                          </button>
-                          
-                          <button 
-                            onClick={handleContactSupport}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
-                          >
-                            <CreditCard className="w-4 h-4" />
-                            <span>Contact Support</span>
                           </button>
                           
                           {profile?.role === 'admin' && (
@@ -427,7 +402,7 @@ export const Header: React.FC<HeaderProps> = ({
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                             >
                               <LogOut className="w-4 h-4" />
-                              <span>Sign Out</span>
+                              <span>{t('logout')}</span>
                             </button>
                           </div>
                         </div>
@@ -443,7 +418,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={() => openAuthModal('signin')}
                     className="text-gray-600 hover:text-gray-900"
                   >
-                    Sign In
+                    {t('sign_in')}
                   </Button>
                   <Button 
                     variant="primary" 
@@ -451,7 +426,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={() => openAuthModal('signup')}
                     className="bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 hover:from-blue-600 hover:via-purple-600 hover:to-yellow-600 text-white shadow-lg hover:shadow-xl transition-all"
                   >
-                    Sign Up
+                    {t('sign_up')}
                   </Button>
                 </div>
               )}
@@ -496,14 +471,14 @@ export const Header: React.FC<HeaderProps> = ({
                     className="w-full justify-start text-gray-600"
                     onClick={() => openAuthModal('signin')}
                   >
-                    Sign In
+                    {t('sign_in')}
                   </Button>
                   <Button 
                     variant="primary" 
                     className="w-full justify-start bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 text-white"
                     onClick={() => openAuthModal('signup')}
                   >
-                    Sign Up
+                    {t('sign_up')}
                   </Button>
                 </div>
               ) : (
@@ -514,7 +489,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={handleViewProfile}
                     icon={User}
                   >
-                    View Profile
+                    {t('profile')}
                   </Button>
                   {profile?.role === 'developer' && (
                     <Button 
@@ -523,7 +498,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onClick={handleDeveloperPortal}
                       icon={Code}
                     >
-                      Developer Portal
+                      {t('developer')} Portal
                     </Button>
                   )}
                   {profile?.role === 'admin' && (
@@ -533,7 +508,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onClick={handleAdminDashboard}
                       icon={Settings}
                     >
-                      Admin Dashboard
+                      {t('admin')} Dashboard
                     </Button>
                   )}
                   {profile?.role !== 'developer' && (
@@ -543,24 +518,16 @@ export const Header: React.FC<HeaderProps> = ({
                       onClick={handleMobileView}
                       icon={Smartphone}
                     >
-                      Mobile View
+                      Mobile
                     </Button>
                   )}
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start"
-                    onClick={handleAITools}
-                    icon={Zap}
-                  >
-                    AI Tools
-                  </Button>
                   <Button 
                     variant="ghost" 
                     className="w-full justify-start"
                     onClick={handleToggleRole}
                     icon={profile?.role === 'developer' ? ToggleRight : ToggleLeft}
                   >
-                    Switch to {profile?.role === 'developer' ? 'Consumer' : 'Developer'}
+                    Switch to {profile?.role === 'developer' ? t('consumer') : t('developer')}
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -568,7 +535,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={handleContactSupport}
                     icon={CreditCard}
                   >
-                    Contact Support
+                    Support
                   </Button>
                 </div>
               )}

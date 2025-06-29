@@ -2,12 +2,14 @@ import React from 'react'
 import { Search, Sparkles, Zap, Users, ArrowRight, Play } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
+import { useTranslation } from '../../hooks/useTranslation'
 import { useAppStore } from '../../store/appStore'
 import { useAuthStore } from '../../store/authStore'
 
 export const Hero: React.FC = () => {
   const { searchQuery, setSearchQuery, searchApps } = useAppStore()
   const { user } = useAuthStore()
+  const { t } = useTranslation()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,7 +55,7 @@ export const Hero: React.FC = () => {
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
             The Premier{' '}
             <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 bg-clip-text text-transparent">
-              AI App Store
+              {t('welcome')}
             </span>
             <br />
             for Indie Developers
@@ -117,7 +119,7 @@ export const Hero: React.FC = () => {
               onClick={handleExploreApps}
               icon={ArrowRight}
             >
-              Explore Apps
+              {t('discover')}
             </Button>
             <Button 
               variant="outline" 
