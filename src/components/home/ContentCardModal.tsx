@@ -493,7 +493,7 @@ export const ContentCardModal: React.FC<ContentCardModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div ref={modalRef} className="content-card-modal-content bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div ref={modalRef} className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         <div className="flex flex-col md:flex-row h-full">
           {/* Left side - App content */}
           <div className="md:w-1/2 bg-gradient-to-br from-purple-50 to-blue-50 p-6 overflow-y-auto max-h-[90vh] md:max-h-none">

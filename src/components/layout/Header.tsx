@@ -371,6 +371,14 @@ export const Header: React.FC<HeaderProps> = ({
                             <span>Settings</span>
                           </button>
                           
+                          <button 
+                            onClick={handleContactSupport}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                          >
+                            <CreditCard className="w-4 h-4" />
+                            <span>Contact Support</span>
+                          </button>
+                          
                           {profile?.role === 'admin' && (
                             <button 
                               onClick={handleAdminDashboard}
@@ -508,6 +516,14 @@ export const Header: React.FC<HeaderProps> = ({
                     icon={profile?.role === 'developer' ? ToggleRight : ToggleLeft}
                   >
                     Switch to {profile?.role === 'developer' ? 'Consumer' : 'Developer'}
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={handleContactSupport}
+                    icon={CreditCard}
+                  >
+                    Contact Support
                   </Button>
                 </div>
               )}
