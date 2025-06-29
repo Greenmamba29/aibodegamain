@@ -7,8 +7,6 @@ import { AppSubmissionForm } from './AppSubmissionForm';
 import { AppManagement } from './AppManagement';
 import { DeveloperAnalytics } from './DeveloperAnalytics';
 import { RevenueAnalytics } from './RevenueAnalytics';
-import { DeveloperSettings } from './DeveloperSettings';
-import { ProfileView } from './ProfileView';
 import { useAuthStore } from '../../store/authStore';
 import { useDeveloperStore } from '../../store/developerStore';
 import { toast } from 'react-hot-toast';
