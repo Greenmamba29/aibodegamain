@@ -13,7 +13,8 @@
     "clean": "rm -rf node_modules package-lock.json && npm install"
   },
   "dependencies": {
-    "lingo.dev": "^1.0.0",
+    "@lingo-dev/compiler": "^1.0.0",
+    "@lingo-dev/client": "^1.0.0",
     "@stripe/stripe-js": "^4.8.0",
     "@supabase/supabase-js": "^2.39.8",
     "lucide-react": "^0.344.0",
