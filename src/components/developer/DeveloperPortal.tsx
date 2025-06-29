@@ -241,42 +241,34 @@ const DeveloperOverview: React.FC<{
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                {t('become_developer_description')}
+                <p className="text-sm font-medium text-gray-600">Total Apps</p>
+                <p className="text-3xl font-bold text-gray-900">{stats?.totalApps || 0}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Eye className="w-6 h-6 text-purple-600" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-                    <h3 className="font-semibold text-gray-900 mb-2">{t('easy_submission')}</h3>
-                    <p className="text-sm text-gray-600">{t('easy_submission_description')}</p>
+              <span className="text-green-600 font-medium">+2</span>
+              <span className="text-gray-500 ml-1">this month</span>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-6">
-                    <h3 className="font-semibold text-gray-900 mb-2">{t('realtime_analytics')}</h3>
-                    <p className="text-sm text-gray-600">{t('analytics_description')}</p>
+            <div className="flex items-center justify-between">
+              <div>
                 <p className="text-sm font-medium text-gray-600">Total Downloads</p>
                 <p className="text-3xl font-bold text-gray-900">{stats?.totalDownloads?.toLocaleString() || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Download className="w-6 h-6 text-blue-600" />
               </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{t('monetization')}</h3>
-                    <p className="text-sm text-gray-600">{t('monetization_description')}</p>
-              <div className="flex items-center text-sm">
-                <span className="text-green-600 font-medium">+12%</span>
-                <span className="text-gray-500 ml-1">vs last month</span>
-              </div>
-              <button
-                onClick={onExportDownloads}
-                className="text-blue-600 hover:text-blue-800 transition-colors"
-                title="Export CSV"
-              >
-                <FileDown className="w-4 h-4" />
-              </button>
+            </div>
+            <div className="mt-4 flex items-center text-sm">
+              <span className="text-green-600 font-medium">+12%</span>
+              <span className="text-gray-500 ml-1">vs last month</span>
             </div>
           </CardContent>
         </Card>
@@ -399,7 +391,7 @@ const DeveloperOverview: React.FC<{
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">3 new followers</p>
-                {t('start_developing')}
+                <p className="text-xs text-gray-500">3 days ago</p>
               </div>
             </div>
           </div>
