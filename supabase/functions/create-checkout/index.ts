@@ -1,4 +1,3 @@
-import { serve } from "npm:@supabase/functions-js@2.3.3";
 import Stripe from "npm:stripe@14.21.0";
 
 const corsHeaders = {
@@ -6,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight request
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders, status: 204 });
