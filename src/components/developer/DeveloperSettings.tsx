@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
+import { AIToolsPage } from '../ai/AIToolsPage';
 import { useAuthStore } from '../../store/authStore';
 import { uploadUserAvatar } from '../../lib/storage';
 import { supabase } from '../../lib/supabase';
@@ -12,6 +13,7 @@ import { toast } from 'react-hot-toast';
 export const DeveloperSettings: React.FC = () => {
   const { profile, updateProfile } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'profile' | 'language' | 'notifications' | 'privacy' | 'ai-tools'>('profile');
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [userSettings, setUserSettings] = useState<any>(null);
   const [settings, setSettings] = useState({
@@ -187,8 +189,68 @@ export const DeveloperSettings: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      {/* Tabs */}
+      <div className="flex overflow-x-auto space-x-1 bg-gray-100 rounded-lg p-1">
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'profile'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          Profile
+        </button>
+        <button
+          onClick={() => setActiveTab('language')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'language'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          Language
+        </button>
+        <button
+          onClick={() => setActiveTab('notifications')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'notifications'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          Notifications
+        </button>
+        <button
+          onClick={() => setActiveTab('privacy')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'privacy'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          Privacy
+        </button>
+        <button
+          onClick={() => setActiveTab('ai-tools')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'ai-tools'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          AI Tools
+        </button>
+      </div>
+
+      {activeTab === 'ai-tools' && (
+        <AIToolsPage />
+      )}
+
+      {activeTab !== 'ai-tools' && (
+        <>
       {/* Profile Settings */}
-      <Card>
+      {activeTab === 'profile' && <Card>
         <CardHeader>
           <h3 className="text-lg font-semibold text-gray-900">Profile Information</h3>
           <p className="text-gray-600">Update your public profile information</p>
@@ -292,10 +354,10 @@ export const DeveloperSettings: React.FC = () => {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Social Links */}
-      <Card>
+      {activeTab === 'profile' && <Card>
         <CardHeader>
           <h3 className="text-lg font-semibold text-gray-900">Social Links</h3>
           <p className="text-gray-600">Add links to your social profiles and websites</p>
@@ -327,10 +389,10 @@ export const DeveloperSettings: React.FC = () => {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Language Settings */}
-      <Card>
+      {activeTab === 'language' && <Card>
         <CardHeader>
           <h3 className="text-lg font-semibold text-gray-900">Language Settings</h3>
           <p className="text-gray-600">Choose your preferred language</p>
@@ -362,10 +424,10 @@ export const DeveloperSettings: React.FC = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Notification Preferences */}
-      <Card>
+      {activeTab === 'notifications' && <Card>
         <CardHeader>
           <h3 className="text-lg font-semibold text-gray-900">Notification Preferences</h3>
           <p className="text-gray-600">Choose how you want to be notified</p>
@@ -393,10 +455,10 @@ export const DeveloperSettings: React.FC = () => {
             </div>
           ))}
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Privacy Settings */}
-      <Card>
+      {activeTab === 'privacy' && <Card>
         <CardHeader>
           <h3 className="text-lg font-semibold text-gray-900">Privacy Settings</h3>
           <p className="text-gray-600">Control who can see your information</p>
@@ -424,10 +486,10 @@ export const DeveloperSettings: React.FC = () => {
             </div>
           ))}
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      {activeTab !== 'ai-tools' && <div className="flex justify-end">
         <Button
           onClick={handleSave}
           loading={loading}
@@ -436,7 +498,9 @@ export const DeveloperSettings: React.FC = () => {
         >
           Save Changes
         </Button>
-      </div>
+      </div>}
+      </>
+      )}
     </div>
   );
 };
