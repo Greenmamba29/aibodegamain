@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { useAuthStore } from '../../store/authStore';
 import { useDeveloperStore } from '../../store/developerStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import { uploadUserAvatar } from '../../lib/storage';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
@@ -13,6 +14,7 @@ export const ProfileView: React.FC = () => {
   const { apps, stats, fetchDeveloperApps, fetchDeveloperStats } = useDeveloperStore();
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [userSettings, setUserSettings] = useState<any>(null);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,10 +61,10 @@ export const ProfileView: React.FC = () => {
       }
 
       await updateProfile({ avatar_url: result.url });
-      toast.success('Avatar updated successfully!');
+      toast.success(t('avatar_updated'));
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      toast.error('Error uploading avatar. Please try again.');
+      toast.error(t('avatar_update_failed'));
     } finally {
       setAvatarUploading(false);
     }
@@ -149,7 +151,7 @@ export const ProfileView: React.FC = () => {
                   size="sm"
                   onClick={handleEditProfile}
                 >
-                  Edit Profile
+                  {t('edit_profile')}
                 </Button>
               </div>
               

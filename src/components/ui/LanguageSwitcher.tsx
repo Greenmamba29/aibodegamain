@@ -70,20 +70,15 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   const handleLanguageChange = (language: Language) => {
     setCurrentLanguage(language);
     setIsOpen(false);
-    setLanguage(language.code);
     localStorage.setItem('preferredLanguage', language.code);
-    
-    // Update URL with language parameter
-    const url = new URL(window.location.href);
-    url.searchParams.set('lang', language.code);
-    window.history.replaceState({}, '', url);
+    setLanguage(language.code);
     
     // Call the callback if provided
     if (onLanguageChange) {
       onLanguageChange(language.code);
     }
     
-    toast.success(t('language_changed_to') + ' ' + language.name);
+    toast.success(`${t('language_changed_to')} ${language.name}`);
   };
 
   const sizeClasses = {
